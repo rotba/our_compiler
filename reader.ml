@@ -1,5 +1,6 @@
 
-#use "pc.ml";;
+
+INCLUDE "pc.ml";;
 
 exception X_not_yet_implemented;;
 exception X_this_should_not_happen;;
@@ -45,8 +46,18 @@ let normalize_scheme_symbol str =
 	s) then str
   else Printf.sprintf "|%s|" str;;
 
-let read_sexpr string = raise X_not_yet_implemented ;;
+let tok_char =
+  let vis_char =  PC.range (Char.chr ((Char.code ' ')+1)) '\127' in
+  let nam_char =  PC.nt_none in               
+  let pref = PC.caten (PC.char '#') (PC.char '\\') in
+  let chain = PC.caten pref (PC.disj vis_char nam_char) in
+  PC.pack chain (function (p,c) -> (Char c))
+
+let read_sexpr string = PC.disj_list[tok_char] ;;
 
 let read_sexprs string = raise X_not_yet_implemented;;
+
+
+  
   
 end;; (* struct Reader *)
