@@ -53,7 +53,11 @@ let tok_char =
   let chain = PC.caten pref (PC.disj vis_char nam_char) in
   PC.pack chain (function (p,c) -> (Char c))
 
-let read_sexpr string = PC.disj_list[tok_char] ;;
+let read_sexpr string =
+  match (PC.disj_list[tok_char] (string_to_list string)) with
+  |(tok, []) -> tok
+  |_ -> raise X_this_should_not_happen;;
+
 
 let read_sexprs string = raise X_not_yet_implemented;;
 
