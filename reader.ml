@@ -54,7 +54,14 @@ let tok_char =
   PC.pack chain (function (p,c) -> (Char c))
 
 let read_sexpr string =
-  match (PC.disj_list[tok_char] (string_to_list string)) with
+  match (
+    try PC.disj_list
+          [
+            tok_char
+          ]
+          (string_to_list string)
+    with PC.X_no_match -> raise X_this_should_not_happen
+  ) with
   |(tok, []) -> tok
   |_ -> raise X_this_should_not_happen;;
 
