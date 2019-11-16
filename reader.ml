@@ -1,6 +1,6 @@
 
 
-INCLUDE "pc.ml";;
+# use "pc.ml";;
 
 exception X_not_yet_implemented;;
 exception X_this_should_not_happen;;
@@ -34,24 +34,46 @@ let rec sexpr_eq s1 s2 =
   | TagRef(name1), TagRef(name2) -> name1 = name2
   | _ -> false;;
   
+
+module Tok_char: sig
+  val tok_char : string -> sexpr
+end
+=struct
+let named_char_to_code str =
+    match str with
+    |"newline" -> 10
+    |"nul" ->  0
+    |"page" ->  12
+    |"return" ->  13
+    |"space" ->  32
+    |"tab" ->  9
+    |_ -> -1;;
+let pref = PC.caten (PC.char '#') (PC.char '\\');;
+let vis_char = PC.range (Char.chr ((Char.code ' ')+1)) '\127';;
+let nam_char = PC.nt_none;;
+
+let tok_char =
+  let chain = PC.caten pref (PC.disj vis_char nam_char) in
+  PC.pack chain (
+      fun (p,c) ->
+      match c with
+      |[car::cdr] -> 
+    );;
+  
+end;; (* struct Tok_char *)  
+
 module Reader: sig
   val read_sexpr : string -> sexpr
   val read_sexprs : string -> sexpr list
 end
 = struct
 let normalize_scheme_symbol str =
+
   let s = string_to_list str in
   if (andmap
 	(fun ch -> (ch = (lowercase_ascii ch)))
 	s) then str
   else Printf.sprintf "|%s|" str;;
-
-let tok_char =
-  let vis_char =  PC.range (Char.chr ((Char.code ' ')+1)) '\127' in
-  let nam_char =  PC.nt_none in               
-  let pref = PC.caten (PC.char '#') (PC.char '\\') in
-  let chain = PC.caten pref (PC.disj vis_char nam_char) in
-  PC.pack chain (function (p,c) -> (Char c))
 
 let read_sexpr string =
   match (

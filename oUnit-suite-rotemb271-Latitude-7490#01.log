@@ -1,3 +1,11 @@
-2019-11-16T17:09:16+00:00 rotemb271-Latitude-7490#01 I: Start test suite:0:test1.
-2019-11-16T17:09:16+00:00 rotemb271-Latitude-7490#01 I: Test suite:0:test1 is successful.
-2019-11-16T17:09:16+00:00 rotemb271-Latitude-7490#01 I: End test suite:0:test1.
+2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 I: Start test suite:0:test1.
+2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 I: Test suite:0:test1 is successful.
+2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 I: End test suite:0:test1.
+2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 I: Start test suite:4:test5.
+2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 E: Test suite:4:test5 exited with an error.
+2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 E: Reader.X_this_should_not_happen in test suite:4:test5.
+2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 E: Raised at file "reader.ml", line 66, characters 14-38
+2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 E: Called from file "test.ml", line 17, characters 76-113
+2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 E: Called from file "src/oUnitRunner.ml", line 46, characters 13-26
+2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 E: 
+2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 I: End test suite:4:test5.
