@@ -1,7 +1,8 @@
 
 
-INCLUDE  "pc.ml";;
-(*# use "pc.ml";;*)
+(*ONLY FOR TESTING*) (*INCLUDE  "pc.ml";;*)
+
+# use "pc.ml";;
 open Format;;
 
 exception X_not_yet_implemented;;
