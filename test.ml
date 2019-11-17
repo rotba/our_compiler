@@ -45,6 +45,8 @@ module Tok_string_test: sig
   val moshe : 'a -> unit
   val long_str :'a -> unit
   val with_meta : 'a -> unit
+  val empty_str : 'a -> unit
+  val with_meta_ci : 'a -> unit
 end
 = struct
 let moshe test_ctxt = assert_equal_sexpr (Reader.String "moshe") (Reader.Reader.read_sexpr "\"moshe\"");;
@@ -64,6 +66,16 @@ let with_meta test_ctxt =
     (Reader.Reader.read_sexpr
        "\"This is a very long\nstring that spills across\nseveral lines.\""
     );;
+let with_meta_ci test_ctxt =
+  assert_equal_sexpr
+    (Reader.String
+       "This is a very long\nstring that spills across\nseveral lines."
+    )
+    (Reader.Reader.read_sexpr
+       "\"This is a very long\Nstring that spills across\nseveral lines.\""
+    );;
+let empty_str test_ctxt =
+  assert_equal_sexpr (Reader.String "") (Reader.Reader.read_sexpr "\"\"");;
   
   
 end;; (* struct Tok_string_test *)
@@ -88,7 +100,9 @@ let string_suite =
   [
     "moshe">:: Tok_string_test.moshe;
     "long string">:: Tok_string_test.long_str;
-    "with meta">:: Tok_string_test.with_meta
+    "with meta">:: Tok_string_test.with_meta;
+    "empty str">:: Tok_string_test.empty_str;
+    "with meta ci">:: Tok_string_test.with_meta_ci
   ];;
 
 let () =
