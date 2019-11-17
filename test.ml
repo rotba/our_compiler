@@ -1,6 +1,17 @@
 open OUnit2;;
+let sexpr_to_string  sexpr=
+  match sexpr with
+  |Reader.Char(x) -> String.make 1  x
+  |Reader.String(x) ->  x
+  |_ -> "not_implemented";;
+
 let assert_equal_sexpr sexpr1 sexpr2=
-  assert_equal true (Reader.sexpr_eq sexpr1 sexpr2);;
+  assert_equal
+    ~cmp: Reader.sexpr_eq
+    ~printer:sexpr_to_string
+    sexpr1
+    sexpr2
+  ;;
 module Tok_char_test: sig
   val a : 'a -> unit
   val esc :  'a -> unit
@@ -32,9 +43,28 @@ end;; (* struct Tok_char_test *)
 
 module Tok_string_test: sig
   val moshe : 'a -> unit
+  val long_str :'a -> unit
+  val with_meta : 'a -> unit
 end
 = struct
-let moshe test_ctxt = assert_equal (Reader.String "moshe") (Reader.Reader.read_sexpr "\"moshe\"");;
+let moshe test_ctxt = assert_equal_sexpr (Reader.String "moshe") (Reader.Reader.read_sexpr "\"moshe\"");;
+let long_str test_ctxt =
+  assert_equal_sexpr
+    (Reader.String
+       "This is a very longstring that don't spills acrossseveral lines."
+    )
+    (Reader.Reader.read_sexpr
+       "\"This is a very longstring that don't spills acrossseveral lines.\""
+    );;
+let with_meta test_ctxt =
+  assert_equal_sexpr
+    (Reader.String
+       "This is a very long\nstring that spills across\nseveral lines."
+    )
+    (Reader.Reader.read_sexpr
+       "\"This is a very long\nstring that spills across\nseveral lines.\""
+    );;
+  
   
 end;; (* struct Tok_string_test *)
 
@@ -56,7 +86,9 @@ let char_suite =
 let string_suite =
 "string_suite">:::
   [
-    "moshe">:: Tok_string_test.moshe
+    "moshe">:: Tok_string_test.moshe;
+    "long string">:: Tok_string_test.long_str;
+    "with meta">:: Tok_string_test.with_meta
   ];;
 
 let () =

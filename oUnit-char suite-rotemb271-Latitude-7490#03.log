@@ -1,3 +1,6 @@
-2019-11-17T10:55:56+00:00 rotemb271-Latitude-7490#03 I: Start test char suite:2:out_of_range_128.
-2019-11-17T10:55:56+00:00 rotemb271-Latitude-7490#03 I: Test char suite:2:out_of_range_128 is successful.
-2019-11-17T10:55:56+00:00 rotemb271-Latitude-7490#03 I: End test char suite:2:out_of_range_128.
+2019-11-17T13:21:31+00:00 rotemb271-Latitude-7490#03 I: Start test char suite:2:out_of_range_128.
+2019-11-17T13:21:31+00:00 rotemb271-Latitude-7490#03 I: Test char suite:2:out_of_range_128 is successful.
+2019-11-17T13:21:31+00:00 rotemb271-Latitude-7490#03 I: End test char suite:2:out_of_range_128.
+2019-11-17T13:21:31+00:00 rotemb271-Latitude-7490#03 I: Start test char suite:5:page in sensitive.
+2019-11-17T13:21:31+00:00 rotemb271-Latitude-7490#03 I: Test char suite:5:page in sensitive is successful.
+2019-11-17T13:21:31+00:00 rotemb271-Latitude-7490#03 I: End test char suite:5:page in sensitive.

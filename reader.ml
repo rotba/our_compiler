@@ -65,16 +65,29 @@ module Tok_string: sig
   val tok_string : char list -> sexpr*char list
 end
 =struct
-let double_quote = PC.char '\"';;
+let double_quote_nt = PC.char '\"';;
+let backslash_nt = PC.char '\\';;  
 let str_let_chr s =
   match (PC.nt_any s) with
   |('\\',_) -> raise PC.X_no_match
   |('\"',_) -> raise PC.X_no_match
   |(e,s)-> (e,s);;
-let str_met_chr = PC.nt_none;;
+
+let str_met_chr =
+  let meta_chr_nt ch = PC.caten backslash_nt (PC.char_ci ch) in
+  PC.disj_list [
+      PC.pack (meta_chr_nt 'r') (fun _ -> Char.chr 13);
+      PC.pack (meta_chr_nt 'n') (fun _ -> Char.chr 10);
+      PC.pack (meta_chr_nt 't') (fun _ -> Char.chr 9);
+      PC.pack (meta_chr_nt 'f') (fun _ -> Char.chr 12);
+      PC.pack (PC.caten backslash_nt backslash_nt) (fun _ -> Char.chr 92);
+      PC.pack (PC.caten backslash_nt double_quote_nt) (fun _ -> Char.chr 34)
+      ;
+    ];;
+
 let str_chr = PC.disj str_let_chr str_met_chr;;
 let tok_string =
-  let chain  = PC.caten (PC.caten double_quote (PC.star str_chr))double_quote in
+  let chain  = PC.caten (PC.caten double_quote_nt (PC.star str_chr))double_quote_nt in
   PC.pack chain (fun ((q1,e),q2) -> String (list_to_string e));;
   
 end;; (* struct Tok_string *)  
