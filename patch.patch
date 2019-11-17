@@ -1,0 +1,32 @@
+diff --git a/reader.ml b/reader.ml
+index e05634e..d3ac9ae 100644
+--- a/reader.ml
++++ b/reader.ml
+@@ -1,8 +1,8 @@
+ 
+ 
+-(*ONLY FOR TESTING*) INCLUDE  "pc.ml";;
++(*ONLY FOR TESTING*)(* INCLUDE  "pc.ml"*);;
+ 
+-(*# use "pc.ml";;*)
++# use "pc.ml";;
+   
+ open Format;;
+ 
+@@ -90,7 +90,15 @@ let tok_string =
+   let chain  = PC.caten (PC.caten double_quote_nt (PC.star str_chr))double_quote_nt in
+   PC.pack chain (fun ((q1,e),q2) -> String (list_to_string e));;
+   
+-end;; (* struct Tok_string *)  
++end;; (* struct Tok_string *)
++
++
++let tok_bool  = 
++    let nt = (PC.caten (PC.char '#') (PC.disj (PC.char_ci 'f') (PC.char_ci 't'))) in 
++    PC.pack nt (fun (x) ->
++    match x with
++    | ('#', 'f') -> Bool false
++    | ('#', 't') -> Bool true);;
+ 
+ 
+ module Reader: sig

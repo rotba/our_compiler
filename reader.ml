@@ -1,8 +1,8 @@
 
 
-(*ONLY FOR TESTING*)(* INCLUDE  "pc.ml"*);;
+(*ONLY FOR TESTING*) INCLUDE  "pc.ml";;
 
-# use "pc.ml";;
+(*# use "pc.ml";;*)
   
 open Format;;
 
@@ -38,7 +38,7 @@ let rec sexpr_eq s1 s2 =
   | TagRef(name1), TagRef(name2) -> name1 = name2
   | _ -> false;;
   
-
+(*#################################ROTEM#####################################*)
 module Tok_char: sig
   val tok_char : char list -> sexpr*char list
 end
@@ -92,13 +92,15 @@ let tok_string =
   
 end;; (* struct Tok_string *)
 
-
+(*#################################ROTEM#####################################*)
+(*#################################ALON#####################################*)
 let tok_bool  = 
     let nt = (PC.caten (PC.char '#') (PC.disj (PC.char_ci 'f') (PC.char_ci 't'))) in 
     PC.pack nt (fun (x) ->
     match x with
     | ('#', 'f') -> Bool false
     | ('#', 't') -> Bool true);;
+(*#################################ALON#####################################*)
 
 
 module Reader: sig
@@ -119,7 +121,8 @@ let read_sexpr string =
     PC.disj_list
           [
             Tok_char.tok_char;
-            Tok_string.tok_string
+            Tok_string.tok_string;
+            tok_bool
           ] in
   let chain = PC.caten all_rules PC.nt_end_of_input in
   let ((res,empty), also_empty) = chain (string_to_list string) in
