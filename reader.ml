@@ -1,6 +1,8 @@
 
 
-# use "pc.ml";;
+INCLUDE  "pc.ml";;
+(*# use "pc.ml";;*)
+open Format;;
 
 exception X_not_yet_implemented;;
 exception X_this_should_not_happen;;
@@ -36,29 +38,35 @@ let rec sexpr_eq s1 s2 =
   
 
 module Tok_char: sig
-  val tok_char : string -> sexpr
+  val tok_char : char list -> sexpr*char list
 end
 =struct
-let named_char_to_code str =
+let str_to_chr str =
     match str with
-    |"newline" -> 10
-    |"nul" ->  0
-    |"page" ->  12
-    |"return" ->  13
-    |"space" ->  32
-    |"tab" ->  9
-    |_ -> -1;;
+    |"newline" -> Char.chr 10
+    |"nul" ->  Char.chr 0
+    |"page" ->  Char.chr 12
+    |"return" ->  Char.chr 13
+    |"space" ->  Char.chr 32
+    |"tab" ->  Char.chr 9
+    |_ -> raise X_this_should_not_happen;;
 let pref = PC.caten (PC.char '#') (PC.char '\\');;
 let vis_char = PC.range (Char.chr ((Char.code ' ')+1)) '\127';;
-let nam_char = PC.nt_none;;
+let nam_char =
+  let nt =
+    PC.disj_list [
+        PC.word "newline";
+        PC.word "nul";
+        PC.word "page";
+        PC.word "return";
+        PC.word "space";
+        PC.word "tab"
+      ] in
+  PC.pack nt (fun (c) -> str_to_chr (list_to_string c));;
 
 let tok_char =
-  let chain = PC.caten pref (PC.disj vis_char nam_char) in
-  PC.pack chain (
-      fun (p,c) ->
-      match c with
-      |[car::cdr] -> 
-    );;
+  let chain = PC.caten pref (PC.disj nam_char vis_char) in
+  PC.pack chain (fun (p,c) -> Char c);;
   
 end;; (* struct Tok_char *)  
 
@@ -76,16 +84,15 @@ let normalize_scheme_symbol str =
   else Printf.sprintf "|%s|" str;;
 
 let read_sexpr string =
-  match (
-    try PC.disj_list
+  let all_rules =
+    PC.disj_list
           [
-            tok_char
-          ]
-          (string_to_list string)
-    with PC.X_no_match -> raise X_this_should_not_happen
-  ) with
-  |(tok, []) -> tok
-  |_ -> raise X_this_should_not_happen;;
+            Tok_char.tok_char
+          ] in
+  let chain = PC.caten all_rules PC.nt_end_of_input in
+  let ((res,empty), also_empty) = chain (string_to_list string) in
+  res;;
+ 
 
 
 let read_sexprs string = raise X_not_yet_implemented;;

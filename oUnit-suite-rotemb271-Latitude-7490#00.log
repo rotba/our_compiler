@@ -1,102 +1,87 @@
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Runner: processes
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Chooser: simple
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Configuration suite_name = "suite"
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Configuration cache_filename = "/home/rotemb271/Code/School/semester_7/COMP/our_compiler/oUnit-$(suite_name).cache"
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Configuration display = "true"
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Configuration results_style_1_X = "false"
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Configuration verbose = "false"
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Configuration health_check_interval = "1."
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Configuration testdata_dir = "none"
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Configuration chooser = "simple"
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Configuration output_html_dir = "none"
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Configuration processes_kill_period = "5."
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Configuration runner = "processes"
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Configuration shards = "4"
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Configuration processes_grace_period = "5."
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Configuration log_encoding = "utf-8"
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Configuration output_junit_file = "none"
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Configuration output_file = "/home/rotemb271/Code/School/semester_7/COMP/our_compiler/oUnit-$(suite_name)-$(shard_id).log"
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Using 4 workers maximum.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Starting worker number rotemb271-Latitude-7490#01.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#01 started.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Starting worker number rotemb271-Latitude-7490#02.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#02 started.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Starting worker number rotemb271-Latitude-7490#03.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#03 started.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Starting worker number rotemb271-Latitude-7490#04.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#04 started.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: 4 tests running: suite:3:test4, suite:2:test3, suite:1:test2, suite:0:test1.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 I: Start test suite:0:test1.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#02 I: Start test suite:1:test2.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#03 I: Start test suite:2:test3.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: 4 tests running: suite:3:test4, suite:2:test3, suite:1:test2, suite:0:test1.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#04 I: Start test suite:3:test4.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: 4 tests running: suite:3:test4, suite:2:test3, suite:1:test2, suite:0:test1.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 I: Test suite:0:test1 is successful.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: 4 tests running: suite:3:test4, suite:2:test3, suite:1:test2, suite:0:test1.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 I: End test suite:0:test1.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: 4 tests running: suite:3:test4, suite:2:test3, suite:1:test2, suite:0:test1.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Still 4 tests running : suite:4:test5, suite:3:test4, suite:2:test3, suite:1:test2.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: 4 tests running: suite:4:test5, suite:3:test4, suite:2:test3, suite:1:test2.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 I: Start test suite:4:test5.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Still 4 tests running : suite:4:test5, suite:3:test4, suite:2:test3, suite:1:test2.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: 4 tests running: suite:4:test5, suite:3:test4, suite:2:test3, suite:1:test2.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#02 I: Test suite:1:test2 is successful.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#03 I: Test suite:2:test3 is successful.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Still 4 tests running : suite:4:test5, suite:3:test4, suite:2:test3, suite:1:test2.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: 4 tests running: suite:4:test5, suite:3:test4, suite:2:test3, suite:1:test2.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#02 I: End test suite:1:test2.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#03 I: End test suite:2:test3.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Still 4 tests running : suite:4:test5, suite:3:test4, suite:2:test3, suite:1:test2.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: 4 tests running: suite:4:test5, suite:3:test4, suite:2:test3, suite:1:test2.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Still 2 tests running : suite:4:test5, suite:3:test4.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: 2 tests running: suite:4:test5, suite:3:test4.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#04 I: Test suite:3:test4 is successful.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Still 2 tests running : suite:4:test5, suite:3:test4.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: 2 tests running: suite:4:test5, suite:3:test4.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#04 I: End test suite:3:test4.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Still 2 tests running : suite:4:test5, suite:3:test4.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: 2 tests running: suite:4:test5, suite:3:test4.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Still 1 tests running : suite:4:test5.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: 1 tests running: suite:4:test5.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 E: Test suite:4:test5 exited with an error.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 E: Reader.X_this_should_not_happen in test suite:4:test5.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 E: Raised at file "reader.ml", line 66, characters 14-38
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 E: Called from file "test.ml", line 17, characters 76-113
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 E: Called from file "src/oUnitRunner.ml", line 46, characters 13-26
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 E: 
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Still 1 tests running : suite:4:test5.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: 1 tests running: suite:4:test5.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#01 I: End test suite:4:test5.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Still 1 tests running : suite:4:test5.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: 1 tests running: suite:4:test5.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: 0 tests running: .
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#02 has ended.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#03 has ended.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#04 has ended.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#01 has ended.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Used 4 worker during test execution.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Run 2 tests with shard rotemb271-Latitude-7490#01.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Run 1 tests with shard rotemb271-Latitude-7490#02.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Run 1 tests with shard rotemb271-Latitude-7490#03.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Run 1 tests with shard rotemb271-Latitude-7490#04.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: ==============
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Summary:
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 E: Test suite:4:test5 exited with an error.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 E: Reader.X_this_should_not_happen in test suite:4:test5.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 E: Raised at file "reader.ml", line 66, characters 14-38
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 E: Called from file "test.ml", line 17, characters 76-113
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 E: Called from file "src/oUnitRunner.ml", line 46, characters 13-26
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 E: 
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Test suite:3:test4 is successful.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Test suite:2:test3 is successful.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Test suite:1:test2 is successful.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Test suite:0:test1 is successful.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Ran: 5 tests in: 0.13 seconds.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Cases: 5.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Tried: 5.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Errors: 1.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Failures: 0.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Skip: 0.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Todo: 0.
-2019-11-16T18:37:04+00:00 rotemb271-Latitude-7490#00 I: Timeout: 0.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Runner: processes
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Chooser: simple
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Configuration suite_name = "suite"
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Configuration cache_filename = "/home/rotemb271/Code/School/semester_7/COMP/our_compiler/oUnit-$(suite_name).cache"
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Configuration display = "true"
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Configuration results_style_1_X = "false"
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Configuration verbose = "false"
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Configuration health_check_interval = "1."
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Configuration testdata_dir = "none"
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Configuration chooser = "simple"
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Configuration output_html_dir = "none"
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Configuration processes_kill_period = "5."
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Configuration runner = "processes"
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Configuration shards = "4"
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Configuration processes_grace_period = "5."
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Configuration log_encoding = "utf-8"
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Configuration output_junit_file = "none"
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Configuration output_file = "/home/rotemb271/Code/School/semester_7/COMP/our_compiler/oUnit-$(suite_name)-$(shard_id).log"
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Using 4 workers maximum.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Starting worker number rotemb271-Latitude-7490#01.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#01 started.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Starting worker number rotemb271-Latitude-7490#02.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#02 started.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Starting worker number rotemb271-Latitude-7490#03.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#03 started.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Starting worker number rotemb271-Latitude-7490#04.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#04 started.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: 4 tests running: suite:3:test_char_out_of_range_space, suite:2:test_char_out_of_range_128, suite:1:test_char_esc, suite:0:test_char_a.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#01 I: Start test suite:0:test_char_a.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#02 I: Start test suite:1:test_char_esc.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#03 I: Start test suite:2:test_char_out_of_range_128.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: 4 tests running: suite:3:test_char_out_of_range_space, suite:2:test_char_out_of_range_128, suite:1:test_char_esc, suite:0:test_char_a.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#01 I: Test suite:0:test_char_a is successful.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: 4 tests running: suite:3:test_char_out_of_range_space, suite:2:test_char_out_of_range_128, suite:1:test_char_esc, suite:0:test_char_a.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#01 I: End test suite:0:test_char_a.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: 4 tests running: suite:3:test_char_out_of_range_space, suite:2:test_char_out_of_range_128, suite:1:test_char_esc, suite:0:test_char_a.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#02 I: Test suite:1:test_char_esc is successful.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#04 I: Start test suite:3:test_char_out_of_range_space.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Still 4 tests running : suite:4:test_char_newline, suite:3:test_char_out_of_range_space, suite:2:test_char_out_of_range_128, suite:1:test_char_esc.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: 4 tests running: suite:4:test_char_newline, suite:3:test_char_out_of_range_space, suite:2:test_char_out_of_range_128, suite:1:test_char_esc.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#02 I: End test suite:1:test_char_esc.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#01 I: Start test suite:4:test_char_newline.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Still 4 tests running : suite:4:test_char_newline, suite:3:test_char_out_of_range_space, suite:2:test_char_out_of_range_128, suite:1:test_char_esc.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: 4 tests running: suite:4:test_char_newline, suite:3:test_char_out_of_range_space, suite:2:test_char_out_of_range_128, suite:1:test_char_esc.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#03 I: Test suite:2:test_char_out_of_range_128 is successful.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Still 3 tests running : suite:4:test_char_newline, suite:3:test_char_out_of_range_space, suite:2:test_char_out_of_range_128.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: 3 tests running: suite:4:test_char_newline, suite:3:test_char_out_of_range_space, suite:2:test_char_out_of_range_128.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#03 I: End test suite:2:test_char_out_of_range_128.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#04 I: Test suite:3:test_char_out_of_range_space is successful.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Still 3 tests running : suite:4:test_char_newline, suite:3:test_char_out_of_range_space, suite:2:test_char_out_of_range_128.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: 3 tests running: suite:4:test_char_newline, suite:3:test_char_out_of_range_space, suite:2:test_char_out_of_range_128.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#04 I: End test suite:3:test_char_out_of_range_space.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Still 2 tests running : suite:4:test_char_newline, suite:3:test_char_out_of_range_space.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: 2 tests running: suite:4:test_char_newline, suite:3:test_char_out_of_range_space.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Still 1 tests running : suite:4:test_char_newline.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: 1 tests running: suite:4:test_char_newline.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#01 I: Test suite:4:test_char_newline is successful.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Still 1 tests running : suite:4:test_char_newline.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: 1 tests running: suite:4:test_char_newline.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#01 I: End test suite:4:test_char_newline.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Still 1 tests running : suite:4:test_char_newline.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: 1 tests running: suite:4:test_char_newline.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: 0 tests running: .
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#02 has ended.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#03 has ended.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#04 has ended.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#01 has ended.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Used 4 worker during test execution.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Run 2 tests with shard rotemb271-Latitude-7490#01.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Run 1 tests with shard rotemb271-Latitude-7490#02.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Run 1 tests with shard rotemb271-Latitude-7490#03.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Run 1 tests with shard rotemb271-Latitude-7490#04.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: ==============
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Summary:
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Test suite:4:test_char_newline is successful.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Test suite:3:test_char_out_of_range_space is successful.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Test suite:2:test_char_out_of_range_128 is successful.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Test suite:1:test_char_esc is successful.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Test suite:0:test_char_a is successful.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Ran: 5 tests in: 0.11 seconds.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Cases: 5.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Tried: 5.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Errors: 0.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Failures: 0.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Skip: 0.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Todo: 0.
+2019-11-17T09:06:56+00:00 rotemb271-Latitude-7490#00 I: Timeout: 0.
