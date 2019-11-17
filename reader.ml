@@ -1,8 +1,9 @@
 
 
-(*ONLY FOR TESTING*) (*INCLUDE  "pc.ml";;*)
+(*ONLY FOR TESTING*) INCLUDE  "pc.ml";;
 
-# use "pc.ml";;
+(*# use "pc.ml";;*)
+  
 open Format;;
 
 exception X_not_yet_implemented;;
@@ -58,7 +59,26 @@ let tok_char =
   let chain = PC.caten pref (PC.disj nam_char vis_char) in
   PC.pack chain (fun (p,c) -> Char c);;
   
-end;; (* struct Tok_char *)  
+end;; (* struct Tok_char *)
+
+module Tok_string: sig
+  val tok_string : char list -> sexpr*char list
+end
+=struct
+let double_quote = PC.char '\"';;
+let str_let_chr s =
+  match (PC.nt_any s) with
+  |('\\',_) -> raise PC.X_no_match
+  |('\"',_) -> raise PC.X_no_match
+  |(e,s)-> (e,s);;
+let str_met_chr = PC.nt_none;;
+let str_chr = PC.disj str_let_chr str_met_chr;;
+let tok_string =
+  let chain  = PC.caten (PC.caten double_quote (PC.star str_chr))double_quote in
+  PC.pack chain (fun ((q1,e),q2) -> String (list_to_string e));;
+  
+end;; (* struct Tok_string *)  
+
 
 module Reader: sig
   val read_sexpr : string -> sexpr
@@ -77,7 +97,8 @@ let read_sexpr string =
   let all_rules =
     PC.disj_list
           [
-            Tok_char.tok_char
+            Tok_char.tok_char;
+            Tok_string.tok_string
           ] in
   let chain = PC.caten all_rules PC.nt_end_of_input in
   let ((res,empty), also_empty) = chain (string_to_list string) in

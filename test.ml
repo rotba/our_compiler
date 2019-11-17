@@ -30,20 +30,20 @@ let newline test_ctxt = assert_equal_sexpr (Reader.Char (Char.chr 10)) (Reader.R
 let page_is test_ctxt = assert_equal_sexpr (Reader.Char (Char.chr 12)) (Reader.Reader.read_sexpr "#\\Page");;  
 end;; (* struct Tok_char_test *)
 
-(*module Tok_string_test: sig
+module Tok_string_test: sig
   val moshe : 'a -> unit
 end
 = struct
-let moshe test_ctxt = assert_equal (Reader.String 'a') (Reader.Reader.read_sexpr "#\\a");;
+let moshe test_ctxt = assert_equal (Reader.String "moshe") (Reader.Reader.read_sexpr "\"moshe\"");;
   
 end;; (* struct Tok_string_test *)
 
-*)
+
 
 
 (* Name the test cases and group them together *)
-let suite_char =
-"suite char">:::
+let char_suite =
+"char suite">:::
   [
     "a">:: Tok_char_test.a;
     "esc">:: Tok_char_test.esc;
@@ -53,6 +53,13 @@ let suite_char =
     "page in sensitive">:: Tok_char_test.page_is
   ];;
 
+let string_suite =
+"string_suite">:::
+  [
+    "moshe">:: Tok_string_test.moshe
+  ];;
+
 let () =
-  run_test_tt_main suite_char
+  run_test_tt_main char_suite;
+  run_test_tt_main string_suite
 ;;
