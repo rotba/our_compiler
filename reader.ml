@@ -41,28 +41,17 @@ module Tok_char: sig
   val tok_char : char list -> sexpr*char list
 end
 =struct
-let str_to_chr str =
-    match str with
-    |"newline" -> Char.chr 10
-    |"nul" ->  Char.chr 0
-    |"page" ->  Char.chr 12
-    |"return" ->  Char.chr 13
-    |"space" ->  Char.chr 32
-    |"tab" ->  Char.chr 9
-    |_ -> raise X_this_should_not_happen;;
 let pref = PC.caten (PC.char '#') (PC.char '\\');;
 let vis_char = PC.range (Char.chr ((Char.code ' ')+1)) '\127';;
 let nam_char =
-  let nt =
-    PC.disj_list [
-        PC.word "newline";
-        PC.word "nul";
-        PC.word "page";
-        PC.word "return";
-        PC.word "space";
-        PC.word "tab"
-      ] in
-  PC.pack nt (fun (c) -> str_to_chr (list_to_string c));;
+  PC.disj_list [
+      PC.pack (PC.word_ci "newline") (fun (s)-> Char.chr 10);
+      PC.pack (PC.word_ci "nul") (fun (s) -> Char.chr 0) ;
+      PC.pack (PC.word_ci "page") (fun (s) -> Char.chr 12);
+      PC.pack (PC.word_ci "return") (fun (s) -> Char.chr 13);
+      PC.pack (PC.word_ci "space") (fun (s) -> Char.chr 32);
+      PC.pack (PC.word_ci "tab") (fun(s) -> Char.chr 9)
+    ];;
 
 let tok_char =
   let chain = PC.caten pref (PC.disj nam_char vis_char) in

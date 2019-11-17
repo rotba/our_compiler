@@ -1,3 +1,6 @@
-2019-11-17T09:08:59+00:00 rotemb271-Latitude-7490#02 I: Start test suite char:1:esc.
-2019-11-17T09:08:59+00:00 rotemb271-Latitude-7490#02 I: Test suite char:1:esc is successful.
-2019-11-17T09:08:59+00:00 rotemb271-Latitude-7490#02 I: End test suite char:1:esc.
+2019-11-17T09:40:13+00:00 rotemb271-Latitude-7490#02 I: Start test suite char:1:esc.
+2019-11-17T09:40:13+00:00 rotemb271-Latitude-7490#02 I: Test suite char:1:esc is successful.
+2019-11-17T09:40:13+00:00 rotemb271-Latitude-7490#02 I: End test suite char:1:esc.
+2019-11-17T09:40:13+00:00 rotemb271-Latitude-7490#02 I: Start test suite char:5:page in sensitive.
+2019-11-17T09:40:13+00:00 rotemb271-Latitude-7490#02 I: Test suite char:5:page in sensitive is successful.
+2019-11-17T09:40:13+00:00 rotemb271-Latitude-7490#02 I: End test suite char:5:page in sensitive.
