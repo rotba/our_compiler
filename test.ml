@@ -72,11 +72,20 @@ let string_suite =
     "with nested sexpr comments">:: (fun _ -> assert_equal_sexpr (Reader.String "moshe") (Reader.Reader.read_sexpr "#;#t\  #;#\\a \"moshe\""))
   ];;
 
+let list_suite =
+"list_suite">:::
+  [
+    "(a b c)">:: (fun _ -> assert_equal_sexpr
+                             (Reader.Pair(Reader.Char 'a', Pair(Reader.Char 'b', Pair(Reader.Char 'c',Reader.Nil ))) )
+                             (Reader.Reader.read_sexpr "(#\\a #\\b #\\c)"))
+  ];;
+
 
 
 
 
 let () =
   run_test_tt_main string_suite;
-  run_test_tt_main char_suite
+  run_test_tt_main char_suite;
+  run_test_tt_main list_suite
 ;;

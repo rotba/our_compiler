@@ -1,8 +1,8 @@
 
+(* ONLY FOR TESTING *)
+INCLUDE "pc.ml";;
 
-(* ONLY FOR TESTING INCLUDE "pc.ml";; *)
-
-# use "pc.ml";;
+(* # use "pc.ml";; *)
   
 open Format;;
 
@@ -37,7 +37,14 @@ let rec sexpr_eq s1 s2 =
   | TaggedSexpr(name1, expr1), TaggedSexpr(name2, expr2) -> (name1 = name2) && (sexpr_eq expr1 expr2) 
   | TagRef(name1), TagRef(name2) -> name1 = name2
   | _ -> false;;
-  
+
+
+let make_paired nt_left nt_right nt =
+  let nt = PC.caten nt_left nt in
+  let nt = PC.pack nt (function (_, e) -> e) in
+  let nt = PC.caten nt nt_right in
+  let nt = PC.pack nt (function (e, _) -> e) in
+  nt;;
 (*#################################ROTEM#####################################*)
 module Tok_char: sig
   val tok_char : char list -> sexpr*char list
@@ -92,6 +99,11 @@ let tok_string =
   
 end;; (* struct Tok_string *)
 
+let rec list_packer = function
+  | [] -> Nil
+  | e::s -> Pair(e, (list_packer s));;
+
+
 (*#################################ROTEM#####################################*)
 (*#################################ALON#####################################*)
 let tok_bool  = 
@@ -108,7 +120,9 @@ let nt_whitespaces =
   PC.pack nt (fun _ -> String "");;
 
 let nt_semi_colon = PC.char ';';;
-
+let nt_lparen = PC.char '(';;
+let nt_rparen = PC.char ')';;
+let nt_semi_colon = PC.char ';';;
 let nt_nl = PC.char (Char.chr 10);;
 
 let nt_line_comment =
@@ -119,27 +133,25 @@ let nt_line_comment =
   let nt  = PC.disj chain_nl chain_eoi in    
   PC.pack nt (fun _ -> String "");;
 
-let make_paired nt_left nt_right nt =
-  let nt = PC.caten nt_left nt in
-  let nt = PC.pack nt (function (_, e) -> e) in
-  let nt = PC.caten nt nt_right in
-  let nt = PC.pack nt (function (e, _) -> e) in
-  nt;;
 
 
 
 let rec nt_comment s = (PC.disj nt_line_comment nt_sexpr_comment) s
 and nt_sexpr_comment s = (PC.pack (PC.caten (PC.word "#;") nt_sexpr) (function _ -> String "") ) s
-(* PC.nt_none s *)
 and nt_skip s = (PC.disj nt_comment nt_whitespaces) s
 and make_spaced nt = make_paired (PC.star nt_skip) (PC.star nt_skip) nt
+and nt_list s =
+  let nt = make_paired nt_lparen nt_rparen (PC.star nt_sexpr) in
+  let nt = PC.pack nt list_packer in
+  nt s
 and nt_sexpr s =
   let all_rules =
     PC.disj_list
       [
         Tok_char.tok_char;
         Tok_string.tok_string;
-        tok_bool
+        tok_bool;
+        nt_list
       ] in
   let spaced = make_spaced all_rules in
   spaced s;;
