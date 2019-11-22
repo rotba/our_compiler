@@ -49,7 +49,7 @@ let with_whitespaces test_ctxt = assert_equal_sexpr (Reader.Char 'a') (Reader.Re
 let with_comment  test_ctxt = assert_equal_sexpr (Reader.Char (Char.chr 12)) (Reader.Reader.read_sexpr ";this is a comment\n#\\Page");;
 let with_two_comments  test_ctxt = assert_equal_sexpr (Reader.Char (Char.chr 12)) (Reader.Reader.read_sexpr ";this is a comment\n;this is a comment\n#\\Page");;
 let with_comments  test_ctxt = assert_equal_sexpr (Reader.Char (Char.chr 12)) (Reader.Reader.read_sexpr ";this is a comment\n#\\Page;this is also a comment");;
-let with_sexpr_comment  test_ctxt = assert_equal_sexpr (Reader.Char 'a') (Reader.Reader.read_sexpr ";#\"moshe\#\\a");;
+let with_sexpr_comment  test_ctxt = assert_equal_sexpr (Reader.Char 'a') (Reader.Reader.read_sexpr "#;\"moshe\"#\\a");;
 
 
 end;; (* struct Tok_char_test *)
@@ -110,7 +110,7 @@ end;; (* struct Tok_string_test *)
 let char_suite =
 "char suite">:::
   [
-    "a">:: Tok_char_test.a;
+    "a">::Tok_char_test.a;
     "esc">:: Tok_char_test.esc;
     "out_of_range_128">:: Tok_char_test.out_of_range_128;
     "out_of_range_space">:: Tok_char_test.out_of_range_space;
