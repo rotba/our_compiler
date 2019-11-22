@@ -23,6 +23,7 @@ module Tok_char_test: sig
   val with_comment : 'a-> unit
   val with_comments : 'a-> unit
   val with_two_comments : 'a-> unit
+  val with_sexpr_comment : 'a-> unit
     
 end
 = struct
@@ -48,6 +49,8 @@ let with_whitespaces test_ctxt = assert_equal_sexpr (Reader.Char 'a') (Reader.Re
 let with_comment  test_ctxt = assert_equal_sexpr (Reader.Char (Char.chr 12)) (Reader.Reader.read_sexpr ";this is a comment\n#\\Page");;
 let with_two_comments  test_ctxt = assert_equal_sexpr (Reader.Char (Char.chr 12)) (Reader.Reader.read_sexpr ";this is a comment\n;this is a comment\n#\\Page");;
 let with_comments  test_ctxt = assert_equal_sexpr (Reader.Char (Char.chr 12)) (Reader.Reader.read_sexpr ";this is a comment\n#\\Page;this is also a comment");;
+let with_sexpr_comment  test_ctxt = assert_equal_sexpr (Reader.Char 'a') (Reader.Reader.read_sexpr ";#\"moshe\#\\a");;
+
 
 end;; (* struct Tok_char_test *)
 
@@ -60,6 +63,8 @@ module Tok_string_test: sig
   val with_whitespaces : 'a-> unit
   val with_comment : 'a-> unit
   val with_comments : 'a-> unit
+  val with_nested_sexpr_comment : 'a-> unit
+    
 end
 = struct
 let moshe test_ctxt = assert_equal_sexpr (Reader.String "moshe") (Reader.Reader.read_sexpr "\"moshe\"");;
@@ -92,6 +97,8 @@ let empty_str test_ctxt =
 let with_whitespaces test_ctxt = assert_equal_sexpr (Reader.String "moshe") (Reader.Reader.read_sexpr "   \"moshe\"    ");;
 let with_comment  test_ctxt = assert_equal_sexpr (Reader.String "moshe") (Reader.Reader.read_sexpr ";this is a comment\n\"moshe\"");;
 let with_comments  test_ctxt = assert_equal_sexpr (Reader.String "moshe") (Reader.Reader.read_sexpr ";this is a comment\n\"moshe\";this is also a comment");;
+let with_nested_sexpr_comment test_ctxt = assert_equal_sexpr (Reader.String "moshe") (Reader.Reader.read_sexpr "#;#t\  #;#\\a \"moshe\"");;
+
   
   
 end;; (* struct Tok_string_test *)
@@ -112,8 +119,8 @@ let char_suite =
     "with whitespaces">:: Tok_char_test.with_whitespaces;
     "with comment">:: Tok_char_test.with_comment;
     "with comments">:: Tok_char_test.with_comments;
-    "with comments">:: Tok_char_test.with_two_comments
-
+    "with comments">:: Tok_char_test.with_two_comments;
+    "with sexpr  comment">:: Tok_char_test.with_sexpr_comment
   ];;
 
 let string_suite =
@@ -126,7 +133,8 @@ let string_suite =
     "with meta ci">:: Tok_string_test.with_meta_ci;
     "with whitespaces">:: Tok_string_test.with_whitespaces;
     "with comment">:: Tok_string_test.with_comment;
-    "with comments">:: Tok_string_test.with_comments
+    "with comments">:: Tok_string_test.with_comments;
+    "with nested sexpr comments">:: Tok_string_test.with_nested_sexpr_comment
   ];;
 
 let () =
