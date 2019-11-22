@@ -1,8 +1,8 @@
 
 
-(*ONLY FOR TESTING*) INCLUDE "pc.ml";;
+(* ONLY FOR TESTING INCLUDE "pc.ml";; *)
 
-(*# use "pc.ml"*)
+# use "pc.ml";;
   
 open Format;;
 
@@ -129,7 +129,8 @@ let make_paired nt_left nt_right nt =
 
 
 let rec nt_comment s = (PC.disj nt_line_comment nt_sexpr_comment) s
-and nt_sexpr_comment s = PC.nt_none s
+and nt_sexpr_comment s = (PC.pack (PC.caten (PC.word "#;") nt_sexpr) (function _ -> String "") ) s
+(* PC.nt_none s *)
 and nt_skip s = (PC.disj nt_comment nt_whitespaces) s
 and make_spaced nt = make_paired (PC.star nt_skip) (PC.star nt_skip) nt
 and nt_sexpr s =
@@ -141,9 +142,7 @@ and nt_sexpr s =
         tok_bool
       ] in
   let spaced = make_spaced all_rules in
-  let chain = PC.caten spaced PC.nt_end_of_input in
-  let packed = PC.pack chain (fun (res, empty) -> res) in
-  packed s;;
+  spaced s;;
 
 module Reader: sig
   val read_sexpr : string -> sexpr
@@ -162,7 +161,7 @@ let normalize_scheme_symbol str =
 let read_sexpr string =
   let (res, empty) = nt_sexpr (string_to_list string) in
   res;;
- 
+
 
 
 let read_sexprs string = raise X_not_yet_implemented;;
