@@ -103,6 +103,8 @@ let rec list_packer = function
   | [] -> Nil
   | e::s -> Pair(e, (list_packer s));;
 
+let qoute_packer = fun (q,sexpr) -> Pair(Symbol("qoute"),Pair(sexpr, Nil));;
+
 
 (*#################################ROTEM#####################################*)
 (*#################################ALON#####################################*)
@@ -124,6 +126,7 @@ let nt_lparen = PC.char '(';;
 let nt_rparen = PC.char ')';;
 let nt_semi_colon = PC.char ';';;
 let nt_nl = PC.char (Char.chr 10);;
+let nt_qoute_char = PC.char '\'';;
 
 let nt_line_comment =
   let nt_content = (PC.star (PC.diff PC.nt_any nt_nl)) in
@@ -144,6 +147,10 @@ and nt_list s =
   let nt = make_paired nt_lparen nt_rparen (PC.star nt_sexpr) in
   let nt = PC.pack nt list_packer in
   nt s
+and nt_qoute s =
+  let nt = PC.caten nt_qoute_char nt_sexpr in
+  let nt = PC.pack nt qoute_packer in
+  nt s
 and nt_sexpr s =
   let all_rules =
     PC.disj_list
@@ -151,7 +158,8 @@ and nt_sexpr s =
         Tok_char.tok_char;
         Tok_string.tok_string;
         tok_bool;
-        nt_list
+        nt_list;
+        nt_qoute
       ] in
   let spaced = make_spaced all_rules in
   spaced s;;

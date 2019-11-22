@@ -1,6 +1,6 @@
-2019-11-22T15:41:53+00:00 rotemb271-Latitude-7490#04 I: Start test char suite:3:out_of_range_space.
-2019-11-22T15:41:53+00:00 rotemb271-Latitude-7490#04 I: Test char suite:3:out_of_range_space is successful.
-2019-11-22T15:41:53+00:00 rotemb271-Latitude-7490#04 I: End test char suite:3:out_of_range_space.
-2019-11-22T15:41:53+00:00 rotemb271-Latitude-7490#04 I: Start test char suite:7:with comment.
-2019-11-22T15:41:53+00:00 rotemb271-Latitude-7490#04 I: Test char suite:7:with comment is successful.
-2019-11-22T15:41:53+00:00 rotemb271-Latitude-7490#04 I: End test char suite:7:with comment.
+2019-11-22T17:10:42+00:00 rotemb271-Latitude-7490#04 I: Start test char suite:3:out_of_range_space.
+2019-11-22T17:10:42+00:00 rotemb271-Latitude-7490#04 I: Test char suite:3:out_of_range_space is successful.
+2019-11-22T17:10:42+00:00 rotemb271-Latitude-7490#04 I: End test char suite:3:out_of_range_space.
+2019-11-22T17:10:42+00:00 rotemb271-Latitude-7490#04 I: Start test char suite:6:with whitespaces.
+2019-11-22T17:10:42+00:00 rotemb271-Latitude-7490#04 I: Test char suite:6:with whitespaces is successful.
+2019-11-22T17:10:42+00:00 rotemb271-Latitude-7490#04 I: End test char suite:6:with whitespaces.
