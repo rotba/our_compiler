@@ -19,7 +19,11 @@ module Tok_char_test: sig
   val newline : 'a -> unit
   val out_of_range_space : 'a -> unit
   val page_is : 'a-> unit
-  val with_whitespaces : 'a-> unit  
+  val with_whitespaces : 'a-> unit
+  val with_comment : 'a-> unit
+  val with_comments : 'a-> unit
+  val with_two_comments : 'a-> unit
+    
 end
 = struct
 let a test_ctxt = assert_equal_sexpr (Reader.Char 'a') (Reader.Reader.read_sexpr "#\\a");;
@@ -41,6 +45,9 @@ let out_of_range_space test_ctxt =
 let newline test_ctxt = assert_equal_sexpr (Reader.Char (Char.chr 10)) (Reader.Reader.read_sexpr "#\\newline");;
 let page_is test_ctxt = assert_equal_sexpr (Reader.Char (Char.chr 12)) (Reader.Reader.read_sexpr "#\\Page");;
 let with_whitespaces test_ctxt = assert_equal_sexpr (Reader.Char 'a') (Reader.Reader.read_sexpr "   #\\a    ");;
+let with_comment  test_ctxt = assert_equal_sexpr (Reader.Char (Char.chr 12)) (Reader.Reader.read_sexpr ";this is a comment\n#\\Page");;
+let with_two_comments  test_ctxt = assert_equal_sexpr (Reader.Char (Char.chr 12)) (Reader.Reader.read_sexpr ";this is a comment\n;this is a comment\n#\\Page");;
+let with_comments  test_ctxt = assert_equal_sexpr (Reader.Char (Char.chr 12)) (Reader.Reader.read_sexpr ";this is a comment\n#\\Page;this is also a comment");;
 
 end;; (* struct Tok_char_test *)
 
@@ -50,6 +57,9 @@ module Tok_string_test: sig
   val with_meta : 'a -> unit
   val empty_str : 'a -> unit
   val with_meta_ci : 'a -> unit
+  val with_whitespaces : 'a-> unit
+  val with_comment : 'a-> unit
+  val with_comments : 'a-> unit
 end
 = struct
 let moshe test_ctxt = assert_equal_sexpr (Reader.String "moshe") (Reader.Reader.read_sexpr "\"moshe\"");;
@@ -79,6 +89,9 @@ let with_meta_ci test_ctxt =
     );;
 let empty_str test_ctxt =
   assert_equal_sexpr (Reader.String "") (Reader.Reader.read_sexpr "\"\"");;
+let with_whitespaces test_ctxt = assert_equal_sexpr (Reader.String "moshe") (Reader.Reader.read_sexpr "   \"moshe\"    ");;
+let with_comment  test_ctxt = assert_equal_sexpr (Reader.String "moshe") (Reader.Reader.read_sexpr ";this is a comment\n\"moshe\"");;
+let with_comments  test_ctxt = assert_equal_sexpr (Reader.String "moshe") (Reader.Reader.read_sexpr ";this is a comment\n\"moshe\";this is also a comment");;
   
   
 end;; (* struct Tok_string_test *)
@@ -96,7 +109,11 @@ let char_suite =
     "out_of_range_space">:: Tok_char_test.out_of_range_space;
     "newline">:: Tok_char_test.newline;
     "page in sensitive">:: Tok_char_test.page_is;
-    "with whitespaces">:: Tok_char_test.with_whitespaces
+    "with whitespaces">:: Tok_char_test.with_whitespaces;
+    "with comment">:: Tok_char_test.with_comment;
+    "with comments">:: Tok_char_test.with_comments;
+    "with comments">:: Tok_char_test.with_two_comments
+
   ];;
 
 let string_suite =
@@ -106,7 +123,10 @@ let string_suite =
     "long string">:: Tok_string_test.long_str;
     "with meta">:: Tok_string_test.with_meta;
     "empty str">:: Tok_string_test.empty_str;
-    "with meta ci">:: Tok_string_test.with_meta_ci
+    "with meta ci">:: Tok_string_test.with_meta_ci;
+    "with whitespaces">:: Tok_string_test.with_whitespaces;
+    "with comment">:: Tok_string_test.with_comment;
+    "with comments">:: Tok_string_test.with_comments
   ];;
 
 let () =

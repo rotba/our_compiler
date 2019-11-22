@@ -1,8 +1,8 @@
 
 
-(*ONLY FOR TESTING*) (*INCLUDE  "pc.ml"*);;
+(*ONLY FOR TESTING*) INCLUDE "pc.ml";;
 
-# use "pc.ml";;
+(*# use "pc.ml"*)
   
 open Format;;
 
@@ -104,7 +104,7 @@ let tok_bool  =
 
 
 let nt_whitespaces =
-  let nt = PC.const (fun (ch) -> ch<=' ')) in
+  let nt = PC.const (fun (ch) -> ch<=' ') in
   PC.pack nt (fun _ -> String "");;
 
 let nt_semi_colon = PC.char ';';;

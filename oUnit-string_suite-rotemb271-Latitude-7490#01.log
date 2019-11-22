@@ -1,6 +1,6 @@
-2019-11-22T11:41:08+00:00 rotemb271-Latitude-7490#01 I: Start test string_suite:0:moshe.
-2019-11-22T11:41:08+00:00 rotemb271-Latitude-7490#01 I: Test string_suite:0:moshe is successful.
-2019-11-22T11:41:08+00:00 rotemb271-Latitude-7490#01 I: End test string_suite:0:moshe.
-2019-11-22T11:41:08+00:00 rotemb271-Latitude-7490#01 I: Start test string_suite:4:with meta ci.
-2019-11-22T11:41:08+00:00 rotemb271-Latitude-7490#01 I: Test string_suite:4:with meta ci is successful.
-2019-11-22T11:41:08+00:00 rotemb271-Latitude-7490#01 I: End test string_suite:4:with meta ci.
+2019-11-22T13:38:31+00:00 rotemb271-Latitude-7490#01 I: Start test string_suite:0:moshe.
+2019-11-22T13:38:31+00:00 rotemb271-Latitude-7490#01 I: Test string_suite:0:moshe is successful.
+2019-11-22T13:38:31+00:00 rotemb271-Latitude-7490#01 I: End test string_suite:0:moshe.
+2019-11-22T13:38:31+00:00 rotemb271-Latitude-7490#01 I: Start test string_suite:6:with comment.
+2019-11-22T13:38:31+00:00 rotemb271-Latitude-7490#01 I: Test string_suite:6:with comment is successful.
+2019-11-22T13:38:31+00:00 rotemb271-Latitude-7490#01 I: End test string_suite:6:with comment.
