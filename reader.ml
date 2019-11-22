@@ -104,7 +104,7 @@ let tok_bool  =
 
 
 let nt_whitespaces =
-  let nt = (PC.star (PC.const (fun (ch) -> ch<=' '))) in
+  let nt = PC.const (fun (ch) -> ch<=' ')) in
   PC.pack nt (fun _ -> String "");;
 
 let nt_semi_colon = PC.char ';';;
@@ -113,9 +113,9 @@ let nt_nl = PC.char (Char.chr 10);;
 
 let nt_line_comment =
   let nt_content = (PC.star (PC.diff PC.nt_any nt_nl)) in
-  let nt = PC.caten nt_semi_colon nt_content
-  let chain_nl =  PC.caten nt nt_nl in
-  let chain_eoi = PC.caten nt PC.nt_end_of_input in
+  let pref = PC.caten nt_semi_colon nt_content in
+  let chain_nl =  PC.caten pref nt_nl in
+  let chain_eoi = PC.pack (PC.caten pref PC.nt_end_of_input) (fun (res,empty1)->(res, '\n'))in
   let nt  = PC.disj chain_nl chain_eoi in    
   PC.pack nt (fun _ -> String "");;
 
@@ -131,7 +131,7 @@ let make_paired nt_left nt_right nt =
 let rec nt_comment s = (PC.disj nt_line_comment nt_sexpr_comment) s
 and nt_sexpr_comment s = PC.nt_none s
 and nt_skip s = (PC.disj nt_comment nt_whitespaces) s
-and make_spaced nt = make_paired nt_skip nt_skip nt 
+and make_spaced nt = make_paired (PC.star nt_skip) (PC.star nt_skip) nt
 and nt_sexpr s =
   let all_rules =
     PC.disj_list
@@ -140,9 +140,9 @@ and nt_sexpr s =
         Tok_string.tok_string;
         tok_bool
       ] in
-  let chain = PC.caten all_rules PC.nt_end_of_input in
-  let spaced = make_spaced chain in
-  let packed = PC.pack spaced (fun (res, empty) -> res) in
+  let spaced = make_spaced all_rules in
+  let chain = PC.caten spaced PC.nt_end_of_input in
+  let packed = PC.pack chain (fun (res, empty) -> res) in
   packed s;;
 
 module Reader: sig

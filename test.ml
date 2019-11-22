@@ -110,6 +110,6 @@ let string_suite =
   ];;
 
 let () =
-  run_test_tt_main char_suite;
-  run_test_tt_main string_suite
+  run_test_tt_main string_suite;
+  run_test_tt_main char_suite
 ;;
