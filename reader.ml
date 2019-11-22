@@ -1,8 +1,8 @@
 
 
-(*ONLY FOR TESTING*) INCLUDE  "pc.ml";;
+(*ONLY FOR TESTING*) (*INCLUDE  "pc.ml"*);;
 
-(*# use "pc.ml";;*)
+# use "pc.ml";;
   
 open Format;;
 
@@ -103,6 +103,48 @@ let tok_bool  =
 (*#################################ALON#####################################*)
 
 
+let nt_whitespaces =
+  let nt = (PC.star (PC.const (fun (ch) -> ch<=' '))) in
+  PC.pack nt (fun _ -> String "");;
+
+let nt_semi_colon = PC.char ';';;
+
+let nt_nl = PC.char (Char.chr 10);;
+
+let nt_line_comment =
+  let nt_content = (PC.star (PC.diff PC.nt_any nt_nl)) in
+  let nt = PC.caten nt_semi_colon nt_content
+  let chain_nl =  PC.caten nt nt_nl in
+  let chain_eoi = PC.caten nt PC.nt_end_of_input in
+  let nt  = PC.disj chain_nl chain_eoi in    
+  PC.pack nt (fun _ -> String "");;
+
+let make_paired nt_left nt_right nt =
+  let nt = PC.caten nt_left nt in
+  let nt = PC.pack nt (function (_, e) -> e) in
+  let nt = PC.caten nt nt_right in
+  let nt = PC.pack nt (function (e, _) -> e) in
+  nt;;
+
+
+
+let rec nt_comment s = (PC.disj nt_line_comment nt_sexpr_comment) s
+and nt_sexpr_comment s = PC.nt_none s
+and nt_skip s = (PC.disj nt_comment nt_whitespaces) s
+and make_spaced nt = make_paired nt_skip nt_skip nt 
+and nt_sexpr s =
+  let all_rules =
+    PC.disj_list
+      [
+        Tok_char.tok_char;
+        Tok_string.tok_string;
+        tok_bool
+      ] in
+  let chain = PC.caten all_rules PC.nt_end_of_input in
+  let spaced = make_spaced chain in
+  let packed = PC.pack spaced (fun (res, empty) -> res) in
+  packed s;;
+
 module Reader: sig
   val read_sexpr : string -> sexpr
   val read_sexprs : string -> sexpr list
@@ -115,17 +157,10 @@ let normalize_scheme_symbol str =
 	(fun ch -> (ch = (lowercase_ascii ch)))
 	s) then str
   else Printf.sprintf "|%s|" str;;
+  
 
 let read_sexpr string =
-  let all_rules =
-    PC.disj_list
-          [
-            Tok_char.tok_char;
-            Tok_string.tok_string;
-            tok_bool
-          ] in
-  let chain = PC.caten all_rules PC.nt_end_of_input in
-  let ((res,empty), also_empty) = chain (string_to_list string) in
+  let (res, empty) = nt_sexpr (string_to_list string) in
   res;;
  
 

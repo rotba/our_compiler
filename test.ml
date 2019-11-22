@@ -19,6 +19,7 @@ module Tok_char_test: sig
   val newline : 'a -> unit
   val out_of_range_space : 'a -> unit
   val page_is : 'a-> unit
+  val with_whitespaces : 'a-> unit  
 end
 = struct
 let a test_ctxt = assert_equal_sexpr (Reader.Char 'a') (Reader.Reader.read_sexpr "#\\a");;
@@ -38,7 +39,9 @@ let out_of_range_space test_ctxt =
       ())
   
 let newline test_ctxt = assert_equal_sexpr (Reader.Char (Char.chr 10)) (Reader.Reader.read_sexpr "#\\newline");;
-let page_is test_ctxt = assert_equal_sexpr (Reader.Char (Char.chr 12)) (Reader.Reader.read_sexpr "#\\Page");;  
+let page_is test_ctxt = assert_equal_sexpr (Reader.Char (Char.chr 12)) (Reader.Reader.read_sexpr "#\\Page");;
+let with_whitespaces test_ctxt = assert_equal_sexpr (Reader.Char 'a') (Reader.Reader.read_sexpr "   #\\a    ");;
+
 end;; (* struct Tok_char_test *)
 
 module Tok_string_test: sig
@@ -92,7 +95,8 @@ let char_suite =
     "out_of_range_128">:: Tok_char_test.out_of_range_128;
     "out_of_range_space">:: Tok_char_test.out_of_range_space;
     "newline">:: Tok_char_test.newline;
-    "page in sensitive">:: Tok_char_test.page_is
+    "page in sensitive">:: Tok_char_test.page_is;
+    "with whitespaces">:: Tok_char_test.with_whitespaces
   ];;
 
 let string_suite =

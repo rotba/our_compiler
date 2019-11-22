@@ -1,0 +1,2 @@
+ocamlfind ocamlc -syntax camlp4o -package camlp4 -ppopt pa_macro.cmo  -o test -package oUnit -linkpkg -g pc.ml reader.ml test.ml
+eval $(opam config env)
