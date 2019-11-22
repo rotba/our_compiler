@@ -103,7 +103,14 @@ let rec list_packer = function
   | [] -> Nil
   | e::s -> Pair(e, (list_packer s));;
 
-let qoute_packer = fun (q,sexpr) -> Pair(Symbol("qoute"),Pair(sexpr, Nil));;
+  
+let qoute_forms_const name sexp = Pair(Symbol(name),Pair(sexp, Nil));;
+let qoute_forms_packer =
+  function
+  |('\'',s) -> qoute_forms_const "qoute" s
+  |(',',s) -> qoute_forms_const "unqoute" s
+  |('`',s) -> qoute_forms_const "quasiquote" s
+  |((',','@'),s) -> qoute_forms_const "unquote-splicing" s;;             
 
 
 (*#################################ROTEM#####################################*)
@@ -120,14 +127,15 @@ let tok_bool  =
 let nt_whitespaces =
   let nt = PC.const (fun (ch) -> ch<=' ') in
   PC.pack nt (fun _ -> String "");;
-
 let nt_semi_colon = PC.char ';';;
 let nt_lparen = PC.char '(';;
 let nt_rparen = PC.char ')';;
 let nt_semi_colon = PC.char ';';;
 let nt_nl = PC.char (Char.chr 10);;
 let nt_qoute_char = PC.char '\'';;
-
+let nt_qqoute_char = PC.char '`';;
+let nt_unqoute_char = PC.char ',';;
+let nt_unqoute_splicing_pref = PC.word ",@";;
 let nt_line_comment =
   let nt_content = (PC.star (PC.diff PC.nt_any nt_nl)) in
   let pref = PC.caten nt_semi_colon nt_content in
@@ -147,9 +155,21 @@ and nt_list s =
   let nt = make_paired nt_lparen nt_rparen (PC.star nt_sexpr) in
   let nt = PC.pack nt list_packer in
   nt s
-and nt_qoute s =
+and nt_qoute s = 
   let nt = PC.caten nt_qoute_char nt_sexpr in
   let nt = PC.pack nt qoute_packer in
+  nt s
+and nt_qoute s = 
+  let nt = PC.caten nt_qqoute_char nt_sexpr in
+  let nt = PC.pack nt qqoute_packer in
+  nt s
+and nt_unqoute s = 
+  let nt = PC.caten nt_unqoute_char nt_sexpr in
+  let nt = PC.pack nt unqoute_packer in
+  nt s
+and nt_unqoute_splicing s = 
+  let nt = PC.caten nt_unqoute_splicing_pref nt_sexpr in
+  let nt = PC.pack nt unqoute_splcing_packer in
   nt s
 and nt_sexpr s =
   let all_rules =
@@ -159,7 +179,10 @@ and nt_sexpr s =
         Tok_string.tok_string;
         tok_bool;
         nt_list;
-        nt_qoute
+        nt_qoute;
+        nt_unqoute;
+        nt_unqoute_splicing;
+        nt_qqoute
       ] in
   let spaced = make_spaced all_rules in
   spaced s;;

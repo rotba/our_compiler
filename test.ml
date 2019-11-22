@@ -110,8 +110,8 @@ let list_suite =
       );
   ];;
 
-let qoute_suite =
-"qoute suite">:::
+let qouted_forms_suite =
+"qouted forms suite">:::
   [
     "'a">::
       (fun _ ->
@@ -129,8 +129,39 @@ let qoute_suite =
                    Nil)
           ))
           (Reader.Reader.read_sexpr "'(#\\a #\\b #\\c)")
-      )
+      );
+        ",a">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Pair(Symbol("unquote"),Pair(Char 'a', Nil)))
+          (Reader.Reader.read_sexpr ",#\\a")
+      );
+    ",(a b c)">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Pair(
+               Symbol("unquote"),
+               Pair(
+                   Reader.Pair(Reader.Char 'a', Pair(Reader.Char 'b', Pair(Reader.Char 'c',Nil ))),
+                   Nil)
+          ))
+          (Reader.Reader.read_sexpr ",(#\\a #\\b #\\c)")
+      );
+    ",@a">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Pair(Symbol("unquote-splicing"),Pair(Char 'a', Nil)))
+          (Reader.Reader.read_sexpr ",@#\\a")
+      );
+     ",@#t">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Pair(Symbol("unquote-splicing"),Pair(Bool true, Nil)))
+          (Reader.Reader.read_sexpr ",@#t")
+      );
   ];;
+
+
 
 
 
@@ -140,5 +171,5 @@ let () =
   run_test_tt_main string_suite;
   run_test_tt_main char_suite;
   run_test_tt_main list_suite;
-  run_test_tt_main qoute_suite
+  run_test_tt_main qouted_forms_suite
 ;;

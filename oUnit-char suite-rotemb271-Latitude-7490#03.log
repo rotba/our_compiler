@@ -1,6 +1,9 @@
-2019-11-22T17:10:42+00:00 rotemb271-Latitude-7490#03 I: Start test char suite:2:out_of_range_128.
-2019-11-22T17:10:42+00:00 rotemb271-Latitude-7490#03 I: Test char suite:2:out_of_range_128 is successful.
-2019-11-22T17:10:42+00:00 rotemb271-Latitude-7490#03 I: End test char suite:2:out_of_range_128.
-2019-11-22T17:10:42+00:00 rotemb271-Latitude-7490#03 I: Start test char suite:7:with comment.
-2019-11-22T17:10:42+00:00 rotemb271-Latitude-7490#03 I: Test char suite:7:with comment is successful.
-2019-11-22T17:10:42+00:00 rotemb271-Latitude-7490#03 I: End test char suite:7:with comment.
+2019-11-22T17:47:47+00:00 rotemb271-Latitude-7490#03 I: Start test char suite:2:out_of_range_128.
+2019-11-22T17:47:47+00:00 rotemb271-Latitude-7490#03 I: Test char suite:2:out_of_range_128 is successful.
+2019-11-22T17:47:47+00:00 rotemb271-Latitude-7490#03 I: End test char suite:2:out_of_range_128.
+2019-11-22T17:47:47+00:00 rotemb271-Latitude-7490#03 I: Start test char suite:6:with whitespaces.
+2019-11-22T17:47:47+00:00 rotemb271-Latitude-7490#03 I: Test char suite:6:with whitespaces is successful.
+2019-11-22T17:47:47+00:00 rotemb271-Latitude-7490#03 I: End test char suite:6:with whitespaces.
+2019-11-22T17:47:47+00:00 rotemb271-Latitude-7490#03 I: Start test char suite:9:with sexpr comment.
+2019-11-22T17:47:47+00:00 rotemb271-Latitude-7490#03 I: Test char suite:9:with sexpr comment is successful.
+2019-11-22T17:47:47+00:00 rotemb271-Latitude-7490#03 I: End test char suite:9:with sexpr comment.
