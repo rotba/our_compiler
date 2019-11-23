@@ -226,7 +226,7 @@ and nt_sexpr s =
         Tok_string.tok_string;
         tok_bool;
         nt_list;
-        nt_dotted_list
+        nt_dotted_list;
         nt_qoute;
         nt_unqoute;
         nt_unqoute_splicing;
