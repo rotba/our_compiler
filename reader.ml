@@ -115,14 +115,14 @@ let nt_float = (PC.caten nt_int (PC.caten (PC.char '.') nt_natural));;
 let tok_float = 
   PC.pack nt_float ( fun (x) ->
   match x with
-  | ((None, e), (d,m)) -> Float (float_of_string (list_to_string (List.append e (d::m))))
-  | ((Some(s), e), (d,m)) -> Float (float_of_string (list_to_string (List.append (s::e) (d::m)))));;
+  | ((None, e), (d,m)) ->  Number (Float (float_of_string (list_to_string (List.append e (d::m)))))
+  | ((Some(s), e), (d,m)) -> Number (Float (float_of_string (list_to_string (List.append (s::e) (d::m))))));;
 
 let tok_num s = 
   try (PC.pack (PC.not_followed_by nt_int (PC.char '.')) ( fun (x) ->
   match x with
-  | (None, e) -> Int (int_of_string (list_to_string e))
-  | (Some(s), e) -> Int (int_of_string (list_to_string (s::e)))) s)
+  | (None, e) -> Number (Int (int_of_string (list_to_string e)))
+  | (Some(s), e) -> Number (Int (int_of_string (list_to_string (s::e))))) s)
   with PC.X_no_match -> tok_float s;;
 
 let nt_letter_ci = PC.range_ci 'a' 'z';;
@@ -135,7 +135,7 @@ let nt_sym_char = PC.disj_list [
 let nt_sym = PC.plus nt_sym_char;;
 let tok_sym = 
   PC.pack nt_sym (fun (x) ->
-  Symbol (list_to_string x));;
+  Symbol (String.lowercase_ascii (list_to_string x)));;
   
 
 (*#################################ALON#####################################*)
@@ -177,7 +177,9 @@ and nt_sexpr s =
       [
         Tok_char.tok_char;
         Tok_string.tok_string;
-        tok_bool
+        tok_bool;
+        tok_num;
+        tok_sym
       ] in
   let spaced = make_spaced all_rules in
   spaced s;;
