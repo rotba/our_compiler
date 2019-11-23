@@ -107,10 +107,10 @@ let rec list_packer = function
 let qoute_forms_const name sexp = Pair(Symbol(name),Pair(sexp, Nil));;
 let qoute_forms_packer =
   function
-  |('\'',s) -> qoute_forms_const "qoute" s
-  |(',',s) -> qoute_forms_const "unqoute" s
-  |('`',s) -> qoute_forms_const "quasiquote" s
-  |((',','@'),s) -> qoute_forms_const "unquote-splicing" s;;             
+  |("\'",s) -> qoute_forms_const "qoute" s
+  |(",",s) -> qoute_forms_const "unquote" s
+  |("`",s) -> qoute_forms_const "quasiquote" s
+  |((",@"),s) -> qoute_forms_const "unquote-splicing" s;;             
 
 
 (*#################################ROTEM#####################################*)
@@ -132,10 +132,10 @@ let nt_lparen = PC.char '(';;
 let nt_rparen = PC.char ')';;
 let nt_semi_colon = PC.char ';';;
 let nt_nl = PC.char (Char.chr 10);;
-let nt_qoute_char = PC.char '\'';;
-let nt_qqoute_char = PC.char '`';;
-let nt_unqoute_char = PC.char ',';;
-let nt_unqoute_splicing_pref = PC.word ",@";;
+let nt_qoute_pref = PC.pack (PC.char '\'') (fun _ -> "\'");;
+let nt_qqoute_pref = PC.pack (PC.char '`') (fun _ -> "`");;
+let nt_unqoute_pref = PC.pack (PC.char ',') (fun _ -> ",");;
+let nt_unqoute_splicing_pref = PC.pack (PC.word ",@") (fun _ -> ",@");;
 let nt_line_comment =
   let nt_content = (PC.star (PC.diff PC.nt_any nt_nl)) in
   let pref = PC.caten nt_semi_colon nt_content in
@@ -156,20 +156,20 @@ and nt_list s =
   let nt = PC.pack nt list_packer in
   nt s
 and nt_qoute s = 
-  let nt = PC.caten nt_qoute_char nt_sexpr in
-  let nt = PC.pack nt qoute_packer in
+  let nt = PC.caten nt_qoute_pref nt_sexpr in
+  let nt = PC.pack nt qoute_forms_packer in
   nt s
-and nt_qoute s = 
-  let nt = PC.caten nt_qqoute_char nt_sexpr in
-  let nt = PC.pack nt qqoute_packer in
+and nt_qqoute s = 
+  let nt = PC.caten nt_qqoute_pref nt_sexpr in
+  let nt = PC.pack nt qoute_forms_packer in
   nt s
 and nt_unqoute s = 
-  let nt = PC.caten nt_unqoute_char nt_sexpr in
-  let nt = PC.pack nt unqoute_packer in
+  let nt = PC.caten nt_unqoute_pref nt_sexpr in
+  let nt = PC.pack nt qoute_forms_packer in
   nt s
 and nt_unqoute_splicing s = 
   let nt = PC.caten nt_unqoute_splicing_pref nt_sexpr in
-  let nt = PC.pack nt unqoute_splcing_packer in
+  let nt = PC.pack nt qoute_forms_packer in
   nt s
 and nt_sexpr s =
   let all_rules =
