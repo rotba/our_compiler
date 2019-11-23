@@ -110,7 +110,24 @@ let qoute_forms_packer =
   |("\'",s) -> qoute_forms_const "qoute" s
   |(",",s) -> qoute_forms_const "unquote" s
   |("`",s) -> qoute_forms_const "quasiquote" s
-  |((",@"),s) -> qoute_forms_const "unquote-splicing" s;;             
+  |((",@"),s) -> qoute_forms_const "unquote-splicing" s;;
+
+
+let rec tagged_again s e =
+    match e with
+    |TaggedSexpr(name, sexpr) ->
+      (name = s) || (tagged_again s sexpr)
+    |Pair(a,b)->
+      (tagged_again s a) || (tagged_again s b)
+    | _ -> false ;;
+
+let tagged_packer =
+  function  
+  |(Symbol(s), None) -> TagRef(s)
+  |(Symbol(s), Some(sexpr)) ->
+    if(tagged_again s sexpr)
+    then raise X_this_should_not_happen
+    else TaggedSexpr(s,sexpr);;
 
 
 (*#################################ROTEM#####################################*)
@@ -209,6 +226,13 @@ and nt_unqoute_splicing s =
   let nt = PC.caten nt_unqoute_splicing_pref nt_sexpr in
   let nt = PC.pack nt qoute_forms_packer in
   nt s
+and nt_tagged s =
+  let nt_tag = make_paired (PC.word "#{") (PC.char '}') tok_sym in
+  let nt_eq_sexpr = PC.caten (PC.char '=') nt_sexpr in
+  let nt_eq_sexpr = PC.pack nt_eq_sexpr (fun (_,e)->e) in
+  let nt = PC.caten nt_tag (PC.maybe nt_eq_sexpr) in
+  let nt = PC.pack nt tagged_packer in
+  nt s
 and nt_sexpr s =
   let all_rules =
     PC.disj_list
@@ -222,7 +246,8 @@ and nt_sexpr s =
         nt_unqoute_splicing;
         nt_qqoute;
         tok_num;
-        tok_sym
+        tok_sym;
+        nt_tagged
       ] in
   let spaced = make_spaced all_rules in
   spaced s;;
