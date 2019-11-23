@@ -261,6 +261,48 @@ let number_suite =
           (Number (Float 999.12349999999))
           (Reader.Reader.read_sexpr "+999.12349999999")
       );
+    "1e1">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Float 10.0))
+          (Reader.Reader.read_sexpr "1e1")
+      );
+    "1E+1">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Float 10.0))
+          (Reader.Reader.read_sexpr "1E+1")
+      );
+    "10e-1">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Float 1.0))
+          (Reader.Reader.read_sexpr "10e-1")
+      );
+    "3.14e+9">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Float 3.14e+9))
+          (Reader.Reader.read_sexpr "3.14e+9")
+      );
+    "3.14E-512">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Float 3.14E-512))
+          (Reader.Reader.read_sexpr "3.14E-512")
+      );
+    "+000000012.3E00000002">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Float 1230.0))
+          (Reader.Reader.read_sexpr "+000000012.3E00000002")
+      );
+    "-5.000000000e-2">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Float (-0.05)))
+          (Reader.Reader.read_sexpr "-5.000000000e-2")
+      );
     
   ];;
 
