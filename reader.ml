@@ -1,8 +1,7 @@
-
 (* ONLY FOR TESTING *)
-(* INCLUDE "pc.ml";; *)
+INCLUDE "pc.ml";;
 
-# use "pc.ml";;
+(* # use "pc.ml";; *)
   
 open Format;;
 

@@ -111,12 +111,27 @@ let list_suite =
           (Reader.Reader.read_sexpr "(          #\\a     #\\b  #;#t #\\c  )")
       );
 
-     "(a b . c)">::
+     "(a         b #;#t .c)">::
       (fun _ ->
         assert_equal_sexpr
           (Reader.Pair(Reader.Char 'a', Pair(Reader.Char 'b', Reader.Char 'c')) )
           (Reader.Reader.read_sexpr "(#\\a #\\b .#\\c)")
       );
+     "(a b . c)">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Reader.Pair(Reader.Char 'a', Pair(Reader.Char 'b', Reader.Char 'c')) )          
+          (Reader.Reader.read_sexpr "(          #\\a     #\\b  #;#t .#\\c  )")
+      );
+    "(a .(b c))">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Reader.Pair(
+               Reader.Char 'a',
+               Pair(Reader.Char 'b', Pair(Reader.Char 'c',Reader.Nil ))
+          ))
+          (Reader.Reader.read_sexpr "(#\\a .(#\\b #\\c))")
+      );     
   ];;
 
 let qouted_forms_suite =
@@ -306,7 +321,15 @@ let references_suite =
           (TaggedSexpr ("x", Pair (Symbol "a", TagRef "x")))
           (Reader.Reader.read_sexpr "#{x}=(a.  #{x})")
       );
-    
+    "#{foo}=(#{foo}=1 2 3)">::
+      (fun _ ->
+        assert_raises
+          Reader.X_this_should_not_happen
+          (fun _->
+            let _i = (Reader.Reader.read_sexpr "#{foo}=(#{foo}=1 2 3)") in
+            ()
+          )
+      );
   ];;
 
 
@@ -316,13 +339,11 @@ let references_suite =
 
 
 let () =
-  run_test_tt_main references_suite;
   run_test_tt_main string_suite;
   run_test_tt_main char_suite;
   run_test_tt_main list_suite;
   run_test_tt_main qouted_forms_suite;
   run_test_tt_main number_suite;
   run_test_tt_main symbol_suite;
-
-  
+  run_test_tt_main references_suite;
 ;;
