@@ -6,6 +6,8 @@ let rec sexpr_to_string  =
   |Reader.Nil-> "Nil"
   |Reader.Symbol(x)-> x
   |Reader.Pair(x,y) -> String.concat "" ["Pair( "; (sexpr_to_string x); " , "; (sexpr_to_string y) ;" )"]
+  |Reader.TaggedSexpr(s,e) -> String.concat "" ["TaggedSexpr( "; s; " , "; (sexpr_to_string e) ;" )"]
+  |Reader.TagRef(x)->x
   |_ -> "not_implemented";;
 
 let assert_equal_sexpr sexpr1 sexpr2=
@@ -107,6 +109,13 @@ let list_suite =
         assert_equal_sexpr
           (Reader.Pair(Reader.Char 'a', Pair(Reader.Char 'b', Pair(Reader.Char 'c',Reader.Nil))) )
           (Reader.Reader.read_sexpr "(          #\\a     #\\b  #;#t #\\c  )")
+      );
+
+     "(a b . c)">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Reader.Pair(Reader.Char 'a', Pair(Reader.Char 'b', Reader.Char 'c')) )
+          (Reader.Reader.read_sexpr "(#\\a #\\b .#\\c)")
       );
   ];;
 
@@ -288,6 +297,18 @@ let symbol_suite =
     
   ];;
 
+let references_suite =
+"references suite">:::
+  [
+    "#{x}=(a.  #{x})">::
+      (fun _ ->
+        assert_equal_sexpr
+          (TaggedSexpr ("x", Pair (Symbol "a", TagRef "x")))
+          (Reader.Reader.read_sexpr "#{x}=(a.  #{x})")
+      );
+    
+  ];;
+
 
 
 
@@ -295,11 +316,13 @@ let symbol_suite =
 
 
 let () =
+  run_test_tt_main references_suite;
   run_test_tt_main string_suite;
   run_test_tt_main char_suite;
   run_test_tt_main list_suite;
   run_test_tt_main qouted_forms_suite;
   run_test_tt_main number_suite;
-  run_test_tt_main symbol_suite
+  run_test_tt_main symbol_suite;
+
   
 ;;

@@ -1,9 +1,9 @@
-2019-11-23T09:51:26+00:00 rotemb271-Latitude-7490#01 I: Start test char suite:0:a.
-2019-11-23T09:51:26+00:00 rotemb271-Latitude-7490#01 I: Test char suite:0:a is successful.
-2019-11-23T09:51:26+00:00 rotemb271-Latitude-7490#01 I: End test char suite:0:a.
-2019-11-23T09:51:26+00:00 rotemb271-Latitude-7490#01 I: Start test char suite:4:newline.
-2019-11-23T09:51:26+00:00 rotemb271-Latitude-7490#01 I: Test char suite:4:newline is successful.
-2019-11-23T09:51:26+00:00 rotemb271-Latitude-7490#01 I: End test char suite:4:newline.
-2019-11-23T09:51:26+00:00 rotemb271-Latitude-7490#01 I: Start test char suite:8:with comments.
-2019-11-23T09:51:26+00:00 rotemb271-Latitude-7490#01 I: Test char suite:8:with comments is successful.
-2019-11-23T09:51:26+00:00 rotemb271-Latitude-7490#01 I: End test char suite:8:with comments.
+2019-11-23T11:57:43+00:00 rotemb271-Latitude-7490#01 I: Start test char suite:0:a.
+2019-11-23T11:57:43+00:00 rotemb271-Latitude-7490#01 I: Test char suite:0:a is successful.
+2019-11-23T11:57:43+00:00 rotemb271-Latitude-7490#01 I: End test char suite:0:a.
+2019-11-23T11:57:43+00:00 rotemb271-Latitude-7490#01 I: Start test char suite:5:page in sensitive.
+2019-11-23T11:57:43+00:00 rotemb271-Latitude-7490#01 I: Test char suite:5:page in sensitive is successful.
+2019-11-23T11:57:43+00:00 rotemb271-Latitude-7490#01 I: End test char suite:5:page in sensitive.
+2019-11-23T11:57:43+00:00 rotemb271-Latitude-7490#01 I: Start test char suite:9:with sexpr comment.
+2019-11-23T11:57:43+00:00 rotemb271-Latitude-7490#01 I: Test char suite:9:with sexpr comment is successful.
+2019-11-23T11:57:43+00:00 rotemb271-Latitude-7490#01 I: End test char suite:9:with sexpr comment.

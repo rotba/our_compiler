@@ -1,6 +1,6 @@
-2019-11-23T09:51:26+00:00 rotemb271-Latitude-7490#04 I: Start test string_suite:3:empty str.
-2019-11-23T09:51:26+00:00 rotemb271-Latitude-7490#04 I: Test string_suite:3:empty str is successful.
-2019-11-23T09:51:26+00:00 rotemb271-Latitude-7490#04 I: End test string_suite:3:empty str.
-2019-11-23T09:51:26+00:00 rotemb271-Latitude-7490#04 I: Start test string_suite:7:with comments.
-2019-11-23T09:51:26+00:00 rotemb271-Latitude-7490#04 I: Test string_suite:7:with comments is successful.
-2019-11-23T09:51:26+00:00 rotemb271-Latitude-7490#04 I: End test string_suite:7:with comments.
+2019-11-23T11:57:43+00:00 rotemb271-Latitude-7490#04 I: Start test string_suite:3:empty str.
+2019-11-23T11:57:43+00:00 rotemb271-Latitude-7490#04 I: Test string_suite:3:empty str is successful.
+2019-11-23T11:57:43+00:00 rotemb271-Latitude-7490#04 I: End test string_suite:3:empty str.
+2019-11-23T11:57:43+00:00 rotemb271-Latitude-7490#04 I: Start test string_suite:8:with nested sexpr comments.
+2019-11-23T11:57:43+00:00 rotemb271-Latitude-7490#04 I: Test string_suite:8:with nested sexpr comments is successful.
+2019-11-23T11:57:43+00:00 rotemb271-Latitude-7490#04 I: End test string_suite:8:with nested sexpr comments.
