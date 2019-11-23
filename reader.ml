@@ -1,8 +1,8 @@
 
 (* ONLY FOR TESTING *)
-INCLUDE "pc.ml";;
+(* INCLUDE "pc.ml";; *)
 
-(* # use "pc.ml";; *)
+# use "pc.ml";;
   
 open Format;;
 
@@ -174,6 +174,10 @@ let nt_sym = PC.plus nt_sym_char;;
 let tok_sym = 
   PC.pack nt_sym (fun (x) ->
   Symbol (String.lowercase_ascii (list_to_string x)));;
+
+let rec dotted_list_list_packer = function
+  | (e::[], (d, s)) -> Pair(e, s)
+  | (e::s, f) -> Pair(e, (dotted_list_list_packer (s, f)));;
   
 
 (*#################################ALON#####################################*)
@@ -210,6 +214,11 @@ and nt_list s =
   let nt = make_paired nt_lparen nt_rparen (PC.star nt_sexpr) in
   let nt = PC.pack nt list_packer in
   nt s
+and nt_dotted_list s =
+  let nt = PC.caten (PC.plus nt_sexpr) (PC.caten (PC.char '.') nt_sexpr) in 
+  let nt = make_paired nt_lparen nt_rparen nt in
+  let nt = PC.pack nt dotted_list_list_packer in
+  nt s
 and nt_qoute s = 
   let nt = PC.caten nt_qoute_pref nt_sexpr in
   let nt = PC.pack nt qoute_forms_packer in
@@ -241,6 +250,7 @@ and nt_sexpr s =
         Tok_string.tok_string;
         tok_bool;
         nt_list;
+        nt_dotted_list;
         nt_qoute;
         nt_unqoute;
         nt_unqoute_splicing;
