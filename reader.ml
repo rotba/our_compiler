@@ -186,14 +186,14 @@ let char_digit_to_value char =
 
 let calc_no_mant b s =
   let s = List.map char_digit_to_value s in
-  let agg curr acc = curr + b*acc in
-  List.fold_right agg s 0;;
+  let agg acc curr = curr + b*acc in
+  List.fold_left agg 0 s;;
 
 let calc_mant base f =
   let f = List.map char_digit_to_value f in
   let f = List.map float_of_int f in
-  let agg acc curr = curr +. (1./.base)*.acc in
-  List.fold_left agg 0. f;;
+  let agg curr acc = (curr +.acc)*. (1./.base) in
+  List.fold_right agg f 0.;;
 
 let dig_list_to_float base n f =
   let no_mant = (float_of_int (calc_no_mant base n)) in
@@ -205,6 +205,8 @@ let calc_sign = function
 |'+' -> 1
 |'-' -> -1
 ;;
+
+let char_list_to_int s = int_of_string (list_to_string s);;
 
 let tok_radix s =
   let nt = make_paired (PC.char '#') (PC.char_ci 'r') nt_natural in 
@@ -271,7 +273,6 @@ let tok_scientific =
     | (man, (e, exp)) -> (Number (Float (float_of_string (man ^ "e" ^ exp))))
     );;
 
-let char_list_to_int s = int_of_string (list_to_string s);;
 
 
 
@@ -346,6 +347,7 @@ and nt_sexpr s =
         tok_bool;  
         Tok_char.tok_char;
         tok_scientific;
+        tok_radix;
         tok_num;
         Tok_string.tok_string;
         tok_sym;
