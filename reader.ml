@@ -140,27 +140,88 @@ let tok_bool  =
 
 let nt_digit = PC.range '0' '9';;
 let nt_natural = PC.plus nt_digit;;
+let nt_radix_digit base = 
+  if (base <= 0 || 36 < base)
+  then raise PC.X_no_match
+  else (
+    if (base <= 10)
+    then (PC.range '0' (char_of_int ((Char.code '0') + (base - 1))))
+    else ( PC.disj
+            (PC.range '0' '9')
+            (PC.range_ci 'a' (char_of_int ((Char.code 'a') + ((base - 10) - 1))))
+    )
+  );;
 let nt_sign = (PC.maybe (PC.disj (PC.char '+') (PC.char '-')));;
-let nt_int = (PC.caten nt_sign nt_natural);;
+let nt_int_gen nt_digis = (PC.caten nt_sign nt_digis);;
+let nt_int = nt_int_gen nt_natural;;
+(* let nt_int = (PC.caten nt_sign nt_natural);; *)
 let tok_int = 
   PC.pack nt_int ( fun (x) ->
   match x with
     | (None, e) -> Int (int_of_string (list_to_string e))
     | (Some(s), e) -> Int (int_of_string (list_to_string (s::e))));;
 
-let nt_float = (PC.caten nt_int (PC.caten (PC.char '.') nt_natural));;
+let nt_float_gen nt_digis = (PC.caten nt_int (PC.caten (PC.char '.') nt_digis));;
+let nt_float = nt_float_gen nt_natural;;
+(* let nt_float = (PC.caten nt_int (PC.caten (PC.char '.') nt_natural));; *)
 let tok_float = 
   PC.pack nt_float ( fun (x) ->
   match x with
     | ((None, e), (d,m)) ->  Number (Float (float_of_string (list_to_string (List.append e (d::m)))))
     | ((Some(s), e), (d,m)) -> Number (Float (float_of_string (list_to_string (List.append (s::e) (d::m))))));;
 
-let tok_num s = 
+let tok_num_gen nt_int tok_float s = 
   try (PC.pack (PC.not_followed_by nt_int (PC.char '.')) ( fun (x) ->
   match x with
     | (None, e) -> Number (Int (int_of_string (list_to_string e)))
     | (Some(s), e) -> Number (Int (int_of_string (list_to_string (s::e))))) s)
   with PC.X_no_match -> tok_float s;;
+
+let tok_num s = (tok_num_gen nt_int tok_float) s;; 
+
+let char_digit_to_value char = 
+  if ('0' <= char && char <= '9')
+  then ((Char.code char) - (Char.code '0'))
+  else ((Char.code (Char.lowercase_ascii char)) - (Char.code 'a') + 10)
+
+let calc_no_mant b s =
+  let s = List.map char_digit_to_value s in
+  let agg curr acc = curr + b*acc in
+  List.fold_right agg s 0;;
+
+let calc_mant base f =
+  let f = List.map char_digit_to_value f in
+  let f = List.map float_of_int f in
+  let agg acc curr = curr +. (1./.base)*.acc in
+  List.fold_left agg 0. f;;
+
+let dig_list_to_float base n f =
+  let no_mant = (float_of_int (calc_no_mant base n)) in
+  let mant = calc_mant (float_of_int base) f in
+  no_mant +. mant;;
+
+
+let calc_sign = function
+|'+' -> 1
+|'-' -> -1
+;;
+
+let tok_radix s =
+  let nt = make_paired (PC.char '#') (PC.char_ci 'r') nt_natural in 
+  let (base, s) = nt s in
+  let base = char_list_to_int base in
+  let nt_radix_int = (PC.not_followed_by (nt_int_gen (PC.plus (nt_radix_digit base))) (PC.char '.')) in
+  try (PC.pack nt_radix_int ( fun (x) ->
+  match x with
+    | (None, e) -> Number (Int (calc_no_mant base e))
+    | (Some(s), e) -> Number (Int ( (calc_sign s)*(calc_no_mant base e)) )) s)
+  with PC.X_no_match -> (
+  let nt_radix_float = (nt_float_gen (PC.plus (nt_radix_digit base))) in
+  PC.pack nt_radix_float ( fun (x) ->
+  match x with
+    | ((None, e), (d,m)) ->  Number (Float (dig_list_to_float base e m))
+    | ((Some(s), e), (d,m)) -> Number (Float ((float_of_int (calc_sign s))*.(dig_list_to_float base e m)))) s);;
+  
 
 let nt_letter_ci = PC.range_ci 'a' 'z';;
 let nt_Punc = PC.one_of "!$^*-_=+<>/?";;
@@ -209,6 +270,13 @@ let tok_scientific =
   match x with
     | (man, (e, exp)) -> (Number (Float (float_of_string (man ^ "e" ^ exp))))
     );;
+
+let char_list_to_int s = int_of_string (list_to_string s);;
+
+
+
+
+
 (*#################################ALON#####################################*)
 
 
@@ -285,17 +353,8 @@ and nt_sexpr s =
         nt_dotted_list;
         nt_qoute;
         nt_qqoute;
-        Tok_char.tok_char;
-        Tok_string.tok_string;
-        tok_bool;
-        nt_list;
-        nt_dotted_list;
-        nt_qoute;
         nt_unqoute;
         nt_unqoute_splicing;
-        nt_qqoute;
-        tok_num;
-        tok_sym;
         nt_tagged
       ] in
   let spaced = make_spaced all_rules in
