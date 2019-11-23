@@ -121,6 +121,44 @@ let tok_bool  =
     match x with
     | ('#', 'f') -> Bool false
     | ('#', 't') -> Bool true);;
+
+let nt_digit = PC.range '0' '9'
+let nt_natural = PC.plus nt_digit
+let nt_sign = (PC.maybe (PC.disj (PC.char '+') (PC.char '-')))
+let nt_int = (PC.caten nt_sign nt_natural);;
+let tok_int = 
+  PC.pack nt_int ( fun (x) ->
+  match x with
+  | (None, e) -> Int (int_of_string (list_to_string e))
+  | (Some(s), e) -> Int (int_of_string (list_to_string (s::e))));;
+
+let nt_float = (PC.caten nt_int (PC.caten (PC.char '.') nt_natural));;
+let tok_float = 
+  PC.pack nt_float ( fun (x) ->
+  match x with
+  | ((None, e), (d,m)) ->  Number (Float (float_of_string (list_to_string (List.append e (d::m)))))
+  | ((Some(s), e), (d,m)) -> Number (Float (float_of_string (list_to_string (List.append (s::e) (d::m))))));;
+
+let tok_num s = 
+  try (PC.pack (PC.not_followed_by nt_int (PC.char '.')) ( fun (x) ->
+  match x with
+  | (None, e) -> Number (Int (int_of_string (list_to_string e)))
+  | (Some(s), e) -> Number (Int (int_of_string (list_to_string (s::e))))) s)
+  with PC.X_no_match -> tok_float s;;
+
+let nt_letter_ci = PC.range_ci 'a' 'z';;
+let nt_Punc = PC.one_of "!$^*-_=+<>/?";;
+let nt_sym_char = PC.disj_list [
+  nt_letter_ci;
+  nt_digit;
+  nt_Punc
+];;
+let nt_sym = PC.plus nt_sym_char;;
+let tok_sym = 
+  PC.pack nt_sym (fun (x) ->
+  Symbol (String.lowercase_ascii (list_to_string x)));;
+  
+
 (*#################################ALON#####################################*)
 
 
@@ -182,7 +220,9 @@ and nt_sexpr s =
         nt_qoute;
         nt_unqoute;
         nt_unqoute_splicing;
-        nt_qqoute
+        nt_qqoute;
+        tok_num;
+        tok_sym
       ] in
   let spaced = make_spaced all_rules in
   spaced s;;
