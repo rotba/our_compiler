@@ -19,8 +19,6 @@ let assert_equal_sexpr sexpr1 sexpr2=
   ;;
 
 
-
-
 (* Name the test cases and group them together *)
 let char_suite =
 "char suite">:::
@@ -91,6 +89,12 @@ let list_suite =
         assert_equal_sexpr
           (Reader.Nil )
           (Reader.Reader.read_sexpr "()")
+      );
+    "(#;#T   ;asjdfasdkjsadjhka\n)">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Reader.Nil )
+          (Reader.Reader.read_sexpr "(#;#T   ;asjdfasdkjsadjhka\n)")
       );
     "(a (b c))">::
       (fun _ ->
@@ -303,7 +307,33 @@ let number_suite =
           (Number (Float (-0.05)))
           (Reader.Reader.read_sexpr "-5.000000000e-2")
       );
-    
+    "#-1r1">::
+      (fun _ ->
+        assert_raises
+          Reader.X_no_match
+          (fun _->
+            let _i = (Reader.Reader.read_sexpr "#-1r1") in
+            ()
+          )
+      );
+    "#36rZZ">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Int 1295))
+          (Reader.Reader.read_sexpr "#36rZZ")
+      );
+    "#16R11.8a">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Float 17.5390625))
+          (Reader.Reader.read_sexpr "#16R11.8a")
+      );
+    "#2r-1101">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Int (-13)))
+          (Reader.Reader.read_sexpr "#2r-1101")
+      );
   ];;
 
 let symbol_suite =
@@ -372,12 +402,16 @@ let references_suite =
             ()
           )
       );
+     "#{foo}=(#{foo}=1 2 3)">::
+      (fun _ ->
+        assert_raises
+          Reader.X_this_should_not_happen
+          (fun _->
+            let _i = (Reader.Reader.read_sexpr "#{foo}=(#{foo}=1 2 3)") in
+            ()
+          )
+      )
   ];;
-
-
-
-
-
 
 
 let () =
