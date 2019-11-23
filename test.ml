@@ -162,6 +162,133 @@ let qouted_forms_suite =
   ];;
 
 
+let number_suite =
+"number suite">:::
+  [
+    "1">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Int 1))
+          (Reader.Reader.read_sexpr "1")
+      );
+    "+1">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Int 1))
+          (Reader.Reader.read_sexpr "+1")
+      );
+    "-1">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Int (-1)))
+          (Reader.Reader.read_sexpr "-1")
+      );
+    "1234">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Int 1234))
+          (Reader.Reader.read_sexpr "1234")
+      );
+    "01234">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Int 1234))
+          (Reader.Reader.read_sexpr "01234")
+      );
+    "-01234">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Int (-1234)))
+          (Reader.Reader.read_sexpr "-01234")
+      );
+    "+01234">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Int 1234))
+          (Reader.Reader.read_sexpr "+01234")
+      );
+    "-0">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Int 0))
+          (Reader.Reader.read_sexpr "-0")
+      );
+    "0005.0129">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Float 5.0129))
+          (Reader.Reader.read_sexpr "0005.0129")
+      );
+    "501.100000000000000000000">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Float 501.1))
+          (Reader.Reader.read_sexpr "501.100000000000000000000")
+      );
+    "-0.0">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Float 0.0))
+          (Reader.Reader.read_sexpr "-0.0")
+      );
+    "+999.12349999999">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Number (Float 999.12349999999))
+          (Reader.Reader.read_sexpr "+999.12349999999")
+      );
+    
+  ];;
+
+let symbol_suite =
+"symbol suite">:::
+  [
+    "abc">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Symbol "abc")
+          (Reader.Reader.read_sexpr "abc")
+      );
+    "Abc">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Symbol "abc")
+          (Reader.Reader.read_sexpr "Abc")
+      );
+    "ABC!$^*-_=+<>/?">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Symbol "abc!$^*-_=+<>/?")
+          (Reader.Reader.read_sexpr "ABC!$^*-_=+<>/?")
+      );
+    "        ABCabc0123!$^*-_=+<>/?">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Symbol "abcabc0123!$^*-_=+<>/?")
+          (Reader.Reader.read_sexpr "        abcabc0123!$^*-_=+<>/?     ")
+      );
+    "ABCabc0123!$^*-_=+<>/?#;abc">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Symbol "abcabc0123!$^*-_=+<>/?")
+          (Reader.Reader.read_sexpr "abcabc0123!$^*-_=+<>/?#;abc")
+      );
+    "#;ABCabc0123!$^*-_=+<>/?  abc">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Symbol "abc")
+          (Reader.Reader.read_sexpr "#;ABCabc0123!$^*-_=+<>/?  abc")
+      );
+    ";ABCabc0123!$^*-_=+<>/?\nabc">::
+      (fun _ ->
+        assert_equal_sexpr
+          (Symbol "abc")
+          (Reader.Reader.read_sexpr ";ABCabc0123!$^*-_=+<>/?\nabc")
+      );    
+    
+  ];;
+
+
 
 
 
@@ -171,5 +298,8 @@ let () =
   run_test_tt_main string_suite;
   run_test_tt_main char_suite;
   run_test_tt_main list_suite;
-  run_test_tt_main qouted_forms_suite
+  run_test_tt_main qouted_forms_suite;
+  run_test_tt_main number_suite;
+  run_test_tt_main symbol_suite
+  
 ;;
