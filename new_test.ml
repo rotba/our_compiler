@@ -1,10 +1,25 @@
 # use "reader.ml";;
-
+let rec sexpr_to_string  =
+    function
+    |Char(x) -> String.make 1  x
+    |String(x) -> x
+    |Nil-> "Nil"
+    |Symbol(x)-> x
+    |Number(Float(x))-> string_of_float x
+    |Number(Int(x))-> string_of_int x                           
+    |Pair(x,y) -> String.concat "" ["Pair( "; (sexpr_to_string x); " , "; (sexpr_to_string y) ;" )"]
+    |TaggedSexpr(s,e) -> String.concat "" ["TaggedSexpr( "; s; " , "; (sexpr_to_string e) ;" )"]
+    |TagRef(x)->x
+    |_ -> "not_implemented";;
 let assert_equal_sexpr sexpr1 sexpr2=
-  let res  = sexpr_eq sexpr1 sexpr2 in
+  try (let res  = sexpr_eq sexpr1 sexpr2 in
   let handle_eq = Printf.sprintf "%s" "." in
+  
   let handle_not_eq = Printf.sprintf "fail\nexpected: %s\nbut got:%s" (sexpr_to_string sexpr1) (sexpr_to_string sexpr2) in
-  if(res) then handle_eq else handle_not_eq;;
+  if(res) then handle_eq else handle_not_eq)
+  with PC.X_no_match -> (
+    Printf.sprintf "fail\nexpected: %s\nbut got:exception" (sexpr_to_string sexpr1));;
+
 
 
 (assert_equal_sexpr (Char 'a') (Reader.read_sexpr "#\\a"));;

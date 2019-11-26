@@ -136,6 +136,8 @@ let tok_bool  =
     PC.pack nt (fun (x) ->
     match x with
       | ('#', 'f') -> Bool false
+      | ('#', 'F') -> Bool false
+      | ('#', 'T') -> Bool true
       | ('#', 't') -> Bool true);;
 
 let nt_digit = PC.range '0' '9';;
@@ -377,14 +379,16 @@ let normalize_scheme_symbol str =
   
 
 let read_sexpr string =
-  let (res, empty) = nt_sexpr (string_to_list string) in
+  let nt = PC.caten nt_sexpr PC.nt_end_of_input in
+  let ((res,empty1), empty2) = nt (string_to_list string) in
   res;;
 
 
 
 let read_sexprs string = 
-let (res, empty) = (PC.star nt_sexpr (string_to_list string))in
-  res;;
+  let nt = PC.caten (PC.star nt_sexpr) PC.nt_end_of_input in
+  let ((res,empty1), empty2) = (nt (string_to_list string))in
+   res;;
 
 
   
