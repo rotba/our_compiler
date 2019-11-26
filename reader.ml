@@ -1,7 +1,7 @@
 (* ONLY FOR TESTING *)
-INCLUDE "pc.ml";;
+(* INCLUDE "pc.ml";; *)
 
-(* # use "pc.ml";; *)
+# use "pc.ml";;
   
 open Format;;
 
@@ -382,7 +382,9 @@ let read_sexpr string =
 
 
 
-let read_sexprs string = raise X_not_yet_implemented;;
+let read_sexprs string = 
+let (res, empty) = (PC.star nt_sexpr (string_to_list string))in
+  res;;
 
 
   
