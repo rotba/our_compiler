@@ -128,6 +128,30 @@ let tagged_packer =
     then raise X_this_should_not_happen
     else TaggedSexpr(s,sexpr);;
 
+let rec get_tags =
+  function
+  |Pair(x,y) -> List.append (get_tags x) (get_tags y)
+  |TaggedSexpr(s,sexpr) -> List.append [s] (get_tags sexpr)
+  |_->[];;
+
+let disjoint l1 l2 =
+  let contains x= List.exists (fun (y) -> x=y) l2 in
+  let inter = List.filter (contains) l1 in
+  (inter) == [];;
+
+let rec is_unique_tags = 
+   function  
+   |Pair(x,y) ->
+     let x_tags = get_tags x in
+     let y_tags = get_tags y in
+     (disjoint x_tags y_tags) && (is_unique_tags y)
+   |_ ->true;;
+
+let nt_unique_tags nt s=
+  let (s1,e) = nt s in
+  if(is_unique_tags s1) then (nt s) else ((fun _ -> raise X_this_should_not_happen) s);;
+  
+
 
 (*#################################ROTEM#####################################*)
 (*#################################ALON#####################################*)
@@ -379,7 +403,8 @@ let normalize_scheme_symbol str =
   
 
 let read_sexpr string =
-  let nt = PC.caten nt_sexpr PC.nt_end_of_input in
+  let nt =  nt_unique_tags nt_sexpr in
+  let nt = PC.caten nt PC.nt_end_of_input in
   let ((res,empty1), empty2) = nt (string_to_list string) in
   res;;
 

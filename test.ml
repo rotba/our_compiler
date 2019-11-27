@@ -433,6 +433,15 @@ let references_suite =
             let _i = (Reader.Reader.read_sexpr "#{foo}=(#{foo}=1 2 3)") in
             ()
           )
+      );
+    "(1 #{foo}=2 3 #{foo}=4)">::
+      (fun _ ->
+        assert_raises
+          Reader.X_this_should_not_happen
+          (fun _->
+            let _i = (Reader.Reader.read_sexpr "(1 #{foo}=2 3 #{foo}=4)") in
+            ()
+          )
       )
   ];;
 
