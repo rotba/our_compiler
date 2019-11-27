@@ -252,7 +252,7 @@ let tok_radix s =
   
 
 let nt_letter_ci = PC.range_ci 'a' 'z';;
-let nt_Punc = PC.one_of "!$^*-_=+<>/?";;
+let nt_Punc = PC.one_of "!$^*-_=+<>/?:";;
 let nt_sym_char = PC.disj_list [
   nt_letter_ci;
   nt_digit;
