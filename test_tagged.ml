@@ -33,7 +33,17 @@ let simple_suite =
         (tag_parse_expression (String  "moshe")));
   ];;
 
+  let less_simple_suite =
+    "simple suite">:::
+      [
+        "5">::(fun _ ->
+          assert_equal_expr
+          Const(Sexpr (TaggedSexpr ("x", Nil)))
+          (tag_parse_expression TaggedSexpr ("x", Pair (Symbol "quote", Pair (Nil, Nil))));
+      ];;
+
 
 let () =
   run_test_tt_main simple_suite;
+  run_test_tt_main less_simple_suite;
 ;;
