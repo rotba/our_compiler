@@ -27,6 +27,10 @@ let simple_suite =
       assert_equal_expr
         (Const (Sexpr (Number (Int 5))))
         (tag_parse_expression (Number  (Int 5))));
+    "moshe">::(fun _ ->
+      assert_equal_expr
+        (Const (Sexpr (String "moshe")))
+        (tag_parse_expression (String  "moshe")));
   ];;
 
 

@@ -1,5 +1,5 @@
 #use "reader.ml";;
-
+open PC;;
 type constant =
   | Sexpr of sexpr
   | Void
@@ -44,11 +44,32 @@ let rec expr_eq e1 e2 =
                        
 exception X_syntax_error;;
 
+(* let nt_bool = nt_none;;
+ * let nt_char = nt_none;;
+ * let nt_string = nt_none;;
+ * let nt_number =nt_none;; *)
+
+let nt_self_eval= function
+  |Number(x)-> (Const (Sexpr (Number x)))
+  |String(x)-> (Const (Sexpr(String x)))
+  |Bool(x)-> (Const (Sexpr(Bool x)))
+  |Char(x)-> (Const (Sexpr(Char x)))
+  |_ -> raise X_no_match;;
+  
+let nt_not_self_eval= nt_none;;
+
+let nt_const =
+    disj_list [
+      nt_self_eval;
+      nt_not_self_eval;
+    ];;
+
 
 let nt_expr s =
   let all_rules =
-    PC.disj_list
+    disj_list
       [
+        nt_const
       ] in
   all_rules s;;
 
@@ -68,9 +89,7 @@ let reserved_word_list =
 (* work on the tag parser starts here *)
 
 let tag_parse_expression sexpr =
-  let nt = PC.caten nt_expr PC.nt_end_of_input in
-  let ((res,empty1), empty2) = nt sexpr in
-  res;;
+ nt_expr sexpr;;
 
 let tag_parse_expressions sexpr = raise X_not_yet_implemented;;
 
