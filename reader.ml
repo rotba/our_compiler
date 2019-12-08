@@ -139,6 +139,7 @@ let disjoint l1 l2 =
   let inter = List.filter (contains) l1 in
   (inter) == [];;
 
+  (* TODO: add test for x *)
 let rec is_unique_tags = 
    function  
    |Pair(x,y) ->
