@@ -165,7 +165,7 @@ let qq =
              )
           )
         );
-        ",@x">::
+        "`,@x">::
       (fun _ ->
         assert_raises
           X_syntax_error
@@ -178,6 +178,35 @@ let qq =
             ()
           )
       );
+        "`(a b)">::(fun _ ->
+          assert_equal_expr
+            (
+              Applic(
+                  Var("cons"),
+                  Seq(
+                      [
+                        Var("a");
+                        Applic(
+                            Var("cons"),
+                            Seq(
+                                [
+                                  Var("b"),
+                                  Var("()")
+                                ]
+                              )
+                          )
+                      ]
+                    )
+                )
+            )
+          (tag_parse_expression (
+               Pair(
+                   Symbol("quasiquote"),
+                   Pair(Symbol("a"), Pair(Symbol("b"),Nil))
+                 )
+             )
+          )
+        );
       ];;
 
 

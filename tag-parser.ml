@@ -80,6 +80,7 @@ let reserved_word_list =
 
 let rec tag_parse_expression sexpr =
   match sexpr with
+  | Pair(Symbol("quasiquote"),cdr) -> handle_qq(cdr)
   | Number(x) -> (Const (Sexpr (Number x)))
   | String(x) -> (Const (Sexpr(String x)))
   | Bool(x) -> (Const (Sexpr(Bool x)))
@@ -96,7 +97,7 @@ let rec tag_parse_expression sexpr =
   | Pair(Symbol "define", Pair(Symbol(a), Pair(b, Nil))) -> Def ((tag_parse_expression (Symbol(a))), (tag_parse_expression (b)))
   | Pair(Symbol "begin", a) -> (handle_begin a)
   (*################################################################################# *)
-  | Pair(a, b) -> Applic ((tag_parse_expression a), (parse_applic_body b))
+  | Pair(a, b) -> Applic ((tag_parse_expression a), (parse_applic_body b))              
   |_ -> raise X_syntax_error
 
 
@@ -146,6 +147,9 @@ match cdr with
 | Nil -> []
 | Pair(car, cdr) -> tag_parse_expression(car)::handle_or(cdr)  
 | _ -> raise Exhausting
+     
+and handle_qq = function
+  |
 ;;
 
 let tag_parse_expressions sexpr = 
