@@ -60,6 +60,17 @@ let simple_suite =
             ()
           )
       );
+    "(or x y z)">::(fun _ ->
+      assert_equal_expr
+        (Or [(Var "x");(Var "y");(Var "z")])
+        (tag_parse_expression
+           (Pair(
+                Symbol("or"),
+                Pair(Symbol("x"),Pair(Symbol("y"),Pair(Symbol("z"),Nil)))
+              )
+           )
+        )
+    );
   ];;
 
 let less_simple_suite =
