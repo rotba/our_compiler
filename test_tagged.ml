@@ -182,7 +182,7 @@ let qq =
                Pair(
                    Symbol("quasiquote"),
                    Pair(
-                       Symbol("unquote"),
+                       Symbol("unquote-splicing"),
                        Pair(Symbol("x"), Nil)
                      )
                  )
