@@ -34,12 +34,13 @@ let simple_suite =
   ];;
 
   let less_simple_suite =
-    "simple suite">:::
+    "less simple suite">:::
       [
-        "5">::(fun _ ->
+        "hey">::(fun _ ->
           assert_equal_expr
-          Const(Sexpr (TaggedSexpr ("x", Nil)))
-          (tag_parse_expression TaggedSexpr ("x", Pair (Symbol "quote", Pair (Nil, Nil))));
+          (Const(Sexpr (TaggedSexpr ("x", Nil))))
+          (tag_parse_expression TaggedSexpr ("x", Pair (Symbol "quote", Pair (Nil, Nil))))
+        );
       ];;
 
 
