@@ -21,15 +21,23 @@ let rec sexpr_to_string  =
   |TagRef(x)->x
   |_ -> "not_implemented";;
 
-let rec expr_to_string  =
-  function
+
+  
+let rec exp_to_string  =function
   |Const(Sexpr(s)) -> String.concat "" ["Const ( Sexpr ( "; (sexpr_to_string s); " ) )"]
-  |_->"not_implemented";;
+  |Var(v) -> v
+  |Applic(name,params) -> String.concat "" ["Applic( "; (exp_to_string name);" , ["; (params_to_string params)  ;"] )"]
+  |_->"not_implemented"
+and params_to_string = function
+  |[] -> ""
+  |f::r -> String.concat (exp_to_string f) [(params_to_string r)]
+;;
+
 
 let assert_equal_expr expr1 expr2=
   assert_equal
     ~cmp: expr_eq
-    ~printer:expr_to_string
+    ~printer:exp_to_string
     expr1
     expr2
   ;;
@@ -132,7 +140,7 @@ let less_simple_suite =
         );
         "(lambda (x . y) x)">::(fun _ ->
           assert_equal_expr
-            (Applic(Var ("adsf"),[]) )
+            (Applic(Var ("asdf"),[]) )
             (tag_parse_expression
                (Pair(
                      Symbol("asdf"),
