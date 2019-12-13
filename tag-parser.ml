@@ -52,6 +52,13 @@ let handle_tagged first sec =
   let sec = sec_handler sec in
   Const(Sexpr(TaggedSexpr(first,sec)));;
 
+let rec is_proper = function
+  |Pair(_,Nil)-> true
+  |Pair(car,cdr)-> (is_proper cdr)
+  |_->false;;
+
+
+
 
 module type TAG_PARSER = sig
   val tag_parse_expression : sexpr -> expr
@@ -81,15 +88,45 @@ let rec tag_parse_expression sexpr =
   | Pair(Symbol "if", Pair(a, Pair(b, Pair(c, Nil)))) -> If ((tag_parse_expression (a)), (tag_parse_expression (b)), (tag_parse_expression (c)))
   | Pair(Symbol "if", Pair(a, Pair(b, Nil))) -> If ((tag_parse_expression (a)), (tag_parse_expression (b)), Const(Void))
   | Pair(a, Pair(b, c)) -> Applic ((tag_parse_expression a), (parse_applic_body (Pair(b, c))))
+  | Pair(Symbol("lambda"), cdr) ->(handle_lambda cdr)
+ (*########################## ####################################################### *)
   |_ -> raise X_syntax_error
 and parse_applic_body = function
   | Pair(a, Nil) -> tag_parse_expression(a)::[]
-  | Pair(a, b) -> tag_parse_expression(a)::parse_applic_body(b)
+  | Pair(a, b) -> tag_parse_expression(a)::parse_applic_body(b)  
+
+and handle_lambda cdr =
+  let rec to_list = function
+  |Pair(Symbol(v),Nil)-> [v]
+  |Pair(Symbol(v),cdr)-> (List.append [v] (to_list cdr)) in
+
+  let rec handle_body = function
+    |Pair(car, Nil) -> (tag_parse_expression  car)
+    |Pair(car, cdr) ->(handle_body cdr)
+    | _->raise X_syntax_error in
+
+  let rec get_opt_list = function
+    |Pair(Symbol(vn),Symbol(vs))->([vn], vs)
+    |Pair(Symbol(vn_m_1), cdr) ->
+      let (acc, vs) = (get_opt_list cdr) in
+      (vn_m_1::acc,vs)
+    |_ -> raise X_syntax_error in
+       
+  match cdr with
+  |Pair(params, body)->
+    if((is_proper params))
+    then LambdaSimple((to_list params), (handle_body body))
+    else
+      let (params, opt) = (get_opt_list params) in
+      LambdaOpt(params, opt, (handle_body body))
+  |_ -> raise X_syntax_error
+
+
+
+;;
 
 let tag_parse_expressions sexpr = 
   List.map tag_parse_expression sexpr;;
-
-let tag_parse_expressions sexpr = raise X_not_yet_implemented;;
 
   
 end;; (* struct Tag_Parser *)
