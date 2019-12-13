@@ -96,11 +96,19 @@ let rec tag_parse_expression sexpr =
   | Pair(Symbol("set!"), Pair(name, Pair(value,Nil))) ->Set(tag_parse_expression(name),tag_parse_expression(value) )
   | Pair(Symbol "define", Pair(Symbol(a), Pair(b, Nil))) -> Def ((tag_parse_expression (Symbol(a))), (tag_parse_expression (b)))
   | Pair(Symbol "begin", a) -> (handle_begin a)
+  | Pair(Symbol "cond", a) -> handle_cond a
   (*################################################################################# *)
   | Pair(a, b) -> Applic ((tag_parse_expression a), (parse_applic_body b))              
   |_ -> raise X_syntax_error
 
-
+and handle_cond sexpr = 
+let rec build_cond = function
+  | Nil -> Nil
+  | Pair(Pair(a, Pair(Symbol("=>"), b)), c) -> raise X_not_yet_implemented
+  | Pair(Pair(Symbol("else"), b), _  ) ->  Pair(Symbol("begin"), b)
+  | Pair(Pair(a, b), c) ->  Pair(Symbol("if"), Pair(a, Pair(Pair(Symbol("begin"),b), (build_cond c))))
+  | _ -> raise Exhausting in
+(tag_parse_expression (build_cond sexpr))
   
 and parse_applic_body = function
   | Nil -> []
@@ -156,4 +164,4 @@ let tag_parse_expressions sexpr =
   List.map tag_parse_expression sexpr;;
 
   
-end;; (* struct Tag_Parser *)
+end;; (* struct Tag_Parser *)
