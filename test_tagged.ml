@@ -71,6 +71,17 @@ let simple_suite =
            )
         )
     );
+    "(set! x 1)">::(fun _ ->
+      assert_equal_expr
+        (Set(Var("x"),Const(Sexpr(Number(Int(1))))))
+        (tag_parse_expression
+           (Pair(
+                Symbol("set!"),
+                Pair(Symbol("x"),Pair(Number(Int(1)),Nil))
+              )
+           )
+        )
+    );
   ];;
 
 let less_simple_suite =

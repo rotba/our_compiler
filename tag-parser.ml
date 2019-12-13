@@ -89,6 +89,7 @@ let rec tag_parse_expression sexpr =
   | Pair(Symbol "if", Pair(a, Pair(b, Nil))) -> If ((tag_parse_expression (a)), (tag_parse_expression (b)), Const(Void))
   | Pair(Symbol("lambda"), cdr) ->(handle_lambda cdr)
   | Pair(Symbol("or"), cdr) ->Or((handle_or cdr))
+  | Pair(Symbol("set!"), Pair(name, Pair(value,Nil))) ->Set(tag_parse_expression(name),tag_parse_expression(value) )
   (*################################################################################# *)
   | Pair(a, Pair(b, c)) -> Applic ((tag_parse_expression a), (parse_applic_body (Pair(b, c))))
   |_ -> raise X_syntax_error
