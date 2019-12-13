@@ -7,6 +7,8 @@ open Format;;
 
 exception X_not_yet_implemented;;
 exception X_this_should_not_happen;;
+exception Exhausting;;
+
   
 type number =
   | Int of int
@@ -109,7 +111,9 @@ let qoute_forms_packer =
   |("\'",s) -> qoute_forms_const "qoute" s
   |(",",s) -> qoute_forms_const "unquote" s
   |("`",s) -> qoute_forms_const "quasiquote" s
-  |((",@"),s) -> qoute_forms_const "unquote-splicing" s;;
+  |((",@"),s) -> qoute_forms_const "unquote-splicing" s
+  | _ -> raise Exhausting
+  ;;
 
 
 let rec tagged_again s e =
@@ -124,9 +128,13 @@ let tagged_packer =
   function  
   |(Symbol(s), None) -> TagRef(s)
   |(Symbol(s), Some(sexpr)) ->
-    if(tagged_again s sexpr)
-    then raise X_this_should_not_happen
-    else TaggedSexpr(s,sexpr);;
+    (
+      if(tagged_again s sexpr)
+      then raise X_this_should_not_happen
+      else TaggedSexpr(s,sexpr)
+    )
+  | _ -> raise Exhausting
+    ;;
 
 let rec get_tags =
   function
@@ -163,7 +171,9 @@ let tok_bool  =
       | ('#', 'f') -> Bool false
       | ('#', 'F') -> Bool false
       | ('#', 'T') -> Bool true
-      | ('#', 't') -> Bool true);;
+      | ('#', 't') -> Bool true
+      | _ -> raise Exhausting)
+      ;;
 
 let nt_digit = PC.range '0' '9';;
 let nt_natural = PC.plus nt_digit;;
@@ -231,6 +241,7 @@ let dig_list_to_float base n f =
 let calc_sign = function
 |'+' -> 1
 |'-' -> -1
+| _ -> raise Exhausting
 ;;
 
 let char_list_to_int s = int_of_string (list_to_string s);;

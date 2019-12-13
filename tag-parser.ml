@@ -1,5 +1,8 @@
 #use "reader.ml";;
 open PC;;
+
+exception Exhausting;;
+
 type constant =
   | Sexpr of sexpr
   | Void
@@ -97,17 +100,18 @@ let rec tag_parse_expression sexpr =
   
 and parse_applic_body = function
   | Nil -> []
-  | Pair(a, Nil) -> tag_parse_expression(a)::[]
-  | Pair(a, b) -> tag_parse_expression(a)::parse_applic_body(b)  
+  | Pair(a, b) -> tag_parse_expression(a)::parse_applic_body(b)
+  | _ -> raise Exhausting  
 
 and handle_lambda cdr =
   let rec to_list = function
   |Nil-> []
-  |Pair(Symbol(v),cdr)-> (List.append [v] (to_list cdr)) in
+  |Pair(Symbol(v),cdr)-> (List.append [v] (to_list cdr))
+  | _ -> raise Exhausting in
 
   let rec handle_body = function
     |Pair(car, Nil) -> (tag_parse_expression  car)
-    |Pair(car, cdr) ->(handle_body cdr)
+    |Pair(car, cdr) ->(Seq(parse_applic_body (Pair(car, cdr))))
     | _->raise X_syntax_error in
 
   let rec get_opt_list = function
@@ -127,9 +131,10 @@ and handle_lambda cdr =
   |_ -> raise X_syntax_error
       
 and handle_or cdr =
-  match cdr with
-  | Nil -> []
-  | Pair(car, cdr) -> tag_parse_expression(car)::handle_or(cdr)  
+match cdr with
+| Nil -> []
+| Pair(car, cdr) -> tag_parse_expression(car)::handle_or(cdr)  
+| _ -> raise Exhausting
 ;;
 
 let tag_parse_expressions sexpr = 
