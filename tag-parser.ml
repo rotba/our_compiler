@@ -89,14 +89,11 @@ let rec tag_parse_expression sexpr =
   | Pair(Symbol "if", Pair(a, Pair(b, Nil))) -> If ((tag_parse_expression (a)), (tag_parse_expression (b)), Const(Void))
   | Pair(a, Pair(b, c)) -> Applic ((tag_parse_expression a), (parse_applic_body (Pair(b, c))))
   | Pair(Symbol("lambda"), cdr) ->(handle_lambda cdr)
+ (*########################## ####################################################### *)
   |_ -> raise X_syntax_error
 and parse_applic_body = function
   | Pair(a, Nil) -> tag_parse_expression(a)::[]
-  | Pair(a, b) -> tag_parse_expression(a)::parse_applic_body(b)
-
-let tag_parse_expressions sexpr = 
-  List.map tag_parse_expression sexpr;;
-  
+  | Pair(a, b) -> tag_parse_expression(a)::parse_applic_body(b)  
 
 and handle_lambda cdr =
   let rec to_list = function
@@ -128,7 +125,8 @@ and handle_lambda cdr =
 
 ;;
 
-let tag_parse_expressions sexpr = raise X_not_yet_implemented;;
+let tag_parse_expressions sexpr = 
+  List.map tag_parse_expression sexpr;;
 
   
 end;; (* struct Tag_Parser *)
