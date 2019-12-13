@@ -80,6 +80,34 @@ let less_simple_suite =
             (Const(Sexpr (TaggedSexpr ("x", Pair(Symbol "quote",Pair (Nil, Nil))))))
             (tag_parse_expression (Pair(Symbol "quote", Pair(TaggedSexpr("x", Pair (Symbol "quote", Pair (Nil, Nil))), Nil))))
         );
+        "(lambda (x) x)">::(fun _ ->
+          assert_equal_expr
+            (LambdaSimple(["x"],Var("x")))
+            (tag_parse_expression
+               (Pair(
+                     Symbol("lambda"),
+                     Pair(
+                         Pair(Symbol("x"),Nil),
+                         Pair(Symbol("x"),Nil)
+                       )
+                  )
+               )
+            )
+        );
+        "(lambda (x . y) x)">::(fun _ ->
+          assert_equal_expr
+            (LambdaOpt(["x"],"y" ,Var("x")))
+            (tag_parse_expression
+               (Pair(
+                     Symbol("lambda"),
+                     Pair(
+                         Pair(Symbol("x"),Symbol("y")),
+                         Pair(Symbol("x"),Nil)
+                       )
+                  )
+               )
+            )
+        );
       ];;
 
 

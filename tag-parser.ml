@@ -52,6 +52,13 @@ let handle_tagged first sec =
   let sec = sec_handler sec in
   Const(Sexpr(TaggedSexpr(first,sec)));;
 
+let rec is_proper = function
+  |Pair(_,Nil)-> true
+  |Pair(car,cdr)-> (is_proper cdr)
+  |_->false;;
+
+
+
 
 module type TAG_PARSER = sig
   val tag_parse_expression : sexpr -> expr
@@ -68,7 +75,7 @@ let reserved_word_list =
 
 (* work on the tag parser starts here *)
 
-let tag_parse_expression sexpr =
+let rec tag_parse_expression sexpr =
   match sexpr with
   | Number(x) -> (Const (Sexpr (Number x)))
   | String(x) -> (Const (Sexpr(String x)))
@@ -78,7 +85,38 @@ let tag_parse_expression sexpr =
   | TaggedSexpr(first, sec) ->(handle_tagged first sec)
   | Pair(Symbol("quote"), Pair(sec,Nil)) ->Const(Sexpr(sec))
   | Symbol(s) ->if (List.exists (fun(e)-> e=s) reserved_word_list) then raise X_syntax_error else (Var(s))
-  |_ -> raise X_syntax_error;;
+  | Pair(Symbol("lambda"), cdr) ->(handle_lambda cdr)
+  |_ -> raise X_syntax_error
+
+and handle_lambda cdr =
+  let rec to_list = function
+  |Pair(Symbol(v),Nil)-> [v]
+  |Pair(Symbol(v),cdr)-> (List.append [v] (to_list cdr)) in
+
+  let rec handle_body = function
+    |Pair(car, Nil) -> (tag_parse_expression  car)
+    |Pair(car, cdr) ->(handle_body cdr)
+    | _->raise X_syntax_error in
+
+  let rec get_opt_list = function
+    |Pair(Symbol(vn),Symbol(vs))->([vn], vs)
+    |Pair(Symbol(vn_m_1), cdr) ->
+      let (acc, vs) = (get_opt_list cdr) in
+      (vn_m_1::acc,vs)
+    |_ -> raise X_syntax_error in
+       
+  match cdr with
+  |Pair(params, body)->
+    if((is_proper params))
+    then LambdaSimple((to_list params), (handle_body body))
+    else
+      let (params, opt) = (get_opt_list params) in
+      LambdaOpt(params, opt, (handle_body body))
+  |_ -> raise X_syntax_error
+
+
+
+;;
 
 let tag_parse_expressions sexpr = raise X_not_yet_implemented;;
 
