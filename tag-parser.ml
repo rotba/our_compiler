@@ -88,7 +88,6 @@ and parse_applic_body = function
 
 let tag_parse_expressions sexpr = 
   List.map tag_parse_expression sexpr;;
-  |_ -> raise X_syntax_error
 
 let tag_parse_expressions sexpr = raise X_not_yet_implemented;;
 
