@@ -80,6 +80,14 @@ let rec tag_parse_expression sexpr =
   | Symbol(s) ->if (List.exists (fun(e)-> e=s) reserved_word_list) then raise X_syntax_error else (Var(s))
   | Pair(Symbol "if", Pair(a, Pair(b, Pair(c, Nil)))) -> If ((tag_parse_expression (a)), (tag_parse_expression (b)), (tag_parse_expression (c)))
   | Pair(Symbol "if", Pair(a, Pair(b, Nil))) -> If ((tag_parse_expression (a)), (tag_parse_expression (b)), Const(Void))
+  | Pair(a, Pair(b, c)) -> Applic ((tag_parse_expression a), (parse_applic_body (Pair(b, c))))
+  |_ -> raise X_syntax_error
+and parse_applic_body = function
+  | Pair(a, Nil) -> tag_parse_expression(a)::[]
+  | Pair(a, b) -> tag_parse_expression(a)::parse_applic_body(b)
+
+let tag_parse_expressions sexpr = 
+  List.map tag_parse_expression sexpr;;
   |_ -> raise X_syntax_error
 
 let tag_parse_expressions sexpr = raise X_not_yet_implemented;;
