@@ -17,7 +17,7 @@ let rec sexpr_to_string  =
   |Number(Float(x))-> string_of_float x
   |Number(Int(x))-> string_of_int x                           
   |Pair(x,y) -> String.concat "" ["Pair( "; (sexpr_to_string x); " , "; (sexpr_to_string y) ;" )"]
-  |TaggedSexpr(s,e) -> String.concat "" ["TaggedSexpr( "; s; " , "; (sexpr_to_string e) ;" )"]
+  |TaggedSexpr(s,e) -> String.concat " , "["TaggedSexpr("; s;  (sexpr_to_string e) ;")"]
   |TagRef(x)->x
   |_ -> "not_implemented";;
 
@@ -28,9 +28,13 @@ let rec exp_to_string  =function
   |Var(v) -> v
   |Applic(name,params) -> String.concat "" ["Applic( "; (exp_to_string name);" , ["; (params_to_string params)  ;"] )"]
   |_->"not_implemented"
-and params_to_string = function
-  |[] -> ""
-  |f::r -> String.concat (exp_to_string f) [(params_to_string r)]
+and params_to_string params=
+  let rec aggregate = function
+  |[] -> []
+  |f::r -> (exp_to_string f) :: (aggregate r) in
+  let params = (aggregate params) in
+  String.concat " , " params
+  
 ;;
 
 
@@ -160,7 +164,10 @@ let qq =
           (tag_parse_expression (
                Pair(
                    Symbol("quasiquote"),
-                   Pair(Symbol("unquote",Pair(Symbol("x"), Nil)))
+                   Pair(
+                       Symbol("unquote"),
+                       Pair(Symbol("x"), Nil)
+                     )
                  )
              )
           )
@@ -174,7 +181,14 @@ let qq =
               (tag_parse_expression (
                Pair(
                    Symbol("quasiquote"),
-                   Pair(Symbol("unquote",Pair(Symbol("x"), Nil)))))) in
+                   Pair(
+                       Symbol("unquote"),
+                       Pair(Symbol("x"), Nil)
+                     )
+                 )
+                 )
+              )
+            in
             ()
           )
       );
@@ -183,20 +197,16 @@ let qq =
             (
               Applic(
                   Var("cons"),
-                  Seq(
                       [
-                        Var("a");
+                        Const ( Sexpr ( Symbol("a") ) );
                         Applic(
                             Var("cons"),
-                            Seq(
                                 [
-                                  Var("b"),
-                                  Var("()")
+                                  Const ( Sexpr ( Symbol("b") ) );
+                                  Const ( Sexpr ( Nil ) )
                                 ]
-                              )
                           )
                       ]
-                    )
                 )
             )
           (tag_parse_expression (
@@ -213,4 +223,5 @@ let qq =
 let () =
   run_test_tt_main simple_suite;
   run_test_tt_main less_simple_suite;
+  run_test_tt_main qq;
 ;;

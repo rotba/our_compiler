@@ -148,8 +148,23 @@ match cdr with
 | Pair(car, cdr) -> tag_parse_expression(car)::handle_or(cdr)  
 | _ -> raise Exhausting
      
-and handle_qq = function
-  |
+and expand_qq =
+  let quote_wrap s = Pair(Symbol("quote"), Pair(Symbol(s),Nil)) in
+  let quote_wrap_nil = Pair(Symbol("quote"), Pair(Nil,Nil)) in
+  let cons_wrap a b = Pair(Symbol("cons"), Pair(a,Pair(b, Nil))) in
+  function
+  |Pair(Symbol("unquote"), Pair(cdr,Nil)) -> cdr
+  |Pair(Symbol("unquote-splicing"), Pair(cdr,Nil)) -> raise X_syntax_error
+  |Symbol(s) -> quote_wrap(s)
+  |Nil -> quote_wrap_nil
+  |Pair(a,b) ->
+    let a = expand_qq(a) in
+    let b = expand_qq(b) in
+    (cons_wrap a b)
+
+and handle_qq sexp=
+  let expanded = expand_qq sexp in
+  tag_parse_expression expanded
 ;;
 
 let tag_parse_expressions sexpr = 
