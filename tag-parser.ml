@@ -44,61 +44,14 @@ let rec expr_eq e1 e2 =
                        
 exception X_syntax_error;;
 
-(* let nt_bool = nt_none;;
- * let nt_char = nt_none;;
- * let nt_string = nt_none;;
- * let nt_number =nt_none;; *)
+let handle_tagged first sec =
+  let rec sec_handler = function
+    | Pair (Symbol ("quote"), Pair (a, Nil)) -> a
+    | Pair(a,b) -> Pair((sec_handler a),(sec_handler b))
+    | x-> x in
+  let sec = sec_handler sec in
+  Const(Sexpr(TaggedSexpr(first,sec)));;
 
-let nt_self_eval= function
-  | Number(x) -> (Const (Sexpr (Number x)))
-  | String(x) -> (Const (Sexpr(String x)))
-  | Bool(x) -> (Const (Sexpr(Bool x)))
-  | Char(x) -> (Const (Sexpr(Char x)))
-  | TagRef(x) -> (Const (Sexpr(TagRef x)))
-  |_ -> raise X_no_match;;
-  
-let nt_not_self_eval=
-
-  let exp_handler = 
-    match y with
-      | Pair (Symbol ("qoute"), Pair (a, Nil)) -> a
-      | x -> x in
-  
-  let nt = function
-  | TaggedSexpr(x,y) -> (
-    try (
-      (nt_self_eval y)
-      (Const (Sexpr(TaggedSexpr (x, y))))
-    )
-    match X_no_match -> (
-      (Const (Sexpr(TaggedSexpr (x, (exp_handler y)))))
-    )
-  )
-  |_ -> raise X_no_match;;
-
-
-let nt_quoted = nt_none ;;
-
-let nt_not_quoted =  
-  disj_list [
-      nt_self_eval;
-      nt_not_self_eval;
-    ];;
-
-let nt_const =
-    disj_list [
-      nt_quoted;
-      nt_not_quoted;
-    ];;
-
-
-let nt_expr s =
-  let all_rules =
-    disj_list
-      [
-        nt_const
-      ] in
-  all_rules s;;
 
 module type TAG_PARSER = sig
   val tag_parse_expression : sexpr -> expr
@@ -116,7 +69,15 @@ let reserved_word_list =
 (* work on the tag parser starts here *)
 
 let tag_parse_expression sexpr =
- nt_expr sexpr;;
+  match sexpr with
+  | Number(x) -> (Const (Sexpr (Number x)))
+  | String(x) -> (Const (Sexpr(String x)))
+  | Bool(x) -> (Const (Sexpr(Bool x)))
+  | Char(x) -> (Const (Sexpr(Char x)))
+  | TagRef(x) -> (Const (Sexpr(TagRef x)))
+  | TaggedSexpr(first, sec) ->(handle_tagged first sec)
+  | Pair(Symbol("quote"), Pair(sec,Nil)) ->Const(Sexpr(sec))
+  |_ -> raise X_syntax_error;;
 
 let tag_parse_expressions sexpr = raise X_not_yet_implemented;;
 
