@@ -93,15 +93,26 @@ let rec tag_parse_expression sexpr =
   | Pair(Symbol("lambda"), cdr) ->(handle_lambda cdr)
   | Pair(Symbol("or"), cdr) ->Or((handle_or cdr))
   | Pair(Symbol "define", Pair(Symbol(a), Pair(b, Nil))) -> Def ((tag_parse_expression (Symbol(a))), (tag_parse_expression (b)))
+  | Pair(Symbol "begin", a) -> (handle_begin a)
   (*################################################################################# *)
   | Pair(a, b) -> Applic ((tag_parse_expression a), (parse_applic_body b))
   |_ -> raise X_syntax_error
+
+
   
 and parse_applic_body = function
   | Nil -> []
   | Pair(a, b) -> tag_parse_expression(a)::parse_applic_body(b)
   | _ -> raise Exhausting  
 
+and handle_begin = function
+  |Nil -> Const(Void)
+  |Pair(car, Nil) -> (tag_parse_expression  car)
+  |Pair(car, cdr) ->(Seq(parse_applic_body (Pair(car, cdr))))
+  | _->raise X_syntax_error
+
+
+  
 and handle_lambda cdr =
   let rec to_list = function
   |Nil-> []
@@ -111,7 +122,7 @@ and handle_lambda cdr =
   let rec handle_body = function
     |Pair(car, Nil) -> (tag_parse_expression  car)
     |Pair(car, cdr) ->(Seq(parse_applic_body (Pair(car, cdr))))
-    | _->raise X_syntax_error in
+    | _->raise X_syntax_error  in
 
   let rec get_opt_list = function
     |Pair(Symbol(vn),Symbol(vs))->([vn], vs)
