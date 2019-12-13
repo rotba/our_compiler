@@ -130,6 +130,17 @@ let less_simple_suite =
                )
             )
         );
+        "(lambda (x . y) x)">::(fun _ ->
+          assert_equal_expr
+            (Applic(Var ("adsf"),[]) )
+            (tag_parse_expression
+               (Pair(
+                     Symbol("asdf"),
+                     Nil
+                  )
+               )
+            )
+        );
       ];;
 
 
