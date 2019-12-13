@@ -47,6 +47,19 @@ let simple_suite =
       assert_equal_expr
         (Const (Sexpr (String "moshe")))
         (tag_parse_expression (String  "moshe")));
+    "var xyz">::(fun _ ->
+      assert_equal_expr
+        (Var "xyz")
+        (tag_parse_expression (Symbol  "xyz")));
+    "var let">::
+      (fun _ ->
+        assert_raises
+          X_syntax_error
+          (fun _->
+            let _i =(tag_parse_expression (Symbol  "let")) in
+            ()
+          )
+      );
   ];;
 
 let less_simple_suite =
@@ -68,6 +81,8 @@ let less_simple_suite =
             (tag_parse_expression (Pair(Symbol "quote", Pair(TaggedSexpr("x", Pair (Symbol "quote", Pair (Nil, Nil))), Nil))))
         );
       ];;
+
+
 
 
 let () =

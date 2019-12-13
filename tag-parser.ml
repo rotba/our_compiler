@@ -77,6 +77,7 @@ let tag_parse_expression sexpr =
   | TagRef(x) -> (Const (Sexpr(TagRef x)))
   | TaggedSexpr(first, sec) ->(handle_tagged first sec)
   | Pair(Symbol("quote"), Pair(sec,Nil)) ->Const(Sexpr(sec))
+  | Symbol(s) ->if (List.exists (fun(e)-> e=s) reserved_word_list) then raise X_syntax_error else (Var(s))
   |_ -> raise X_syntax_error;;
 
 let tag_parse_expressions sexpr = raise X_not_yet_implemented;;
