@@ -85,6 +85,8 @@ let rec tag_parse_expression sexpr =
   | TaggedSexpr(first, sec) ->(handle_tagged first sec)
   | Pair(Symbol("quote"), Pair(sec,Nil)) ->Const(Sexpr(sec))
   | Symbol(s) ->if (List.exists (fun(e)-> e=s) reserved_word_list) then raise X_syntax_error else (Var(s))
+  | Pair(Symbol "if", Pair(a, Pair(b, Pair(c, Nil)))) -> If ((tag_parse_expression (a)), (tag_parse_expression (b)), (tag_parse_expression (c)))
+  | Pair(Symbol "if", Pair(a, Pair(b, Nil))) -> If ((tag_parse_expression (a)), (tag_parse_expression (b)), Const(Void))
   | Pair(Symbol("lambda"), cdr) ->(handle_lambda cdr)
   |_ -> raise X_syntax_error
 
