@@ -87,9 +87,10 @@ let rec tag_parse_expression sexpr =
   | Symbol(s) ->if (List.exists (fun(e)-> e=s) reserved_word_list) then raise X_syntax_error else (Var(s))
   | Pair(Symbol "if", Pair(a, Pair(b, Pair(c, Nil)))) -> If ((tag_parse_expression (a)), (tag_parse_expression (b)), (tag_parse_expression (c)))
   | Pair(Symbol "if", Pair(a, Pair(b, Nil))) -> If ((tag_parse_expression (a)), (tag_parse_expression (b)), Const(Void))
-  | Pair(a, Pair(b, c)) -> Applic ((tag_parse_expression a), (parse_applic_body (Pair(b, c))))
   | Pair(Symbol("lambda"), cdr) ->(handle_lambda cdr)
- (*########################## ####################################################### *)
+  | Pair(Symbol("or"), cdr) ->Or((handle_or cdr))
+  (*################################################################################# *)
+  | Pair(a, Pair(b, c)) -> Applic ((tag_parse_expression a), (parse_applic_body (Pair(b, c))))
   |_ -> raise X_syntax_error
 and parse_applic_body = function
   | Pair(a, Nil) -> tag_parse_expression(a)::[]
@@ -97,7 +98,7 @@ and parse_applic_body = function
 
 and handle_lambda cdr =
   let rec to_list = function
-  |Pair(Symbol(v),Nil)-> [v]
+  |Nil-> []
   |Pair(Symbol(v),cdr)-> (List.append [v] (to_list cdr)) in
 
   let rec handle_body = function
@@ -120,9 +121,11 @@ and handle_lambda cdr =
       let (params, opt) = (get_opt_list params) in
       LambdaOpt(params, opt, (handle_body body))
   |_ -> raise X_syntax_error
-
-
-
+      
+and handle_or cdr =
+  match cdr with
+  | Nil -> []
+  | Pair(car, cdr) -> tag_parse_expression(car)::handle_or(cdr)  
 ;;
 
 let tag_parse_expressions sexpr = 
