@@ -152,11 +152,18 @@ and expand_qq =
   let quote_wrap s = Pair(Symbol("quote"), Pair(Symbol(s),Nil)) in
   let quote_wrap_nil = Pair(Symbol("quote"), Pair(Nil,Nil)) in
   let cons_wrap a b = Pair(Symbol("cons"), Pair(a,Pair(b, Nil))) in
+  let append_wrap a b = Pair(Symbol("append"), Pair(a,Pair(b, Nil))) in
   function
   |Pair(Symbol("unquote"), Pair(cdr,Nil)) -> cdr
   |Pair(Symbol("unquote-splicing"), Pair(cdr,Nil)) -> raise X_syntax_error
   |Symbol(s) -> quote_wrap(s)
   |Nil -> quote_wrap_nil
+  |Pair(Pair(Symbol("unquote-splicing"), Pair(a,Nil)),b) ->
+    let b = expand_qq(b) in
+    (append_wrap a b)
+  |Pair(a, Pair(Symbol("unquote-splicing"), Pair(b,Nil))) ->
+    let a = expand_qq(a) in
+    (cons_wrap a b)
   |Pair(a,b) ->
     let a = expand_qq(a) in
     let b = expand_qq(b) in

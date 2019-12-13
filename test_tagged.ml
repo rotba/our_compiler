@@ -217,6 +217,62 @@ let qq =
              )
           )
         );
+        "`(,@a b)">::(fun _ ->
+          assert_equal_expr
+            (
+              Applic(
+                  Var("append"),
+                      [
+                        Var("a");
+                        Applic(
+                            Var("cons"),
+                                [
+                                  Const ( Sexpr ( Symbol("b") ) );
+                                  Const ( Sexpr ( Nil ) )
+                                ]
+                          )
+                      ]
+                )
+            )
+          (tag_parse_expression (
+               Pair(
+                   Symbol("quasiquote"),
+                   Pair(
+                       Pair(Symbol("unquote-splicing"),Pair(Symbol("a"),Nil)),
+                       Pair(Symbol("b"),Nil)
+                     )
+                 )
+             )
+          )
+        );
+        "`(a ,@b)">::(fun _ ->
+          assert_equal_expr
+            (
+              Applic(
+                  Var("cons"),
+                      [
+                        Const ( Sexpr ( Symbol("a") ) );
+                        Applic(
+                            Var("append"),
+                                [
+                                  Var("b") ;
+                                  Const ( Sexpr ( Nil ) )
+                                ]
+                          )
+                      ]
+                )
+            )
+          (tag_parse_expression (
+               Pair(
+                   Symbol("quasiquote"),
+                   Pair(
+                       Symbol("a"),
+                       Pair(Symbol("unquote-splicing"),Pair(Symbol("b"),Nil))
+                     )
+                 )
+             )
+          )
+        );
       ];;
 
 
