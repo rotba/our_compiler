@@ -112,7 +112,7 @@ let less_simple_suite =
         );
         "(lambda (x) x)">::(fun _ ->
           assert_equal_expr
-            (LambdaSimple(["x"],Var("x")))
+            (LambdaSimple(["x"],Seq[Var("x")]))
             (tag_parse_expression
                (Pair(
                      Symbol("lambda"),
@@ -126,7 +126,7 @@ let less_simple_suite =
         );
         "(lambda (x . y) x)">::(fun _ ->
           assert_equal_expr
-            (LambdaOpt(["x"],"y" ,Var("x")))
+            (LambdaOpt(["x"],"y" ,Seq([Var("x")])))
             (tag_parse_expression
                (Pair(
                      Symbol("lambda"),
