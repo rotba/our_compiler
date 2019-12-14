@@ -56,7 +56,7 @@ let handle_tagged first sec =
   Const(Sexpr(TaggedSexpr(first,sec)));;
 
 let rec is_proper = function
-  |Pair(_,Nil)-> true
+  | Nil -> true
   |Pair(car,cdr)-> (is_proper cdr)
   |_->false;;
 
@@ -105,31 +105,46 @@ let rec tag_parse_expression sexpr =
 and handle_cond sexpr = 
 let rec build_cond = function
   | Nil -> Nil
-  | Pair(Pair(a, Pair(Symbol("=>"), b)), c) ->Pair(
+  | Pair(Pair(a, Pair(Symbol("=>"), b)), Nil) ->Pair(
   Pair (Symbol "let",
     Pair
      (Pair
        (Pair (Symbol "value",
-         Pair (Pair (Symbol "h?", Pair (Symbol "x", Nil)), Nil)),
+         Pair (a, Nil)),
        Pair
         (Pair (Symbol "f",
           Pair
            (Pair (Symbol "lambda",
              Pair (Nil,
-              Pair (Pair (Symbol "p", Pair (Symbol "q", Nil)), Nil))),
+              b)),
+           Nil)),
+        Nil)),
+     Pair
+      (Pair (Symbol "if",
+        Pair (Symbol "value",
+         Pair (Pair (Pair (Symbol "f", Nil), Pair (Symbol "value", Nil)),
+           Nil))),
+      Nil))),
+  Nil)
+  | Pair(Pair(a, Pair(Symbol("=>"), b)), c) ->Pair(
+  Pair (Symbol "let",
+    Pair
+     (Pair
+       (Pair (Symbol "value",
+         Pair (a, Nil)),
+       Pair
+        (Pair (Symbol "f",
+          Pair
+           (Pair (Symbol "lambda",
+             Pair (Nil,
+              b)),
            Nil)),
         Pair
          (Pair (Symbol "rest",
            Pair
             (Pair (Symbol "lambda",
               Pair (Nil,
-               Pair
-                (Pair (Symbol "begin",
-                  Pair
-                   (Pair (Symbol "h",
-                     Pair (Symbol "x", Pair (Symbol "y", Nil))),
-                   Pair (Pair (Symbol "g", Pair (Symbol "x", Nil)), Nil))),
-                Nil))),
+               (build_cond c))),
             Nil)),
          Nil))),
      Pair
@@ -254,79 +269,4 @@ and handle_let sexp =
 
 let tag_parse_expressions sexpr = 
   List.map tag_parse_expression sexpr;;
-
-  
-end;; (* struct Tag_Parser *)
-
-(* Pair (Symbol "let",                                                                                                                                                                                          Pair                                                                                                                                                                                                       
-  (Pair
-    (Pair (Symbol "value",
-      Pair (Pair (Symbol "h?", Pair (Symbol "x", Nil)), Nil)),
-    Pair
-     (Pair (Symbol "f",
-       Pair
-        (Pair (Symbol "lambda",
-          Pair (Nil, Pair (Pair (Symbol "p", Pair (Symbol "q", Nil)), Nil))),
-        Nil)),
-     Pair
-      (Pair (Symbol "rest",
-        Pair
-         (Pair (Symbol "lambda",
-           Pair (Nil,
-            Pair
-             (Pair (Symbol "begin",
-               Pair
-                (Pair (Symbol "h", Pair (Symbol "x", Pair (Symbol "y", Nil))),
-                Pair (Pair (Symbol "g", Pair (Symbol "x", Nil)), Nil))),
-             Nil))),
-         Nil)),
-      Nil))),
-  Pair
-   (Pair (Symbol "if",
-     Pair (Symbol "value",
-      Pair (Pair (Pair (Symbol "f", Nil), Pair (Symbol "value", Nil)),
-       Pair (Pair (Symbol "rest", Nil), Nil)))),
-   Nil))) *)
-
-
-   (* Pair (Symbol "if",
-   Pair (Pair (Symbol "zero?", Pair (Symbol "n", Nil)),
-  Pair
-   (Pair (Symbol "begin",
-     Pair (Pair (Symbol "f", Pair (Symbol "x", Nil)),
-      Pair (Pair (Symbol "g", Pair (Symbol "y", Nil)), Nil))),
-   Pair
-    (Pair (Symbol "let",
-      Pair
-       (Pair
-         (Pair (Symbol "value",
-           Pair (Pair (Symbol "h?", Pair (Symbol "x", Nil)), Nil)),
-         Pair
-          (Pair (Symbol "f",
-            Pair
-             (Pair (Symbol "lambda",
-               Pair (Nil,
-                Pair (Pair (Symbol "p", Pair (Symbol "q", Nil)), Nil))),
-             Nil)),
-          Pair
-           (Pair (Symbol "rest",
-             Pair
-              (Pair (Symbol "lambda",
-                Pair (Nil,
-                 Pair
-                  (Pair (Symbol "begin",
-                    Pair
-                     (Pair (Symbol "h",
-                       Pair (Symbol "x", Pair (Symbol "y", Nil))),
-                     Pair (Pair (Symbol "g", Pair (Symbol "x", Nil)), Nil))),
-                  Nil))),
-              Nil)),
-           Nil))),
-       Pair
-        (Pair (Symbol "if",
-          Pair (Symbol "value",
-           Pair (Pair (Pair (Symbol "f", Nil), Pair (Symbol "value", Nil)),
-            Pair (Pair (Symbol "rest", Nil), Nil)))),
-        Nil))),
-    Nil)))) *)
 
