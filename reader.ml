@@ -108,7 +108,7 @@ let rec list_packer = function
 let qoute_forms_const name sexp = Pair(Symbol(name),Pair(sexp, Nil));;
 let qoute_forms_packer =
   function
-  |("\'",s) -> qoute_forms_const "qoute" s
+  |("\'",s) -> qoute_forms_const "quote" s
   |(",",s) -> qoute_forms_const "unquote" s
   |("`",s) -> qoute_forms_const "quasiquote" s
   |((",@"),s) -> qoute_forms_const "unquote-splicing" s
