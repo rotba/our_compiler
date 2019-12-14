@@ -220,6 +220,7 @@ and handle_lambda cdr =
     |Pair(Symbol(vn_m_1), cdr) ->
       let (acc, vs) = (get_opt_list cdr) in
       (vn_m_1::acc,vs)
+    |Symbol(vs) -> ([],vs)
     |_ -> raise X_syntax_error in
        
   match cdr with

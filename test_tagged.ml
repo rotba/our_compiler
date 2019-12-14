@@ -127,6 +127,33 @@ let less_simple_suite =
             (Const(Sexpr (TaggedSexpr ("x", Pair(Symbol "quote",Pair (Nil, Nil))))))
             (tag_parse_expression (Pair(Symbol "quote", Pair(TaggedSexpr("x", Pair (Symbol "quote", Pair (Nil, Nil))), Nil))))
         );
+        "(lambda (x . y) x)">::(fun _ ->
+          assert_equal_expr
+            (Applic(Var ("asdf"),[]) )
+            (tag_parse_expression
+               (Pair(
+                     Symbol("asdf"),
+                     Nil
+                  )
+               )
+            )
+        );
+        "(lambda () x)">::(fun _ ->
+          assert_equal_expr
+            (Applic(Var ("asdf"),[]) )
+            (tag_parse_expression
+               (Pair(
+                     Symbol("asdf"),
+                     Nil
+                  )
+               )
+            )
+        );
+      ];;
+
+let lambda =
+    "lambda">:::
+      [
         "(lambda (x) x)">::(fun _ ->
           assert_equal_expr
             (LambdaSimple(["x"],Var("x")))
@@ -180,16 +207,14 @@ let less_simple_suite =
                )
             )
         );
-        "(lambda () x)">::(fun _ ->
+        "test_tag_lambda_variadic_expression_parser_2">::(fun _ ->
           assert_equal_expr
-            (Applic(Var ("asdf"),[]) )
-            (tag_parse_expression
-               (Pair(
-                     Symbol("asdf"),
-                     Nil
-                  )
-               )
-            )
+            (Applic (LambdaOpt ([], "x", Var "x"),
+                                                                           [Const (Sexpr (Number (Int 1))); Const (Sexpr (Number (Int 2)));
+                                                                            Const (Sexpr (Number (Int 3))); Const (Sexpr (Number (Int 4)))]))
+  (Tag_Parser.tag_parse_expression (Pair (Pair (Symbol "lambda", Pair (Symbol "x", Pair (Symbol "x", Nil))),
+                                     Pair (Number (Int 1),
+                                      Pair (Number (Int 2), Pair (Number (Int 3), Pair (Number (Int 4), Nil)))))))
         );
       ];;
 
@@ -468,4 +493,5 @@ let () =
   run_test_tt_main cond;
   run_test_tt_main qq;
   run_test_tt_main lets;
+  run_test_tt_main lambda;
 ;;

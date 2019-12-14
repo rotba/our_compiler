@@ -1,3 +1,6 @@
-2019-12-14T19:05:02+00:00 se142row1-1_lnx#01 I: Start test lets:0:(let ((x 1)) x).
-2019-12-14T19:05:02+00:00 se142row1-1_lnx#01 I: Test lets:0:(let ((x 1)) x) is successful.
-2019-12-14T19:05:02+00:00 se142row1-1_lnx#01 I: End test lets:0:(let ((x 1)) x).
+2019-12-14T19:16:12+00:00 se142row1-1_lnx#01 I: Start test lets:0:(let ((x 1)) x).
+2019-12-14T19:16:12+00:00 se142row1-1_lnx#01 I: Test lets:0:(let ((x 1)) x) is successful.
+2019-12-14T19:16:12+00:00 se142row1-1_lnx#01 I: End test lets:0:(let ((x 1)) x).
+2019-12-14T19:16:12+00:00 se142row1-1_lnx#01 I: Start test lets:7:test_tag_let_rec_expression_parser_2.
+2019-12-14T19:16:12+00:00 se142row1-1_lnx#01 I: Test lets:7:test_tag_let_rec_expression_parser_2 is successful.
+2019-12-14T19:16:12+00:00 se142row1-1_lnx#01 I: End test lets:7:test_tag_let_rec_expression_parser_2.
