@@ -1,0 +1,6 @@
+2019-12-14T16:40:32+00:00 alon#01 I: Start test quasiquoate:0:,x.
+2019-12-14T16:40:32+00:00 alon#01 I: Test quasiquoate:0:,x is successful.
+2019-12-14T16:40:32+00:00 alon#01 I: End test quasiquoate:0:,x.
+2019-12-14T16:40:32+00:00 alon#01 I: Start test quasiquoate:4:`(a ,@b).
+2019-12-14T16:40:32+00:00 alon#01 I: Test quasiquoate:4:`(a ,@b) is successful.
+2019-12-14T16:40:32+00:00 alon#01 I: End test quasiquoate:4:`(a ,@b).
