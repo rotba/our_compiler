@@ -1,0 +1,6 @@
+2019-12-14T20:21:54+00:00 alon#01 I: Start test list_suite:0:(a b c).
+2019-12-14T20:21:54+00:00 alon#01 I: Test list_suite:0:(a b c) is successful.
+2019-12-14T20:21:54+00:00 alon#01 I: End test list_suite:0:(a b c).
+2019-12-14T20:21:54+00:00 alon#01 I: Start test list_suite:6:(a         b #;#t .c).
+2019-12-14T20:21:54+00:00 alon#01 I: Test list_suite:6:(a         b #;#t .c) is successful.
+2019-12-14T20:21:54+00:00 alon#01 I: End test list_suite:6:(a         b #;#t .c).

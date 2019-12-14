@@ -95,7 +95,7 @@ let rec tag_parse_expression sexpr =
   | Pair(Symbol "if", Pair(a, Pair(b, Pair(c, _)))) -> If ((tag_parse_expression (a)), (tag_parse_expression (b)), (tag_parse_expression (c)))
   | Pair(Symbol "if", Pair(a, Pair(b, _))) -> If ((tag_parse_expression (a)), (tag_parse_expression (b)), Const(Void))
   | Pair(Symbol("lambda"), cdr) ->(handle_lambda cdr)
-  | Pair(Symbol("or"), cdr) ->Or((handle_or cdr))
+  | Pair(Symbol("or"), cdr) ->(handle_or cdr)
   | Pair(Symbol("set!"), Pair(name, Pair(value,Nil))) ->Set(tag_parse_expression(name),tag_parse_expression(value) )
   | Pair(Symbol "define", Pair(Symbol(a), Pair(b, Nil))) -> Def ((tag_parse_expression (Symbol(a))), (tag_parse_expression (b)))
   | Pair(Symbol "define", a) -> handle_define a
@@ -108,14 +108,15 @@ let rec tag_parse_expression sexpr =
 
   and handle_define sexpr = 
   let rec build_and = function
-    | Pair(Pair(Symbol(a),b), Pair(c, Nil)) -> 
+    | Pair(Pair(Symbol(a),b), c) -> 
     Pair (Symbol "define", 
         Pair( Symbol (a),
           Pair(
             Pair(Symbol "lambda", 
                 Pair(b,
-                  Pair(c, Nil))) ,
-        Nil))) in 
+                  c)) ,
+        Nil)))
+    | _ -> raise X_syntax_error in 
 
     tag_parse_expression (build_and sexpr)
 
@@ -123,7 +124,8 @@ let rec tag_parse_expression sexpr =
   and handle_and sexpr = 
 let rec build_and = function 
   | Nil -> Bool(true)
-  | Pair(a, b) -> (Pair (Symbol "if",Pair (a, Pair ((build_and b), Pair (Bool(false), Nil))))) in
+  | Pair(a, Nil) -> a
+  | Pair(a, b) -> (Pair (Symbol "if",Pair (a, Pair (Pair(Symbol "and", b) , Pair (Bool(false), Nil))))) in
   
   tag_parse_expression (build_and sexpr)
 
@@ -231,12 +233,18 @@ and handle_lambda cdr =
       let (params, opt) = (get_opt_list params) in
       LambdaOpt(params, opt, (handle_body body))
   |_ -> raise X_syntax_error
-      
+ 
 and handle_or cdr =
-match cdr with
+
+let rec build_or = function
 | Nil -> []
-| Pair(car, cdr) -> tag_parse_expression(car)::handle_or(cdr)  
-| _ -> raise Exhausting
+| Pair(car, cdr) -> tag_parse_expression(car)::build_or(cdr)  
+| _ -> raise Exhausting in
+
+match cdr with
+| Nil -> tag_parse_expression (Bool(false))
+| Pair(car, Nil) -> tag_parse_expression (car)
+| Pair(car, cdr) -> Or(build_or((Pair(car, cdr))) )
      
 and expand_qq =
   let quote_wrap s = Pair(Symbol("quote"), Pair(Symbol(s),Nil)) in

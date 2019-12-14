@@ -1,0 +1,103 @@
+.........
+Ran: 9 tests in: 0.11 seconds.
+OK
+..........
+Ran: 10 tests in: 0.12 seconds.
+OK
+E..E.....
+==============================================================================
+Error: list_suite:3:(#;#T   ;asjdfasdkjsadjhka
+).
+
+File "/home/a_braverman/Desktop/Uni/Compy/our_compiler/oUnit-list_suite-alon#04.log", line 3, characters 1-1:
+Error: list_suite:3:(#;#T   ;asjdfasdkjsadjhka
+) (in the log).
+
+Raised at file "./pc.ml", line 75, characters 22-32
+Called from file "./pc.ml", line 53, characters 16-23
+Called from file "./pc.ml", line 57, characters 15-21
+Called from file "./pc.ml", line 52, characters 16-23
+Called from file "./pc.ml", line 57, characters 15-21
+Called from file "./reader.ml", line 160, characters 15-19
+Called from file "./pc.ml", line 52, characters 16-23
+Called from file "./reader.ml", line 420, characters 31-57
+Called from file "./test_reader.ml", line 112, characters 10-61
+Called from file "src/oUnitRunner.ml", line 46, characters 13-26
+
+PC.X_no_match
+------------------------------------------------------------------------------
+==============================================================================
+Error: list_suite:2:(   ).
+
+File "/home/a_braverman/Desktop/Uni/Compy/our_compiler/oUnit-list_suite-alon#03.log", line 2, characters 1-1:
+Error: list_suite:2:(   ) (in the log).
+
+Raised at file "./pc.ml", line 75, characters 22-32
+Called from file "./pc.ml", line 53, characters 16-23
+Called from file "./pc.ml", line 57, characters 15-21
+Called from file "./pc.ml", line 52, characters 16-23
+Called from file "./pc.ml", line 57, characters 15-21
+Called from file "./reader.ml", line 160, characters 15-19
+Called from file "./pc.ml", line 52, characters 16-23
+Called from file "./reader.ml", line 420, characters 31-57
+Called from file "./test_reader.ml", line 106, characters 10-38
+Called from file "src/oUnitRunner.ml", line 46, characters 13-26
+
+PC.X_no_match
+------------------------------------------------------------------------------
+Ran: 9 tests in: 0.11 seconds.
+FAILED: Cases: 9 Tried: 9 Errors: 2 Failures: 0 Skip:  0 Todo: 0 Timeouts: 0.
+.....
+Ran: 5 tests in: 0.10 seconds.
+OK
+.........
+Ran: 9 tests in: 0.11 seconds.
+OK
+.........
+Ran: 9 tests in: 0.11 seconds.
+OK
+.........
+Ran: 9 tests in: 0.11 seconds.
+OK
+...
+Ran: 3 tests in: 0.11 seconds.
+OK
+......
+Ran: 6 tests in: 0.11 seconds.
+OK
+.....
+Ran: 5 tests in: 0.11 seconds.
+OK
+.
+Ran: 1 tests in: 0.11 seconds.
+OK
+......
+Ran: 6 tests in: 0.11 seconds.
+OK
+........
+Ran: 8 tests in: 0.11 seconds.
+OK
+.....
+Ran: 5 tests in: 0.11 seconds.
+OK
+........
+Ran: 8 tests in: 0.10 seconds.
+OK
+.....
+Ran: 5 tests in: 0.10 seconds.
+OK
+................
+Ran: 16 tests in: 0.11 seconds.
+OK
+...................................
+Ran: 35 tests in: 0.12 seconds.
+OK
+.........
+Ran: 9 tests in: 0.11 seconds.
+OK
+....
+Ran: 4 tests in: 0.10 seconds.
+OK
+.
+Ran: 1 tests in: 0.10 seconds.
+OK
