@@ -306,7 +306,7 @@ and expand_let_star =
 
 and expand_letrec =
   let rec whatevers_wrap =
-    let gen_whatever var = Pair(var, Pair(String("whatever"), Nil)) in
+    let gen_whatever var = Pair(var, Pair(Pair(Symbol("quote"), Pair(Symbol("whatever"),Nil)), Nil)) in
     function
     |Nil -> Nil
     |Pair(Pair(var, _),cdr) ->

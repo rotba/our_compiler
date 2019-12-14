@@ -1,3 +1,3 @@
-2019-12-14T18:06:46+00:00 se142row1-1_lnx#06 I: Start test quasiquoate:5:`(,@a b).
-2019-12-14T18:06:46+00:00 se142row1-1_lnx#06 I: Test quasiquoate:5:`(,@a b) is successful.
-2019-12-14T18:06:46+00:00 se142row1-1_lnx#06 I: End test quasiquoate:5:`(,@a b).
+2019-12-14T19:05:02+00:00 se142row1-1_lnx#06 I: Start test quasiquoate:5:`(a . ,@b).
+2019-12-14T19:05:02+00:00 se142row1-1_lnx#06 I: Test quasiquoate:5:`(a . ,@b) is successful.
+2019-12-14T19:05:02+00:00 se142row1-1_lnx#06 I: End test quasiquoate:5:`(a . ,@b).
