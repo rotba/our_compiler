@@ -155,7 +155,7 @@ let less_simple_suite =
         );
       ];;
 
-let qq =
+(* let qq =
     "quasiquoate">:::
       [
         ",x">::(fun _ ->
@@ -273,11 +273,42 @@ let qq =
              )
           )
         );
-      ];;
+      ];; *)
 
+      let cond =
+        "cond">:::
+          [
+            "cond test">::(fun _ ->
+              assert_equal_expr
+              (
+                If(
+                  Applic(
+                    Var("zero?"),
+                    [Var("n")]
+                  ),
+                  Seq(
+                    [
+                      Applic(Var("f"), [Var("x")]);
+                      Applic(Var("g"), [Var("y")])
+                    ]
+                  ),
+                  Seq(
+                    [
+                      Applic(Var("h"), [Var("x");Var("y")]);
+                      Applic(Var("g"), [Var("x")])
+                    ]
+                  )
+                )
+              )
+              (tag_parse_expression (
+                   Reader.read_sexpr("(cond ((zero? n) (f x) (g y)) (else (h x y) (g x)) ((q? y) (p x) (q y)))")
+              )
+            ));
+          ];;
 
 let () =
   run_test_tt_main simple_suite;
   run_test_tt_main less_simple_suite;
-  run_test_tt_main qq;
+  (* run_test_tt_main qq; *)
+  run_test_tt_main cond;
 ;;

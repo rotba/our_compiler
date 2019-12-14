@@ -89,16 +89,62 @@ let rec tag_parse_expression sexpr =
   | TaggedSexpr(first, sec) ->(handle_tagged first sec)
   | Pair(Symbol("quote"), Pair(sec,Nil)) ->Const(Sexpr(sec))
   | Symbol(s) ->if (List.exists (fun(e)-> e=s) reserved_word_list) then raise X_syntax_error else (Var(s))
-  | Pair(Symbol "if", Pair(a, Pair(b, Pair(c, Nil)))) -> If ((tag_parse_expression (a)), (tag_parse_expression (b)), (tag_parse_expression (c)))
-  | Pair(Symbol "if", Pair(a, Pair(b, Nil))) -> If ((tag_parse_expression (a)), (tag_parse_expression (b)), Const(Void))
+  | Pair(Symbol "if", Pair(a, Pair(b, Pair(c, _)))) -> If ((tag_parse_expression (a)), (tag_parse_expression (b)), (tag_parse_expression (c)))
+  | Pair(Symbol "if", Pair(a, Pair(b, _))) -> If ((tag_parse_expression (a)), (tag_parse_expression (b)), Const(Void))
   | Pair(Symbol("lambda"), cdr) ->(handle_lambda cdr)
   | Pair(Symbol("or"), cdr) ->Or((handle_or cdr))
   | Pair(Symbol("set!"), Pair(name, Pair(value,Nil))) ->Set(tag_parse_expression(name),tag_parse_expression(value) )
   | Pair(Symbol "define", Pair(Symbol(a), Pair(b, Nil))) -> Def ((tag_parse_expression (Symbol(a))), (tag_parse_expression (b)))
   | Pair(Symbol "begin", a) -> (handle_begin a)
+  | Pair(Symbol "cond", a) -> handle_cond a
   (*################################################################################# *)
   | Pair(a, b) -> Applic ((tag_parse_expression a), (parse_applic_body b))              
   |_ -> raise X_syntax_error
+
+and handle_cond sexpr = 
+let rec build_cond = function
+  | Nil -> Nil
+  | Pair(Pair(a, Pair(Symbol("=>"), b)), c) ->Pair(
+  Pair (Symbol "let",
+    Pair
+     (Pair
+       (Pair (Symbol "value",
+         Pair (Pair (Symbol "h?", Pair (Symbol "x", Nil)), Nil)),
+       Pair
+        (Pair (Symbol "f",
+          Pair
+           (Pair (Symbol "lambda",
+             Pair (Nil,
+              Pair (Pair (Symbol "p", Pair (Symbol "q", Nil)), Nil))),
+           Nil)),
+        Pair
+         (Pair (Symbol "rest",
+           Pair
+            (Pair (Symbol "lambda",
+              Pair (Nil,
+               Pair
+                (Pair (Symbol "begin",
+                  Pair
+                   (Pair (Symbol "h",
+                     Pair (Symbol "x", Pair (Symbol "y", Nil))),
+                   Pair (Pair (Symbol "g", Pair (Symbol "x", Nil)), Nil))),
+                Nil))),
+            Nil)),
+         Nil))),
+     Pair
+      (Pair (Symbol "if",
+        Pair (Symbol "value",
+         Pair (Pair (Pair (Symbol "f", Nil), Pair (Symbol "value", Nil)),
+          Pair (Pair (Symbol "rest", Nil), Nil)))),
+      Nil))),
+  Nil)
+  (* Pair(Symbol "let", Pair( Pair( Pair(Symbol "value", a), Pair(Pair(Symbol "f", Pair( Symbol "lambda")))))) *)
+  | Pair(Pair(Symbol("else"), b), _  ) ->  Pair(Pair(Symbol("begin"), b),Nil)
+  | Pair(Pair(a, b), c) ->  Pair(Pair(Symbol("if"), Pair(a, Pair(Pair(Symbol("begin"),b), (build_cond c)))), Nil)
+  | _ -> raise Exhausting in
+let extract = function
+  | Pair(a, b) -> a in
+  (tag_parse_expression (extract (build_cond sexpr)))
 
 
   
@@ -179,3 +225,76 @@ let tag_parse_expressions sexpr =
 
   
 end;; (* struct Tag_Parser *)
+
+(* Pair (Symbol "let",                                                                                                                                                                                          Pair                                                                                                                                                                                                       
+  (Pair
+    (Pair (Symbol "value",
+      Pair (Pair (Symbol "h?", Pair (Symbol "x", Nil)), Nil)),
+    Pair
+     (Pair (Symbol "f",
+       Pair
+        (Pair (Symbol "lambda",
+          Pair (Nil, Pair (Pair (Symbol "p", Pair (Symbol "q", Nil)), Nil))),
+        Nil)),
+     Pair
+      (Pair (Symbol "rest",
+        Pair
+         (Pair (Symbol "lambda",
+           Pair (Nil,
+            Pair
+             (Pair (Symbol "begin",
+               Pair
+                (Pair (Symbol "h", Pair (Symbol "x", Pair (Symbol "y", Nil))),
+                Pair (Pair (Symbol "g", Pair (Symbol "x", Nil)), Nil))),
+             Nil))),
+         Nil)),
+      Nil))),
+  Pair
+   (Pair (Symbol "if",
+     Pair (Symbol "value",
+      Pair (Pair (Pair (Symbol "f", Nil), Pair (Symbol "value", Nil)),
+       Pair (Pair (Symbol "rest", Nil), Nil)))),
+   Nil))) *)
+
+
+   (* Pair (Symbol "if",
+   Pair (Pair (Symbol "zero?", Pair (Symbol "n", Nil)),
+  Pair
+   (Pair (Symbol "begin",
+     Pair (Pair (Symbol "f", Pair (Symbol "x", Nil)),
+      Pair (Pair (Symbol "g", Pair (Symbol "y", Nil)), Nil))),
+   Pair
+    (Pair (Symbol "let",
+      Pair
+       (Pair
+         (Pair (Symbol "value",
+           Pair (Pair (Symbol "h?", Pair (Symbol "x", Nil)), Nil)),
+         Pair
+          (Pair (Symbol "f",
+            Pair
+             (Pair (Symbol "lambda",
+               Pair (Nil,
+                Pair (Pair (Symbol "p", Pair (Symbol "q", Nil)), Nil))),
+             Nil)),
+          Pair
+           (Pair (Symbol "rest",
+             Pair
+              (Pair (Symbol "lambda",
+                Pair (Nil,
+                 Pair
+                  (Pair (Symbol "begin",
+                    Pair
+                     (Pair (Symbol "h",
+                       Pair (Symbol "x", Pair (Symbol "y", Nil))),
+                     Pair (Pair (Symbol "g", Pair (Symbol "x", Nil)), Nil))),
+                  Nil))),
+              Nil)),
+           Nil))),
+       Pair
+        (Pair (Symbol "if",
+          Pair (Symbol "value",
+           Pair (Pair (Pair (Symbol "f", Nil), Pair (Symbol "value", Nil)),
+            Pair (Pair (Symbol "rest", Nil), Nil)))),
+        Nil))),
+    Nil)))) *)
+
