@@ -27,8 +27,10 @@ let rec exp_to_string  =
   function
   |Const(Sexpr(s)) -> String.concat "" ["Const ( Sexpr ( "; (sexpr_to_string s); " ) )"]
   |Var(v) -> v
+  |Set(exp1,exp2) -> String.concat " " ["(set!"; (exp_to_string exp1); (exp_to_string exp2);")"]
+  |Seq(list) -> String.concat "" ["Seq([";(seq_to_string list exp_to_string);"])"]
   |Applic(name,params) -> String.concat "" ["Applic( "; (exp_to_string name);" , ["; (seq_to_string params exp_to_string)  ;"] )"]
-  |LambdaSimple(params,body) -> String.concat "" ["LambdaSimple( ";" ( " ; (string_list_to_string params ); " ) " ; ", ["; (exp_to_string body)  ;"] )"]
+  |LambdaSimple(params,body) -> String.concat "" ["(LambdaSimple( ";" ( " ; (string_list_to_string params ); " ) " ; ", ["; (exp_to_string body)  ;"] )"]
   |_->"not_implemented"
     
 and seq_to_string params to_string=
@@ -378,6 +380,27 @@ let lets =
               [Const(Sexpr(Number(Int(1))))]
             ))
             (tag_parse_expression (Reader.read_sexpr("(let* ((x 1) (y x)) x)")) )
+        );
+        "(letrec ((x 1)) x)">::(fun _ ->
+          assert_equal_expr
+            (Applic(
+              LambdaSimple(
+                  ["x"],
+                  Seq([
+                        Set(Var("x"), Const(Sexpr(Number(Int(1)))));
+                        Applic(
+                            LambdaSimple(
+                                [],
+                                Var("x")
+                              ),
+                            []
+                          )
+                    ])
+                  
+                ),
+              [Const(Sexpr(String("whatever")))]
+            ))
+            (tag_parse_expression (Reader.read_sexpr("(letrec ((x 1)) x)")) )
         );
       ];;
 
