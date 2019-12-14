@@ -23,15 +23,25 @@ let rec sexpr_to_string  =
 
 
   
-let rec exp_to_string  =function
+let rec exp_to_string  =
+  function
   |Const(Sexpr(s)) -> String.concat "" ["Const ( Sexpr ( "; (sexpr_to_string s); " ) )"]
   |Var(v) -> v
-  |Applic(name,params) -> String.concat "" ["Applic( "; (exp_to_string name);" , ["; (params_to_string params)  ;"] )"]
+  |Applic(name,params) -> String.concat "" ["Applic( "; (exp_to_string name);" , ["; (seq_to_string params exp_to_string)  ;"] )"]
+  |LambdaSimple(params,body) -> String.concat "" ["LambdaSimple( ";" ( " ; (string_list_to_string params ); " ) " ; ", ["; (exp_to_string body)  ;"] )"]
   |_->"not_implemented"
-and params_to_string params=
+    
+and seq_to_string params to_string=
   let rec aggregate = function
   |[] -> []
-  |f::r -> (exp_to_string f) :: (aggregate r) in
+  |f::r -> (to_string f) :: (aggregate r) in
+  let params = (aggregate params) in
+  String.concat " , " params
+
+and string_list_to_string params=
+  let rec aggregate = function
+  |[] -> []
+  |f::r -> f :: (aggregate r) in
   let params = (aggregate params) in
   String.concat " , " params
   
@@ -252,13 +262,7 @@ let less_simple_suite =
                   Var("cons"),
                       [
                         Const ( Sexpr ( Symbol("a") ) );
-                        Applic(
-                            Var("append"),
-                                [
-                                  Var("b") ;
-                                  Const ( Sexpr ( Nil ) )
-                                ]
-                          )
+                        Var("b")
                       ]
                 )
             )
@@ -305,10 +309,28 @@ let less_simple_suite =
               )
             ));
           ];;
+let lets =
+    "lets">:::
+      [
+        "(let ((x 1)) x)">::(fun _ ->
+          assert_equal_expr
+            (Applic(
+              LambdaSimple(
+                  ["x"],
+                  Var("x")
+                ),
+              [Const(Sexpr(Number(Int(1))))]
+            ))
+            (tag_parse_expression (Reader.read_sexpr("(let ((x 1)) x)")) )
+        );
+      ];;
+
+
 
 let () =
   run_test_tt_main simple_suite;
   run_test_tt_main less_simple_suite;
-  (* run_test_tt_main qq; *)
   run_test_tt_main cond;
+  run_test_tt_main qq;
+  run_test_tt_main lets;
 ;;

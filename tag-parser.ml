@@ -81,6 +81,7 @@ let reserved_word_list =
 let rec tag_parse_expression sexpr =
   match sexpr with
   | Pair(Symbol("quasiquote"),cdr) -> handle_qq(cdr)
+  | Pair(Symbol("let"),cdr) -> handle_let(cdr)
   | Number(x) -> (Const (Sexpr (Number x)))
   | String(x) -> (Const (Sexpr(String x)))
   | Bool(x) -> (Const (Sexpr(Bool x)))
@@ -215,10 +216,41 @@ and expand_qq =
     let b = expand_qq(b) in
     (cons_wrap a b)
 
+and expand_let =
+  let rec get_bindings =
+    let get_binding = function
+      |Pair(var,Pair(vaal, Nil)) -> (var, vaal) in
+    function
+    |Nil -> (Nil,Nil)
+    |Pair(car,cdr) ->
+      let (var, vaal) = (get_binding car) in
+      let (vars, vals) = (get_bindings cdr) in
+      (Pair(var,vars), Pair(vaal,vals)) in
+  let lambda_wrap vars body =
+    Pair(
+        Symbol("lambda"),
+        Pair(vars, body)
+      ) in
+  let applic_wrap lambda vals =
+    Pair(lambda,vals) in
+  function
+  |Pair(ribs, cdr) ->
+    let (vars, vals) = (get_bindings ribs) in
+    let lambda = (lambda_wrap vars cdr) in
+    let applic = (applic_wrap lambda vals) in
+    applic
+  |_ -> raise X_syntax_error
+
 and handle_qq sexp=
   let expanded = expand_qq sexp in
   tag_parse_expression expanded
+
+and handle_let sexp =
+  let expanded = expand_let sexp in
+  tag_parse_expression expanded
 ;;
+
+
 
 let tag_parse_expressions sexpr = 
   List.map tag_parse_expression sexpr;;
