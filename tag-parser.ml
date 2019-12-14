@@ -96,11 +96,36 @@ let rec tag_parse_expression sexpr =
   | Pair(Symbol("or"), cdr) ->Or((handle_or cdr))
   | Pair(Symbol("set!"), Pair(name, Pair(value,Nil))) ->Set(tag_parse_expression(name),tag_parse_expression(value) )
   | Pair(Symbol "define", Pair(Symbol(a), Pair(b, Nil))) -> Def ((tag_parse_expression (Symbol(a))), (tag_parse_expression (b)))
-  | Pair(Symbol "begin", a) -> (handle_begin a)
+  | Pair(Symbol "define", a) -> handle_define a
+  | Pair(Symbol "begin", a) -> handle_begin a
   | Pair(Symbol "cond", a) -> handle_cond a
+  | Pair(Symbol "and", a) -> handle_and a
   (*################################################################################# *)
   | Pair(a, b) -> Applic ((tag_parse_expression a), (parse_applic_body b))              
   |_ -> raise X_syntax_error
+
+  and handle_define sexpr = 
+  let rec build_and = function
+    | Pair(Pair(Symbol(a),b), Pair(c, Nil)) -> 
+    Pair (Symbol "define", 
+        Pair( Symbol (a),
+          Pair(
+            Pair(Symbol "lambda", 
+                Pair(b,
+                  Pair(c, Nil))) ,
+        Nil))) in 
+
+    tag_parse_expression (build_and sexpr)
+
+
+  and handle_and sexpr = 
+let rec build_and = function 
+  | Nil -> Bool(true)
+  | Pair(a, b) -> (Pair (Symbol "if",Pair (a, Pair ((build_and b), Pair (Bool(false), Nil))))) in
+  
+  tag_parse_expression (build_and sexpr)
+
+
 
 and handle_cond sexpr = 
 let rec build_cond = function
@@ -270,3 +295,4 @@ and handle_let sexp =
 let tag_parse_expressions sexpr = 
   List.map tag_parse_expression sexpr;;
 
+  end;; (* struct Tag_Parser *) 
