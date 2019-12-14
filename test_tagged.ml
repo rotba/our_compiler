@@ -190,7 +190,7 @@ let less_simple_suite =
         );
       ];;
 
-(* let qq =
+let qq =
     "quasiquoate">:::
       [
         ",x">::(fun _ ->
@@ -302,7 +302,7 @@ let less_simple_suite =
              )
           )
         );
-      ];; *)
+      ];;
 
       let cond =
         "cond">:::
