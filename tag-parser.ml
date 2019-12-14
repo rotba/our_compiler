@@ -80,7 +80,7 @@ let reserved_word_list =
 
 let rec tag_parse_expression sexpr =
   match sexpr with
-  | Pair(Symbol("quasiquote"),cdr) -> handle_qq(cdr)
+  | Pair(Symbol("quasiquote"),Pair(cdr,Nil)) -> handle_qq(cdr)
   | Pair(Symbol("let"),cdr) -> handle_let(cdr)
   | Pair(Symbol("let*"),cdr) -> handle_let_star(cdr)
   | Pair(Symbol("letrec"),cdr) -> handle_letrec(cdr)

@@ -1,3 +1,12 @@
-2019-12-14T17:01:14+00:00 se142row1-1_lnx#03 I: Start test quasiquoate:2:`(a b).
-2019-12-14T17:01:14+00:00 se142row1-1_lnx#03 I: Test quasiquoate:2:`(a b) is successful.
-2019-12-14T17:01:14+00:00 se142row1-1_lnx#03 I: End test quasiquoate:2:`(a b).
+2019-12-14T18:06:46+00:00 se142row1-1_lnx#03 I: Start test quasiquoate:2:`5.
+2019-12-14T18:06:46+00:00 se142row1-1_lnx#03 E: Test quasiquoate:2:`5 exited with an error.
+2019-12-14T18:06:46+00:00 se142row1-1_lnx#03 E: File "./tag-parser.ml", line 245, characters 2-7: Pattern matching failed in test quasiquoate:2:`5.
+2019-12-14T18:06:46+00:00 se142row1-1_lnx#03 E: Raised at file "./tag-parser.ml", line 249, characters 10-24
+2019-12-14T18:06:46+00:00 se142row1-1_lnx#03 E: Called from file "./tag-parser.ml", line 344, characters 17-31
+2019-12-14T18:06:46+00:00 se142row1-1_lnx#03 E: Called from file "./test_tagged.ml", line 214, characters 8-55
+2019-12-14T18:06:46+00:00 se142row1-1_lnx#03 E: Called from file "src/oUnitRunner.ml", line 46, characters 13-26
+2019-12-14T18:06:46+00:00 se142row1-1_lnx#03 E: 
+2019-12-14T18:06:46+00:00 se142row1-1_lnx#03 I: End test quasiquoate:2:`5.
+2019-12-14T18:06:46+00:00 se142row1-1_lnx#03 I: Start test quasiquoate:6:`(a . ,@b).
+2019-12-14T18:06:46+00:00 se142row1-1_lnx#03 I: Test quasiquoate:6:`(a . ,@b) is successful.
+2019-12-14T18:06:46+00:00 se142row1-1_lnx#03 I: End test quasiquoate:6:`(a . ,@b).
