@@ -1,9 +1,9 @@
-2019-12-14T20:21:54+00:00 alon#02 I: Start test char suite:1:esc.
-2019-12-14T20:21:54+00:00 alon#02 I: Test char suite:1:esc is successful.
-2019-12-14T20:21:54+00:00 alon#02 I: End test char suite:1:esc.
-2019-12-14T20:21:54+00:00 alon#02 I: Start test char suite:5:page in sensitive.
-2019-12-14T20:21:54+00:00 alon#02 I: Test char suite:5:page in sensitive is successful.
-2019-12-14T20:21:54+00:00 alon#02 I: End test char suite:5:page in sensitive.
-2019-12-14T20:21:54+00:00 alon#02 I: Start test char suite:9:with sexpr comment.
-2019-12-14T20:21:54+00:00 alon#02 I: Test char suite:9:with sexpr comment is successful.
-2019-12-14T20:21:54+00:00 alon#02 I: End test char suite:9:with sexpr comment.
+2019-12-14T20:43:36+00:00 alon#02 I: Start test char suite:1:esc.
+2019-12-14T20:43:36+00:00 alon#02 I: Test char suite:1:esc is successful.
+2019-12-14T20:43:36+00:00 alon#02 I: End test char suite:1:esc.
+2019-12-14T20:43:36+00:00 alon#02 I: Start test char suite:5:page in sensitive.
+2019-12-14T20:43:36+00:00 alon#02 I: Test char suite:5:page in sensitive is successful.
+2019-12-14T20:43:36+00:00 alon#02 I: End test char suite:5:page in sensitive.
+2019-12-14T20:43:36+00:00 alon#02 I: Start test char suite:9:with sexpr comment.
+2019-12-14T20:43:36+00:00 alon#02 I: Test char suite:9:with sexpr comment is successful.
+2019-12-14T20:43:36+00:00 alon#02 I: End test char suite:9:with sexpr comment.

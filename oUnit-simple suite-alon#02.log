@@ -1,6 +1,6 @@
-2019-12-14T20:21:56+00:00 alon#02 I: Start test simple suite:1:moshe.
-2019-12-14T20:21:56+00:00 alon#02 I: Test simple suite:1:moshe is successful.
-2019-12-14T20:21:56+00:00 alon#02 I: End test simple suite:1:moshe.
-2019-12-14T20:21:56+00:00 alon#02 I: Start test simple suite:5:(set! x 1).
-2019-12-14T20:21:56+00:00 alon#02 I: Test simple suite:5:(set! x 1) is successful.
-2019-12-14T20:21:56+00:00 alon#02 I: End test simple suite:5:(set! x 1).
+2019-12-14T20:43:38+00:00 alon#02 I: Start test simple suite:1:moshe.
+2019-12-14T20:43:38+00:00 alon#02 I: Test simple suite:1:moshe is successful.
+2019-12-14T20:43:38+00:00 alon#02 I: End test simple suite:1:moshe.
+2019-12-14T20:43:38+00:00 alon#02 I: Start test simple suite:5:(set! x 1).
+2019-12-14T20:43:38+00:00 alon#02 I: Test simple suite:5:(set! x 1) is successful.
+2019-12-14T20:43:38+00:00 alon#02 I: End test simple suite:5:(set! x 1).

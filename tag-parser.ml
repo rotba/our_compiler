@@ -125,7 +125,8 @@ let rec tag_parse_expression sexpr =
 let rec build_and = function 
   | Nil -> Bool(true)
   | Pair(a, Nil) -> a
-  | Pair(a, b) -> (Pair (Symbol "if",Pair (a, Pair (Pair(Symbol "and", b) , Pair (Bool(false), Nil))))) in
+  | Pair(a, b) -> (Pair (Symbol "if",Pair (a, Pair (Pair(Symbol "and", b) , Pair (Bool(false), Nil))))) 
+  | _ -> raise Exhausting in
   
   tag_parse_expression (build_and sexpr)
 
@@ -188,7 +189,8 @@ let rec build_cond = function
   | Pair(Pair(a, b), c) ->  Pair(Pair(Symbol("if"), Pair(a, Pair(Pair(Symbol("begin"),b), (build_cond c)))), Nil)
   | _ -> raise Exhausting in
 let extract = function
-  | Pair(a, b) -> a in
+  | Pair(a, b) -> a 
+  | _ -> raise Exhausting in
   (tag_parse_expression (extract (build_cond sexpr)))
 
 
@@ -245,6 +247,7 @@ match cdr with
 | Nil -> tag_parse_expression (Bool(false))
 | Pair(car, Nil) -> tag_parse_expression (car)
 | Pair(car, cdr) -> Or(build_or((Pair(car, cdr))) )
+| _ -> raise X_syntax_error
      
 and expand_qq =
   let quote_wrap s = Pair(Symbol("quote"), Pair(Symbol(s),Nil)) in
@@ -266,17 +269,20 @@ and expand_qq =
     let a = expand_qq(a) in
     let b = expand_qq(b) in
     (cons_wrap a b)
+  | _ -> raise X_syntax_error
 
 and expand_let =
   let rec get_bindings =
     let get_binding = function
-      |Pair(var,Pair(vaal, Nil)) -> (var, vaal) in
+      |Pair(var,Pair(vaal, Nil)) -> (var, vaal)
+      | _ -> raise X_syntax_error in
     function
     |Nil -> (Nil,Nil)
-    |Pair(car,cdr) ->
+    |Pair(car,cdr) ->(
       let (var, vaal) = (get_binding car) in
       let (vars, vals) = (get_bindings cdr) in
-      (Pair(var,vars), Pair(vaal,vals)) in
+      (Pair(var,vars), Pair(vaal,vals)))
+    | _ -> raise X_syntax_error in
   let lambda_wrap vars body =
     Pair(
         Symbol("lambda"),
@@ -304,15 +310,15 @@ and expand_let_star =
           )
       ) in
   function
-  |Pair(ribs, body) ->
+  |Pair(ribs, body) ->(
     match ribs with
     |Nil -> (expand_let (Pair(ribs,body)))
     |Pair(_,Nil) -> (expand_let (Pair(ribs,body)))
     |Pair(rib_1, cdr) ->
       let rest = (let_star_wrap cdr body) in
       let_wrap rib_1 rest
-    |_ -> raise X_syntax_error
-
+    |_ -> raise X_syntax_error)
+  | _ -> raise X_syntax_error
 and expand_letrec =
   let rec whatevers_wrap =
     let gen_whatever var = Pair(var, Pair(Pair(Symbol("quote"), Pair(Symbol("whatever"),Nil)), Nil)) in
@@ -324,8 +330,7 @@ and expand_letrec =
       Pair(whatever, rest)
     |_ -> raise X_syntax_error
   in
-  let empty_let_wrap body=Pair(Symbol("let"),Pair(Nil,body))
-  in
+  (* let empty_let_wrap body=Pair(Symbol("let"),Pair(Nil,body)) *)
   let gen_body ribs body =
     let rec set_bangs_wrap =function
     |Nil -> body
