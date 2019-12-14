@@ -56,7 +56,7 @@ let handle_tagged first sec =
   Const(Sexpr(TaggedSexpr(first,sec)));;
 
 let rec is_proper = function
-  |Pair(_,Nil)-> true
+  |Nil-> true
   |Pair(car,cdr)-> (is_proper cdr)
   |_->false;;
 
@@ -82,6 +82,7 @@ let rec tag_parse_expression sexpr =
   match sexpr with
   | Pair(Symbol("quasiquote"),cdr) -> handle_qq(cdr)
   | Pair(Symbol("let"),cdr) -> handle_let(cdr)
+  | Pair(Symbol("let*"),cdr) -> handle_let_star(cdr)
   | Number(x) -> (Const (Sexpr (Number x)))
   | String(x) -> (Const (Sexpr(String x)))
   | Bool(x) -> (Const (Sexpr(Bool x)))
@@ -195,12 +196,37 @@ and expand_let =
     applic
   |_ -> raise X_syntax_error
 
+and expand_let_star =
+  let let_star_wrap ribs body =
+    Pair(Symbol("let*"),Pair(ribs, body)) in
+  let let_wrap rib1 rest =
+    Pair(
+        Symbol("let"),
+        Pair(
+            Pair(rib1, Nil),
+            Pair(rest,Nil)
+          )
+      ) in
+  function
+  |Pair(ribs, body) ->
+    match ribs with
+    |Nil -> (expand_let (Pair(ribs,body)))
+    |Pair(_,Nil) -> (expand_let (Pair(ribs,body)))
+    |Pair(rib_1, cdr) ->
+      let rest = (let_star_wrap cdr body) in
+      let_wrap rib_1 rest
+  |_ -> raise X_syntax_error
+
 and handle_qq sexp=
   let expanded = expand_qq sexp in
   tag_parse_expression expanded
 
 and handle_let sexp =
   let expanded = expand_let sexp in
+  tag_parse_expression expanded
+  
+and handle_let_star sexp =
+  let expanded = expand_let_star sexp in
   tag_parse_expression expanded
 ;;
 

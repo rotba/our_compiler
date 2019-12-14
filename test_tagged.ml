@@ -138,6 +138,20 @@ let less_simple_suite =
                )
             )
         );
+        "(lambda () x)">::(fun _ ->
+          assert_equal_expr
+            (LambdaSimple([],Var("x")))
+            (tag_parse_expression
+               (Pair(
+                     Symbol("lambda"),
+                     Pair(
+                         Nil,
+                         Pair(Symbol("x"),Nil)
+                       )
+                  )
+               )
+            )
+        );
         "(lambda (x . y) x)">::(fun _ ->
           assert_equal_expr
             (LambdaOpt(["x"], "y", Var("x")))
@@ -153,6 +167,17 @@ let less_simple_suite =
             )
         );
         "(lambda (x . y) x)">::(fun _ ->
+          assert_equal_expr
+            (Applic(Var ("asdf"),[]) )
+            (tag_parse_expression
+               (Pair(
+                     Symbol("asdf"),
+                     Nil
+                  )
+               )
+            )
+        );
+        "(lambda () x)">::(fun _ ->
           assert_equal_expr
             (Applic(Var ("asdf"),[]) )
             (tag_parse_expression
@@ -292,6 +317,67 @@ let lets =
               [Const(Sexpr(Number(Int(1))))]
             ))
             (tag_parse_expression (Reader.read_sexpr("(let ((x 1)) x)")) )
+        );
+        "(let () 1)">::(fun _ ->
+          assert_equal_expr
+            (Applic(
+              LambdaSimple(
+                  [],
+                  Const(Sexpr(Number(Int(1))))
+                ),
+              []
+            ))
+            (tag_parse_expression (Reader.read_sexpr("(let () 1)")) )
+        );
+        "(let* ((x 1)) x)">::(fun _ ->
+          assert_equal_expr
+            (Applic(
+              LambdaSimple(
+                  ["x"],
+                  Var("x")
+                ),
+              [Const(Sexpr(Number(Int(1))))]
+            ))
+            (tag_parse_expression (Reader.read_sexpr("(let* ((x 1)) x)")) )
+        );
+        "(let* () x)">::(fun _ ->
+          assert_equal_expr
+            (Applic(
+              LambdaSimple(
+                  [],
+                  Var("x")
+                ),
+              []
+            ))
+            (tag_parse_expression (Reader.read_sexpr("(let* () x)")) )
+        );
+        "(let ((x 1) (y x)) x)">::(fun _ ->
+          assert_equal_expr
+            (Applic(
+              LambdaSimple(
+                  ["x";"y"],
+                  Var("x")
+                ),
+              [Const(Sexpr(Number(Int(1)))); Var("x")]
+            ))
+            (tag_parse_expression (Reader.read_sexpr("(let ((x 1) (y x)) x)")) )
+        );
+        "(let* ((x 1) (y x)) x)">::(fun _ ->
+          assert_equal_expr
+            (Applic(
+              LambdaSimple(
+                  ["x"],
+                  Applic(
+                      LambdaSimple(
+                          ["y"],
+                          Var("x")
+                        ),
+                      [Var("x")]
+                    )
+                ),
+              [Const(Sexpr(Number(Int(1))))]
+            ))
+            (tag_parse_expression (Reader.read_sexpr("(let* ((x 1) (y x)) x)")) )
         );
       ];;
 
