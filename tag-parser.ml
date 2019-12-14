@@ -80,7 +80,7 @@ let reserved_word_list =
 
 let rec tag_parse_expression sexpr =
   match sexpr with
-  | Pair(Symbol("quasiquote"),cdr) -> handle_qq(cdr)
+  | Pair(Symbol("quasiquote"),Pair(cdr,Nil)) -> handle_qq(cdr)
   | Pair(Symbol("let"),cdr) -> handle_let(cdr)
   | Pair(Symbol("let*"),cdr) -> handle_let_star(cdr)
   | Pair(Symbol("letrec"),cdr) -> handle_letrec(cdr)
@@ -220,6 +220,7 @@ and handle_lambda cdr =
     |Pair(Symbol(vn_m_1), cdr) ->
       let (acc, vs) = (get_opt_list cdr) in
       (vn_m_1::acc,vs)
+    |Symbol(vs) -> ([],vs)
     |_ -> raise X_syntax_error in
        
   match cdr with
@@ -306,7 +307,7 @@ and expand_let_star =
 
 and expand_letrec =
   let rec whatevers_wrap =
-    let gen_whatever var = Pair(var, Pair(String("whatever"), Nil)) in
+    let gen_whatever var = Pair(var, Pair(Pair(Symbol("quote"), Pair(Symbol("whatever"),Nil)), Nil)) in
     function
     |Nil -> Nil
     |Pair(Pair(var, _),cdr) ->

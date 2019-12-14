@@ -31,6 +31,7 @@ let rec exp_to_string  =
   |Seq(list) -> String.concat "" ["Seq([";(seq_to_string list exp_to_string);"])"]
   |Applic(name,params) -> String.concat "" ["Applic( "; (exp_to_string name);" , ["; (seq_to_string params exp_to_string)  ;"] )"]
   |LambdaSimple(params,body) -> String.concat "" ["(LambdaSimple( ";" ( " ; (string_list_to_string params ); " ) " ; ", ["; (exp_to_string body)  ;"] )"]
+  |If(e1,e2,e3)-> String.concat "" ["(If( "; (exp_to_string e1 ); " , " ; (exp_to_string e2) ; "," ; (exp_to_string e3)  ;" )"]
   |_->"not_implemented"
     
 and seq_to_string params to_string=
@@ -126,6 +127,33 @@ let less_simple_suite =
             (Const(Sexpr (TaggedSexpr ("x", Pair(Symbol "quote",Pair (Nil, Nil))))))
             (tag_parse_expression (Pair(Symbol "quote", Pair(TaggedSexpr("x", Pair (Symbol "quote", Pair (Nil, Nil))), Nil))))
         );
+        "(lambda (x . y) x)">::(fun _ ->
+          assert_equal_expr
+            (Applic(Var ("asdf"),[]) )
+            (tag_parse_expression
+               (Pair(
+                     Symbol("asdf"),
+                     Nil
+                  )
+               )
+            )
+        );
+        "(lambda () x)">::(fun _ ->
+          assert_equal_expr
+            (Applic(Var ("asdf"),[]) )
+            (tag_parse_expression
+               (Pair(
+                     Symbol("asdf"),
+                     Nil
+                  )
+               )
+            )
+        );
+      ];;
+
+let lambda =
+    "lambda">:::
+      [
         "(lambda (x) x)">::(fun _ ->
           assert_equal_expr
             (LambdaSimple(["x"],Var("x")))
@@ -179,36 +207,37 @@ let less_simple_suite =
                )
             )
         );
-        "(lambda () x)">::(fun _ ->
+        "test_tag_lambda_variadic_expression_parser_2">::(fun _ ->
           assert_equal_expr
-            (Applic(Var ("asdf"),[]) )
-            (tag_parse_expression
-               (Pair(
-                     Symbol("asdf"),
-                     Nil
-                  )
-               )
-            )
+            (Applic (LambdaOpt ([], "x", Var "x"),
+                                                                           [Const (Sexpr (Number (Int 1))); Const (Sexpr (Number (Int 2)));
+                                                                            Const (Sexpr (Number (Int 3))); Const (Sexpr (Number (Int 4)))]))
+  (Tag_Parser.tag_parse_expression (Pair (Pair (Symbol "lambda", Pair (Symbol "x", Pair (Symbol "x", Nil))),
+                                     Pair (Number (Int 1),
+                                      Pair (Number (Int 2), Pair (Number (Int 3), Pair (Number (Int 4), Nil)))))))
         );
       ];;
 
 let qq =
     "quasiquoate">:::
       [
-        ",x">::(fun _ ->
+        "`,x">::(fun _ ->
           assert_equal_expr
           (Var("x"))
           (tag_parse_expression (
-               Pair(
-                   Symbol("quasiquote"),
-                   Pair(
-                       Symbol("unquote"),
-                       Pair(Symbol("x"), Nil)
-                     )
-                 )
+               Reader.read_sexpr("`,x")
              )
           )
         );
+        "`()">::(fun _ ->
+          assert_equal_expr
+          (Const(Sexpr(Nil)))
+          (tag_parse_expression (Reader.read_sexpr "`()"))
+        );
+        (* "`5">::(fun _ ->
+       * assert_equal_expr
+       *   (Const (Sexpr (Number (Int 5))))
+       *   (tag_parse_expression (Reader.read_sexpr "`5"))); *)
         "`,@x">::
       (fun _ ->
         assert_raises
@@ -247,10 +276,7 @@ let qq =
                 )
             )
           (tag_parse_expression (
-               Pair(
-                   Symbol("quasiquote"),
-                   Pair(Symbol("a"), Pair(Symbol("b"),Nil))
-                 )
+               Reader.read_sexpr("`(a b)")
              )
           )
         );
@@ -272,17 +298,11 @@ let qq =
                 )
             )
           (tag_parse_expression (
-               Pair(
-                   Symbol("quasiquote"),
-                   Pair(
-                       Pair(Symbol("unquote-splicing"),Pair(Symbol("a"),Nil)),
-                       Pair(Symbol("b"),Nil)
-                     )
-                 )
+               Reader.read_sexpr("`(,@a b)")
              )
           )
         );
-        "`(a ,@b)">::(fun _ ->
+        "`(a . ,@b)">::(fun _ ->
           assert_equal_expr
             (
               Applic(
@@ -294,13 +314,7 @@ let qq =
                 )
             )
           (tag_parse_expression (
-               Pair(
-                   Symbol("quasiquote"),
-                   Pair(
-                       Symbol("a"),
-                       Pair(Symbol("unquote-splicing"),Pair(Symbol("b"),Nil))
-                     )
-                 )
+               Reader.read_sexpr("`(a . ,@b)")
              )
           )
         );
@@ -422,9 +436,52 @@ let lets =
                     ])
                   
                 ),
-              [Const(Sexpr(String("whatever")))]
+              [Const(Sexpr(Symbol("whatever")))]
             ))
             (tag_parse_expression (Reader.read_sexpr("(letrec ((x 1)) x)")) )
+        );
+        "test_tag_let_rec_expression_parser_2">::(fun _ ->
+          assert_equal_expr
+            (Applic
+                                                                   (LambdaSimple (["fact"],
+                                                                     Seq
+                                                                      [Set (Var "fact",
+                                                                        LambdaSimple (["n"],
+                                                                         If (Applic (Var "zero?", [Var "n"]), Const (Sexpr (Number (Int 1))),
+                                                                          Applic (Var "*",
+                                                                           [Var "n";
+                                                                            Applic (Var "fact",
+                                                                             [Applic (Var "-", [Var "n"; Const (Sexpr (Number (Int 1)))])])]))));
+                                                                       Applic (Var "fact", [Const (Sexpr (Number (Int 5)))])]),
+                                                                   [Const (Sexpr (Symbol "whatever"))])
+                                                                  )
+                      (Tag_Parser.tag_parse_expression (Pair (Symbol "letrec",
+                                                         Pair
+                                                          (Pair
+                                                            (Pair (Symbol "fact",
+                                                              Pair
+                                                               (Pair (Symbol "lambda",
+                                                                 Pair (Pair (Symbol "n", Nil),
+                                                                  Pair
+                                                                   (Pair (Symbol "if",
+                                                                     Pair (Pair (Symbol "zero?", Pair (Symbol "n", Nil)),
+                                                                      Pair (Number (Int 1),
+                                                                       Pair
+                                                                        (Pair (Symbol "*",
+                                                                          Pair (Symbol "n",
+                                                                           Pair
+                                                                            (Pair (Symbol "fact",
+                                                                              Pair
+                                                                               (Pair (Symbol "-",
+                                                                                 Pair (Symbol "n", Pair (Number (Int 1), Nil))),
+                                                                               Nil)),
+                                                                            Nil))),
+                                                                        Nil)))),
+                                                                   Nil))),
+                                                               Nil)),
+                                                            Nil),
+                                                          Pair (Pair (Symbol "fact", Pair (Number (Int 5), Nil)), Nil)))
+                                                        ))
         );
       ];;
 
@@ -436,4 +493,5 @@ let () =
   run_test_tt_main cond;
   run_test_tt_main qq;
   run_test_tt_main lets;
+  run_test_tt_main lambda;
 ;;

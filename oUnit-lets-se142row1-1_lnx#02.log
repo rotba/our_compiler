@@ -1,6 +1,6 @@
-2019-12-14T17:01:14+00:00 se142row1-1_lnx#02 I: Start test lets:1:(let () 1).
-2019-12-14T17:01:14+00:00 se142row1-1_lnx#02 I: Test lets:1:(let () 1) is successful.
-2019-12-14T17:01:14+00:00 se142row1-1_lnx#02 I: End test lets:1:(let () 1).
-2019-12-14T17:01:14+00:00 se142row1-1_lnx#02 I: Start test lets:6:(letrec ((x 1)) x).
-2019-12-14T17:01:14+00:00 se142row1-1_lnx#02 I: Test lets:6:(letrec ((x 1)) x) is successful.
-2019-12-14T17:01:14+00:00 se142row1-1_lnx#02 I: End test lets:6:(letrec ((x 1)) x).
+2019-12-14T19:16:12+00:00 se142row1-1_lnx#02 I: Start test lets:1:(let () 1).
+2019-12-14T19:16:12+00:00 se142row1-1_lnx#02 I: Test lets:1:(let () 1) is successful.
+2019-12-14T19:16:12+00:00 se142row1-1_lnx#02 I: End test lets:1:(let () 1).
+2019-12-14T19:16:12+00:00 se142row1-1_lnx#02 I: Start test lets:6:(letrec ((x 1)) x).
+2019-12-14T19:16:12+00:00 se142row1-1_lnx#02 I: Test lets:6:(letrec ((x 1)) x) is successful.
+2019-12-14T19:16:12+00:00 se142row1-1_lnx#02 I: End test lets:6:(letrec ((x 1)) x).
