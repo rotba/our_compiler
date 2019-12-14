@@ -1,0 +1,6 @@
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#01 I: Start test less simple suite:0:tagged def special case.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#01 I: Test less simple suite:0:tagged def special case is successful.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#01 I: End test less simple suite:0:tagged def special case.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#01 I: Start test less simple suite:6:(lambda (x . y) x).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#01 I: Test less simple suite:6:(lambda (x . y) x) is successful.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#01 I: End test less simple suite:6:(lambda (x . y) x).

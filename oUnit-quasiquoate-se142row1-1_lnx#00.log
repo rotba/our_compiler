@@ -1,0 +1,107 @@
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Runner: processes
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Chooser: simple
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Configuration suite_name = "quasiquoate"
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Configuration cache_filename = "/users/studs/bsc/2019/alonbrav/our_compiler/oUnit-$(suite_name).cache"
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Configuration display = "true"
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Configuration results_style_1_X = "false"
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Configuration verbose = "false"
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Configuration health_check_interval = "1."
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Configuration testdata_dir = "none"
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Configuration chooser = "simple"
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Configuration output_html_dir = "none"
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Configuration processes_kill_period = "5."
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Configuration runner = "processes"
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Configuration shards = "6"
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Configuration processes_grace_period = "5."
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Configuration log_encoding = "utf-8"
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Configuration output_junit_file = "none"
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Configuration output_file = "/users/studs/bsc/2019/alonbrav/our_compiler/oUnit-$(suite_name)-$(shard_id).log"
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Using 6 workers maximum.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Starting worker number se142row1-1_lnx#01.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Worker se142row1-1_lnx#01 started.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Starting worker number se142row1-1_lnx#02.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Worker se142row1-1_lnx#02 started.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Starting worker number se142row1-1_lnx#03.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Worker se142row1-1_lnx#03 started.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Starting worker number se142row1-1_lnx#04.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Worker se142row1-1_lnx#04 started.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Starting worker number se142row1-1_lnx#05.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Worker se142row1-1_lnx#05 started.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Still 5 tests running : quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x, quasiquoate:0:,x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: 5 tests running: quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x, quasiquoate:0:,x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#01 I: Start test quasiquoate:0:,x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Still 5 tests running : quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x, quasiquoate:0:,x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: 5 tests running: quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x, quasiquoate:0:,x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#02 I: Start test quasiquoate:1:`,@x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Still 5 tests running : quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x, quasiquoate:0:,x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: 5 tests running: quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x, quasiquoate:0:,x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#01 I: Test quasiquoate:0:,x is successful.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Still 5 tests running : quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x, quasiquoate:0:,x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: 5 tests running: quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x, quasiquoate:0:,x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#01 I: End test quasiquoate:0:,x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Still 5 tests running : quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x, quasiquoate:0:,x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: 5 tests running: quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x, quasiquoate:0:,x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Still 4 tests running : quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: 4 tests running: quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#04 I: Start test quasiquoate:3:`(,@a b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Still 4 tests running : quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: 4 tests running: quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#03 I: Start test quasiquoate:2:`(a b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Still 4 tests running : quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: 4 tests running: quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#02 I: Test quasiquoate:1:`,@x is successful.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Still 4 tests running : quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: 4 tests running: quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#02 I: End test quasiquoate:1:`,@x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Still 4 tests running : quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: 4 tests running: quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b), quasiquoate:1:`,@x.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Still 3 tests running : quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: 3 tests running: quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#04 I: Test quasiquoate:3:`(,@a b) is successful.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Still 3 tests running : quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: 3 tests running: quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#03 I: Test quasiquoate:2:`(a b) is successful.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#04 I: End test quasiquoate:3:`(,@a b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Still 3 tests running : quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: 3 tests running: quasiquoate:4:`(a ,@b), quasiquoate:3:`(,@a b), quasiquoate:2:`(a b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#03 I: End test quasiquoate:2:`(a b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Still 2 tests running : quasiquoate:4:`(a ,@b), quasiquoate:2:`(a b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: 2 tests running: quasiquoate:4:`(a ,@b), quasiquoate:2:`(a b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Still 1 tests running : quasiquoate:4:`(a ,@b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: 1 tests running: quasiquoate:4:`(a ,@b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#05 I: Start test quasiquoate:4:`(a ,@b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Still 1 tests running : quasiquoate:4:`(a ,@b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: 1 tests running: quasiquoate:4:`(a ,@b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#05 I: Test quasiquoate:4:`(a ,@b) is successful.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Still 1 tests running : quasiquoate:4:`(a ,@b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: 1 tests running: quasiquoate:4:`(a ,@b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#05 I: End test quasiquoate:4:`(a ,@b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Still 1 tests running : quasiquoate:4:`(a ,@b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: 1 tests running: quasiquoate:4:`(a ,@b).
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: 0 tests running: .
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Worker se142row1-1_lnx#01 has ended.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Worker se142row1-1_lnx#02 has ended.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Worker se142row1-1_lnx#04 has ended.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Worker se142row1-1_lnx#03 has ended.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Worker se142row1-1_lnx#05 has ended.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Used 5 worker during test execution.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Run 1 tests with shard se142row1-1_lnx#05.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Run 1 tests with shard se142row1-1_lnx#01.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Run 1 tests with shard se142row1-1_lnx#03.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Run 1 tests with shard se142row1-1_lnx#02.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Run 1 tests with shard se142row1-1_lnx#04.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: ==============
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Summary:
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Test quasiquoate:4:`(a ,@b) is successful.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Test quasiquoate:2:`(a b) is successful.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Test quasiquoate:3:`(,@a b) is successful.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Test quasiquoate:1:`,@x is successful.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Test quasiquoate:0:,x is successful.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Ran: 5 tests in: 0.11 seconds.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Cases: 5.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Tried: 5.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Errors: 0.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Failures: 0.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Skip: 0.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Todo: 0.
+2019-12-14T17:01:14+00:00 se142row1-1_lnx#00 I: Timeout: 0.

@@ -83,6 +83,7 @@ let rec tag_parse_expression sexpr =
   | Pair(Symbol("quasiquote"),cdr) -> handle_qq(cdr)
   | Pair(Symbol("let"),cdr) -> handle_let(cdr)
   | Pair(Symbol("let*"),cdr) -> handle_let_star(cdr)
+  | Pair(Symbol("letrec"),cdr) -> handle_letrec(cdr)
   | Number(x) -> (Const (Sexpr (Number x)))
   | String(x) -> (Const (Sexpr(String x)))
   | Bool(x) -> (Const (Sexpr(Bool x)))
@@ -301,6 +302,42 @@ and expand_let_star =
     |Pair(rib_1, cdr) ->
       let rest = (let_star_wrap cdr body) in
       let_wrap rib_1 rest
+    |_ -> raise X_syntax_error
+
+and expand_letrec =
+  let rec whatevers_wrap =
+    let gen_whatever var = Pair(var, Pair(String("whatever"), Nil)) in
+    function
+    |Nil -> Nil
+    |Pair(Pair(var, _),cdr) ->
+      let whatever = gen_whatever var in
+      let rest = whatevers_wrap cdr in
+      Pair(whatever, rest)
+    |_ -> raise X_syntax_error
+  in
+  let empty_let_wrap body=Pair(Symbol("let"),Pair(Nil,body))
+  in
+  let gen_body ribs body =
+    let rec set_bangs_wrap =function
+    |Nil -> body
+    |Pair(car,cdr) ->
+      let set_bang = Pair(Symbol("set!"),car) in
+      let rest = set_bangs_wrap cdr in
+      Pair(set_bang, rest)
+    |_ -> raise X_syntax_error in
+    set_bangs_wrap ribs
+  in
+  let let_wrap ribs body =
+    Pair(
+        Symbol("let"),
+        Pair(ribs, body)
+      )
+  in
+  function
+  |Pair(ribs, body) ->
+    let whatevers = whatevers_wrap ribs in
+    let body = gen_body ribs body in
+    let_wrap whatevers body
   |_ -> raise X_syntax_error
 
 and handle_qq sexp=
@@ -313,6 +350,10 @@ and handle_let sexp =
   
 and handle_let_star sexp =
   let expanded = expand_let_star sexp in
+  tag_parse_expression expanded
+
+and handle_letrec sexp =
+  let expanded = expand_letrec sexp in
   tag_parse_expression expanded
 ;;
 

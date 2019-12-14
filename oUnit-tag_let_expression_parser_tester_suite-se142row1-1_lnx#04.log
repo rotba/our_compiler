@@ -1,0 +1,12 @@
+2019-12-14T16:52:28+00:00 se142row1-1_lnx#04 I: Start test tag_let_expression_parser_tester_suite:3:test_tag_let_expression_parser_4.
+2019-12-14T16:52:28+00:00 se142row1-1_lnx#04 I: Test tag_let_expression_parser_tester_suite:3:test_tag_let_expression_parser_4 is successful.
+2019-12-14T16:52:28+00:00 se142row1-1_lnx#04 I: End test tag_let_expression_parser_tester_suite:3:test_tag_let_expression_parser_4.
+2019-12-14T16:52:28+00:00 se142row1-1_lnx#04 I: Start test tag_let_expression_parser_tester_suite:13:test_tag_let_rec_expression_parser_2.
+2019-12-14T16:52:28+00:00 se142row1-1_lnx#04 E: Test tag_let_expression_parser_tester_suite:13:test_tag_let_rec_expression_parser_2 exited with an error.
+2019-12-14T16:52:28+00:00 se142row1-1_lnx#04 E: X_syntax_error in test tag_let_expression_parser_tester_suite:13:test_tag_let_rec_expression_parser_2.
+2019-12-14T16:52:28+00:00 se142row1-1_lnx#04 E: Raised at file "./tag-parser.ml", line 93, characters 78-92
+2019-12-14T16:52:28+00:00 se142row1-1_lnx#04 E: Called from file "./tag-parser.ml", line 105, characters 26-50
+2019-12-14T16:52:28+00:00 se142row1-1_lnx#04 E: Called from file "./test_tag_let_expression_parser.ml", line 276, characters 22-2296
+2019-12-14T16:52:28+00:00 se142row1-1_lnx#04 E: Called from file "src/oUnitRunner.ml", line 46, characters 13-26
+2019-12-14T16:52:28+00:00 se142row1-1_lnx#04 E: 
+2019-12-14T16:52:28+00:00 se142row1-1_lnx#04 I: End test tag_let_expression_parser_tester_suite:13:test_tag_let_rec_expression_parser_2.
