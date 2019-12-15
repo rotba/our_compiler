@@ -1,0 +1,83 @@
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Runner: processes
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Chooser: simple
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Configuration suite_name = "tag_lambda_expression_parser_tester_suite"
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Configuration cache_filename = "/home/rotemb271/Code/School/semester_7/COMP/our_compiler/oUnit-$(suite_name).cache"
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Configuration display = "true"
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Configuration results_style_1_X = "false"
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Configuration verbose = "false"
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Configuration health_check_interval = "1."
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Configuration testdata_dir = "none"
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Configuration chooser = "simple"
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Configuration output_html_dir = "none"
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Configuration processes_kill_period = "5."
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Configuration runner = "processes"
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Configuration shards = "4"
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Configuration processes_grace_period = "5."
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Configuration log_encoding = "utf-8"
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Configuration output_junit_file = "none"
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Configuration output_file = "/home/rotemb271/Code/School/semester_7/COMP/our_compiler/oUnit-$(suite_name)-$(shard_id).log"
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Using 4 workers maximum.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Starting worker number rotemb271-Latitude-7490#01.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#01 started.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Starting worker number rotemb271-Latitude-7490#02.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#02 started.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Starting worker number rotemb271-Latitude-7490#03.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#03 started.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Starting worker number rotemb271-Latitude-7490#04.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#04 started.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Still 4 tests running : tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4, tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3, tag_lambda_expression_parser_tester_suite:1:test_tag_seq_expression_parser_2, tag_lambda_expression_parser_tester_suite:0:test_tag_seq_expression_parser_1.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: 4 tests running: tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4, tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3, tag_lambda_expression_parser_tester_suite:1:test_tag_seq_expression_parser_2, tag_lambda_expression_parser_tester_suite:0:test_tag_seq_expression_parser_1.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#01 I: Start test tag_lambda_expression_parser_tester_suite:0:test_tag_seq_expression_parser_1.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#02 I: Start test tag_lambda_expression_parser_tester_suite:1:test_tag_seq_expression_parser_2.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#03 I: Start test tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Still 4 tests running : tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4, tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3, tag_lambda_expression_parser_tester_suite:1:test_tag_seq_expression_parser_2, tag_lambda_expression_parser_tester_suite:0:test_tag_seq_expression_parser_1.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: 4 tests running: tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4, tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3, tag_lambda_expression_parser_tester_suite:1:test_tag_seq_expression_parser_2, tag_lambda_expression_parser_tester_suite:0:test_tag_seq_expression_parser_1.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#01 I: Test tag_lambda_expression_parser_tester_suite:0:test_tag_seq_expression_parser_1 is successful.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#04 I: Start test tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Still 4 tests running : tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4, tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3, tag_lambda_expression_parser_tester_suite:1:test_tag_seq_expression_parser_2, tag_lambda_expression_parser_tester_suite:0:test_tag_seq_expression_parser_1.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: 4 tests running: tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4, tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3, tag_lambda_expression_parser_tester_suite:1:test_tag_seq_expression_parser_2, tag_lambda_expression_parser_tester_suite:0:test_tag_seq_expression_parser_1.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#01 I: End test tag_lambda_expression_parser_tester_suite:0:test_tag_seq_expression_parser_1.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#02 I: Test tag_lambda_expression_parser_tester_suite:1:test_tag_seq_expression_parser_2 is successful.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Still 4 tests running : tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4, tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3, tag_lambda_expression_parser_tester_suite:1:test_tag_seq_expression_parser_2, tag_lambda_expression_parser_tester_suite:0:test_tag_seq_expression_parser_1.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: 4 tests running: tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4, tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3, tag_lambda_expression_parser_tester_suite:1:test_tag_seq_expression_parser_2, tag_lambda_expression_parser_tester_suite:0:test_tag_seq_expression_parser_1.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#02 I: End test tag_lambda_expression_parser_tester_suite:1:test_tag_seq_expression_parser_2.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Still 3 tests running : tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4, tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3, tag_lambda_expression_parser_tester_suite:1:test_tag_seq_expression_parser_2.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: 3 tests running: tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4, tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3, tag_lambda_expression_parser_tester_suite:1:test_tag_seq_expression_parser_2.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Still 2 tests running : tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4, tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: 2 tests running: tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4, tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#03 I: Test tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3 is successful.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Still 2 tests running : tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4, tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: 2 tests running: tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4, tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#03 I: End test tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Still 2 tests running : tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4, tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: 2 tests running: tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4, tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#04 I: Test tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4 is successful.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Still 1 tests running : tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: 1 tests running: tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#04 I: End test tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Still 1 tests running : tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: 1 tests running: tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: 0 tests running: .
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#01 has ended.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#02 has ended.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#03 has ended.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Worker rotemb271-Latitude-7490#04 has ended.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Used 4 worker during test execution.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Run 1 tests with shard rotemb271-Latitude-7490#01.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Run 1 tests with shard rotemb271-Latitude-7490#02.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Run 1 tests with shard rotemb271-Latitude-7490#03.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Run 1 tests with shard rotemb271-Latitude-7490#04.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: ==============
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Summary:
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Test tag_lambda_expression_parser_tester_suite:3:test_tag_seq_expression_parser_4 is successful.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Test tag_lambda_expression_parser_tester_suite:2:test_tag_seq_expression_parser_3 is successful.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Test tag_lambda_expression_parser_tester_suite:1:test_tag_seq_expression_parser_2 is successful.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Test tag_lambda_expression_parser_tester_suite:0:test_tag_seq_expression_parser_1 is successful.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Ran: 4 tests in: 0.10 seconds.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Cases: 4.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Tried: 4.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Errors: 0.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Failures: 0.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Skip: 0.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Todo: 0.
+2019-12-15T08:06:27+00:00 rotemb271-Latitude-7490#00 I: Timeout: 0.

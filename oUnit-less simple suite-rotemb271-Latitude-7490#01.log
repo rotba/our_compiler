@@ -1,0 +1,6 @@
+2019-12-15T08:06:24+00:00 rotemb271-Latitude-7490#01 I: Start test less simple suite:0:tagged def special case.
+2019-12-15T08:06:24+00:00 rotemb271-Latitude-7490#01 I: Test less simple suite:0:tagged def special case is successful.
+2019-12-15T08:06:24+00:00 rotemb271-Latitude-7490#01 I: End test less simple suite:0:tagged def special case.
+2019-12-15T08:06:24+00:00 rotemb271-Latitude-7490#01 I: Start test less simple suite:4:(lambda () x).
+2019-12-15T08:06:24+00:00 rotemb271-Latitude-7490#01 I: Test less simple suite:4:(lambda () x) is successful.
+2019-12-15T08:06:24+00:00 rotemb271-Latitude-7490#01 I: End test less simple suite:4:(lambda () x).
