@@ -1,9 +1,0 @@
-2019-12-15T08:06:21+00:00 rotemb271-Latitude-7490#02 I: Start test char suite:1:esc.
-2019-12-15T08:06:21+00:00 rotemb271-Latitude-7490#02 I: Test char suite:1:esc is successful.
-2019-12-15T08:06:21+00:00 rotemb271-Latitude-7490#02 I: End test char suite:1:esc.
-2019-12-15T08:06:21+00:00 rotemb271-Latitude-7490#02 I: Start test char suite:5:page in sensitive.
-2019-12-15T08:06:21+00:00 rotemb271-Latitude-7490#02 I: Test char suite:5:page in sensitive is successful.
-2019-12-15T08:06:21+00:00 rotemb271-Latitude-7490#02 I: End test char suite:5:page in sensitive.
-2019-12-15T08:06:21+00:00 rotemb271-Latitude-7490#02 I: Start test char suite:9:with sexpr comment.
-2019-12-15T08:06:21+00:00 rotemb271-Latitude-7490#02 I: Test char suite:9:with sexpr comment is successful.
-2019-12-15T08:06:21+00:00 rotemb271-Latitude-7490#02 I: End test char suite:9:with sexpr comment.
