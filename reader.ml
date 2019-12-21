@@ -429,7 +429,7 @@ let read_sexpr string =
 
 
 let read_sexprs string = 
-  let nt = PC.caten (PC.star nt_sexpr) PC.nt_end_of_input in
+  let nt = PC.caten (PC.star nt_sexpr) (PC.caten (PC.star nt_skip) PC.nt_end_of_input) in
   let ((res,empty1), empty2) = (nt (string_to_list string))in
    res;;
 
