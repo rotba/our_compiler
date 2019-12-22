@@ -134,7 +134,29 @@ let simple_suite =
   ];;
 
 
+let last_year =
+"last year">:::
+  [
+    "_1">::(fun _ ->
+      assert_equal_expr_tag
+        (
+          Applic' (LambdaSimple' (["x"], If' (Applic' (Var' (VarParam ("x", 0)), [Const' (Sexpr (Number (Int (1))))]), Applic' (Var' (VarParam ("x", 0)), [Const' (Sexpr (Number (Int (2))))]), Applic' (LambdaSimple' (["x"], Set' (Var' (VarParam ("x", 0)), Const' (Sexpr (Number (Int (0)))))), [Const' (Sexpr (Number (Int (3))))]))), [LambdaSimple' (["x"], Var' (VarParam ("x", 0)))])
+        )
+        (Semantics.annotate_lexical_addresses(
+             Applic
+               (LambdaSimple (["x"],
+                              If (Applic (Var "x", [Const (Sexpr (Number (Int 1)))]),
+                                  Applic (Var "x", [Const (Sexpr (Number (Int 2)))]),
+                                  Applic
+                                    (LambdaSimple (["x"], Set (Var "x", Const (Sexpr (Number (Int 0))))),
+                                     [Const (Sexpr (Number (Int 3)))]))),
+                [LambdaSimple (["x"], Var "x")])
+           )
+        )
+    );
+  ];;
 
 let () =
   run_test_tt_main simple_suite;
+  run_test_tt_main last_year;
 ;;

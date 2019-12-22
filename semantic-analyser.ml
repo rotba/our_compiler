@@ -99,9 +99,12 @@ let handle_var env v =
                       
 let rec rec_anno_lex env e =
   match e with
+  |Const(c) -> Const'(c)
+  |Set(e1,e2) -> Set'((rec_anno_lex env e1),(rec_anno_lex env e2))
   |Var(v) -> handle_var env v
   |LambdaSimple(params, body) -> handle_lambda env params body
   |Applic(proc, args) -> handle_applic env proc args
+  |If(test, dit,dif) -> handle_if env test dit dif
                                
 and handle_lambda env params body =
   let env = Env(params, env) in
@@ -113,6 +116,13 @@ and handle_applic env proc args =
   let map_func = rec_anno_lex env in
   let args' = (List.map map_func args) in
   Applic'(proc', args')
+  
+and handle_if env test dit dif =
+  let test'  = rec_anno_lex env test in
+  let dit'  = rec_anno_lex env dit in
+  let dif'  = rec_anno_lex env dif in
+  If'(test',dit',dif')
+  
 ;;
   
 
