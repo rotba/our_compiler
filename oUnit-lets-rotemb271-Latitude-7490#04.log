@@ -1,6 +1,0 @@
-2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#04 I: Start test lets:3:(let* () x).
-2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#04 I: Test lets:3:(let* () x) is successful.
-2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#04 I: End test lets:3:(let* () x).
-2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#04 I: Start test lets:6:(letrec ((x 1)) x).
-2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#04 I: Test lets:6:(letrec ((x 1)) x) is successful.
-2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#04 I: End test lets:6:(letrec ((x 1)) x).

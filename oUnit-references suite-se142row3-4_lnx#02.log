@@ -1,3 +1,0 @@
-2019-12-22T16:09:43+00:00 se142row3-4_lnx#02 I: Start test references suite:1:#{foo}=(#{foo}=1 2 3).
-2019-12-22T16:09:43+00:00 se142row3-4_lnx#02 I: Test references suite:1:#{foo}=(#{foo}=1 2 3) is successful.
-2019-12-22T16:09:43+00:00 se142row3-4_lnx#02 I: End test references suite:1:#{foo}=(#{foo}=1 2 3).

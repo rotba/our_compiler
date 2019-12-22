@@ -1,9 +1,0 @@
-2019-12-22T16:09:43+00:00 se142row3-4_lnx#04 I: Start test number suite:3:1234.
-2019-12-22T16:09:43+00:00 se142row3-4_lnx#04 I: Test number suite:3:1234 is successful.
-2019-12-22T16:09:43+00:00 se142row3-4_lnx#04 I: End test number suite:3:1234.
-2019-12-22T16:09:43+00:00 se142row3-4_lnx#04 I: Start test number suite:18:-5.000000000e-2.
-2019-12-22T16:09:43+00:00 se142row3-4_lnx#04 I: Test number suite:18:-5.000000000e-2 is successful.
-2019-12-22T16:09:43+00:00 se142row3-4_lnx#04 I: End test number suite:18:-5.000000000e-2.
-2019-12-22T16:09:43+00:00 se142row3-4_lnx#04 I: Start test number suite:24:#calc_mant 16 8a.
-2019-12-22T16:09:43+00:00 se142row3-4_lnx#04 I: Test number suite:24:#calc_mant 16 8a is successful.
-2019-12-22T16:09:43+00:00 se142row3-4_lnx#04 I: End test number suite:24:#calc_mant 16 8a.

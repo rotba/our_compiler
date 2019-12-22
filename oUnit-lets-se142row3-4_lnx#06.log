@@ -1,3 +1,0 @@
-2019-12-22T16:09:47+00:00 se142row3-4_lnx#06 I: Start test lets:5:(let* ((x 1) (y x)) x).
-2019-12-22T16:09:47+00:00 se142row3-4_lnx#06 I: Test lets:5:(let* ((x 1) (y x)) x) is successful.
-2019-12-22T16:09:47+00:00 se142row3-4_lnx#06 I: End test lets:5:(let* ((x 1) (y x)) x).
