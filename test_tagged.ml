@@ -358,7 +358,7 @@ let lets =
             (Applic(
               LambdaSimple(
                   ["x"],
-                  Var("y")
+                  Var("x")
                 ),
               [Const(Sexpr(Number(Int(1))))]
             ))

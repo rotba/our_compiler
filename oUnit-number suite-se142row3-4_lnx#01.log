@@ -1,0 +1,28 @@
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: Start test number suite:0:1.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: Test number suite:0:1 is successful.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: End test number suite:0:1.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: Start test number suite:6:+01234.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: Test number suite:6:+01234 is successful.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: End test number suite:6:+01234.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: Start test number suite:7:-0.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: Test number suite:7:-0 is successful.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: End test number suite:7:-0.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: Start test number suite:9:501.100000000000000000000.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: Test number suite:9:501.100000000000000000000 is successful.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: End test number suite:9:501.100000000000000000000.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: Start test number suite:12:1e1.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 E: Test number suite:12:1e1 has failed.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 E: expected: 10. but got: 1e1 in test number suite:12:1e1.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 E: Raised at file "src/oUnitAssert.ml", line 45, characters 8-27
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 E: Called from file "src/oUnitRunner.ml", line 46, characters 13-26
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 E: 
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: End test number suite:12:1e1.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: Start test number suite:15:3.14e+9.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: Test number suite:15:3.14e+9 is successful.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: End test number suite:15:3.14e+9.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: Start test number suite:19:#-1r1.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: Test number suite:19:#-1r1 is successful.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: End test number suite:19:#-1r1.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: Start test number suite:24:#calc_mant 16 8a.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: Test number suite:24:#calc_mant 16 8a is successful.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#01 I: End test number suite:24:#calc_mant 16 8a.

@@ -159,14 +159,14 @@ let qouted_forms_suite =
     "'a">::
       (fun _ ->
         assert_equal_sexpr
-          (Pair(Symbol("qoute"),Pair(Char 'a', Nil)))
+          (Pair(Symbol("quote"),Pair(Char 'a', Nil)))
           (Reader.read_sexpr "'#\\a")
       );
     "'(a b c)">::
       (fun _ ->
         assert_equal_sexpr
           (Pair(
-               Symbol("qoute"),
+               Symbol("quote"),
                Pair(
                    Pair(Char 'a', Pair(Char 'b', Pair(Char 'c',Nil ))),
                    Nil)
