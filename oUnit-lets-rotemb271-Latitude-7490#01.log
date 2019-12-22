@@ -1,0 +1,11 @@
+2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#01 I: Start test lets:0:(let ((x 1)) x).
+2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#01 E: Test lets:0:(let ((x 1)) x) has failed.
+2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#01 E: expected: Applic( (LambdaSimple(  ( x ) , [y] ) , [Const ( Sexpr ( 1 ) )] )
+2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#01 E: but got: Applic( (LambdaSimple(  ( x ) , [x] ) , [Const ( Sexpr ( 1 ) )] ) in test lets:0:(let ((x 1)) x).
+2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#01 E: Raised at file "src/oUnitAssert.ml", line 45, characters 8-27
+2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#01 E: Called from file "src/oUnitRunner.ml", line 46, characters 13-26
+2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#01 E: 
+2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#01 I: End test lets:0:(let ((x 1)) x).
+2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#01 I: Start test lets:4:(let ((x 1) (y x)) x).
+2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#01 I: Test lets:4:(let ((x 1) (y x)) x) is successful.
+2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#01 I: End test lets:4:(let ((x 1) (y x)) x).

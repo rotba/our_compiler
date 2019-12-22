@@ -1,0 +1,6 @@
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#02 I: Start test string_suite:1:long string.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#02 I: Test string_suite:1:long string is successful.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#02 I: End test string_suite:1:long string.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#02 I: Start test string_suite:7:with comments.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#02 I: Test string_suite:7:with comments is successful.
+2019-12-22T15:58:34+00:00 se142row3-4_lnx#02 I: End test string_suite:7:with comments.

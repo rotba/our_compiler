@@ -1,9 +1,0 @@
-2019-12-14T21:00:56+00:00 alon#01 I: Start test string_suite:0:moshe.
-2019-12-14T21:00:56+00:00 alon#01 I: Test string_suite:0:moshe is successful.
-2019-12-14T21:00:56+00:00 alon#01 I: End test string_suite:0:moshe.
-2019-12-14T21:00:56+00:00 alon#01 I: Start test string_suite:4:with meta ci.
-2019-12-14T21:00:56+00:00 alon#01 I: Test string_suite:4:with meta ci is successful.
-2019-12-14T21:00:56+00:00 alon#01 I: End test string_suite:4:with meta ci.
-2019-12-14T21:00:56+00:00 alon#01 I: Start test string_suite:8:with nested sexpr comments.
-2019-12-14T21:00:56+00:00 alon#01 I: Test string_suite:8:with nested sexpr comments is successful.
-2019-12-14T21:00:56+00:00 alon#01 I: End test string_suite:8:with nested sexpr comments.

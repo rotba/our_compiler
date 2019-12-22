@@ -285,7 +285,9 @@ let tok_radix s =
 
 let rec dotted_list_list_packer = function
   | (e::[], (d, s)) -> Pair(e, s)
-  | (e::s, f) -> Pair(e, (dotted_list_list_packer (s, f)));;
+  | (e::s, f) -> Pair(e, (dotted_list_list_packer (s, f)))
+  |([],_)-> raise Exhausting
+;;
 
 let nt_float_to_string = 
   PC.pack nt_float ( fun (x) ->

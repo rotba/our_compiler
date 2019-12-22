@@ -1,0 +1,6 @@
+2019-12-16T13:08:46+00:00 rotemb271-Latitude-7490#02 I: Start test simple suite:1:moshe.
+2019-12-16T13:08:46+00:00 rotemb271-Latitude-7490#02 I: Test simple suite:1:moshe is successful.
+2019-12-16T13:08:46+00:00 rotemb271-Latitude-7490#02 I: End test simple suite:1:moshe.
+2019-12-16T13:08:46+00:00 rotemb271-Latitude-7490#02 I: Start test simple suite:5:(set! x 1).
+2019-12-16T13:08:46+00:00 rotemb271-Latitude-7490#02 I: Test simple suite:5:(set! x 1) is successful.
+2019-12-16T13:08:46+00:00 rotemb271-Latitude-7490#02 I: End test simple suite:5:(set! x 1).

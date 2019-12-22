@@ -1,0 +1,6 @@
+2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#03 I: Start test quasiquoate:2:`,@x.
+2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#03 I: Test quasiquoate:2:`,@x is successful.
+2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#03 I: End test quasiquoate:2:`,@x.
+2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#03 I: Start test quasiquoate:5:`(a . ,@b).
+2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#03 I: Test quasiquoate:5:`(a . ,@b) is successful.
+2019-12-16T13:08:47+00:00 rotemb271-Latitude-7490#03 I: End test quasiquoate:5:`(a . ,@b).

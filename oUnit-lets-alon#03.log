@@ -1,6 +1,0 @@
-2019-12-14T21:00:58+00:00 alon#03 I: Start test lets:2:(let* ((x 1)) x).
-2019-12-14T21:00:58+00:00 alon#03 I: Test lets:2:(let* ((x 1)) x) is successful.
-2019-12-14T21:00:58+00:00 alon#03 I: End test lets:2:(let* ((x 1)) x).
-2019-12-14T21:00:58+00:00 alon#03 I: Start test lets:7:test_tag_let_rec_expression_parser_2.
-2019-12-14T21:00:58+00:00 alon#03 I: Test lets:7:test_tag_let_rec_expression_parser_2 is successful.
-2019-12-14T21:00:58+00:00 alon#03 I: End test lets:7:test_tag_let_rec_expression_parser_2.
