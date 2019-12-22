@@ -177,6 +177,22 @@ let tok_bool  =
 
 let nt_digit = PC.range '0' '9';;
 let nt_natural = PC.plus nt_digit;;
+
+let nt_letter_ci = PC.range_ci 'a' 'z';;
+let nt_Punc = PC.one_of "!$^*-_=+<>/?:";;
+let nt_sym_char = PC.disj_list [
+  nt_letter_ci;
+  nt_digit;
+  nt_Punc
+];;
+
+let nt_sym = PC.plus nt_sym_char;;
+let tok_sym = 
+  PC.pack nt_sym (fun (x) ->
+  Symbol (String.lowercase_ascii (list_to_string x)));;
+
+
+
 let nt_radix_digit base = 
   if (base <= 0 || 36 < base)
   then raise PC.X_no_match
@@ -190,7 +206,9 @@ let nt_radix_digit base =
   );;
 let nt_sign = (PC.maybe (PC.disj (PC.char '+') (PC.char '-')));;
 let nt_int_gen nt_digis = (PC.caten nt_sign nt_digis);;
-let nt_int = nt_int_gen nt_natural;;
+let nt_int = 
+ PC.not_followed_by (nt_int_gen nt_natural) (PC.disj nt_letter_ci nt_Punc);;
+
 (* let nt_int = (PC.caten nt_sign nt_natural);; *)
 let tok_int = 
   PC.pack nt_int ( fun (x) ->
@@ -263,18 +281,6 @@ let tok_radix s =
     | ((Some(s), e), (d,m)) -> Number (Float ((float_of_int (calc_sign s))*.(dig_list_to_float base e m)))) s);;
   
 
-let nt_letter_ci = PC.range_ci 'a' 'z';;
-let nt_Punc = PC.one_of "!$^*-_=+<>/?:";;
-let nt_sym_char = PC.disj_list [
-  nt_letter_ci;
-  nt_digit;
-  nt_Punc
-];;
-
-let nt_sym = PC.plus nt_sym_char;;
-let tok_sym = 
-  PC.pack nt_sym (fun (x) ->
-  Symbol (String.lowercase_ascii (list_to_string x)));;
 
 let rec dotted_list_list_packer = function
   | (e::[], (d, s)) -> Pair(e, s)
@@ -349,12 +355,12 @@ and nt_sexpr_comment s = (PC.pack (PC.caten (PC.word "#;") nt_sexpr) (function _
 and nt_skip s = (PC.disj nt_comment nt_whitespaces) s
 and make_spaced nt = make_paired (PC.star nt_skip) (PC.star nt_skip) nt
 and nt_list s =
-  let nt = make_paired nt_lparen nt_rparen (PC.star nt_sexpr) in
+  let nt = make_paired (PC.caten nt_lparen (PC.star nt_skip)) (PC.caten (PC.star nt_skip) nt_rparen) (PC.star nt_sexpr) in
   let nt = PC.pack nt list_packer in
   nt s
 and nt_dotted_list s =
   let nt = PC.caten (PC.plus nt_sexpr) (PC.caten (PC.char '.') nt_sexpr) in 
-  let nt = make_paired nt_lparen nt_rparen nt in
+  let nt = make_paired (PC.caten nt_lparen (PC.star nt_skip)) (PC.caten (PC.star nt_skip) nt_rparen) nt in
   let nt = PC.pack nt dotted_list_list_packer in
   nt s
 and nt_qoute s = 
@@ -425,7 +431,7 @@ let read_sexpr string =
 
 
 let read_sexprs string = 
-  let nt = PC.caten (PC.star nt_sexpr) PC.nt_end_of_input in
+  let nt = PC.caten (PC.star nt_sexpr) (PC.caten (PC.star nt_skip) PC.nt_end_of_input) in
   let ((res,empty1), empty2) = (nt (string_to_list string))in
    res;;
 
