@@ -103,18 +103,26 @@ let rec rec_anno_lex env e =
   |Set(e1,e2) -> Set'((rec_anno_lex env e1),(rec_anno_lex env e2))
   |Var(v) -> handle_var env v
   |LambdaSimple(params, body) -> handle_lambda env params body
+  |LambdaOpt(params,opt ,body) -> handle_lambda_opt env params opt body
   |Applic(proc, args) -> handle_applic env proc args
   |If(test, dit,dif) -> handle_if env test dit dif
+  |Or(args) -> handle_or env args
+  |Seq(exps) -> handle_seq env exps
+  |Def(var,vall) -> handle_def env var vall
                                
 and handle_lambda env params body =
   let env = Env(params, env) in
   let body' = (rec_anno_lex env body) in
   LambdaSimple'(params, body')
 
+and handle_lambda_opt env params opt body =
+  let env = Env((List.append params [opt]), env) in
+  let body' = (rec_anno_lex env body) in
+  LambdaOpt'(params,opt,body')
+
 and handle_applic env proc args =
   let proc' = rec_anno_lex env proc in
-  let map_func = rec_anno_lex env in
-  let args' = (List.map map_func args) in
+  let args' = (map env args) in
   Applic'(proc', args')
   
 and handle_if env test dit dif =
@@ -122,7 +130,21 @@ and handle_if env test dit dif =
   let dit'  = rec_anno_lex env dit in
   let dif'  = rec_anno_lex env dif in
   If'(test',dit',dif')
-  
+
+and handle_or env args =
+  Or'((map env args))
+
+and handle_seq env exps =
+  Seq'((map env exps))
+
+and map env l=
+  let map_func = rec_anno_lex env in
+  (List.map map_func l)
+
+and handle_def env var vall =
+  let var' = rec_anno_lex env var in
+  let vall' = rec_anno_lex env vall in
+  Def'(var',vall')
 ;;
   
 

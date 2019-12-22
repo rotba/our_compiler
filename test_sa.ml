@@ -154,6 +154,59 @@ let last_year =
            )
         )
     );
+    "_2">::(fun _ ->
+      assert_equal_expr_tag
+        (
+          LambdaSimple' (["x"], Or' ([Applic' (LambdaOpt' (["y"], "z", Applic' (LambdaSimple' ([], Applic' (LambdaSimple' ([], Applic' (Var' (VarFree "+"), [Var' (VarBound ("x", 2, 0));Var' (VarBound ("z", 1, 1))])), [])), [])), [Var' (VarParam ("x", 0));Const' (Sexpr (Number (Int (1))))]);LambdaSimple' ([], Set' (Var' (VarBound ("x", 0, 0)), Var' (VarFree "w")));Applic' (Var' (VarFree "w"), [Var' (VarFree "w")])]))
+        )
+        (Semantics.annotate_lexical_addresses(
+             LambdaSimple (["x"],
+                           Or
+                             [Applic
+                                (LambdaOpt (["y"], "z",
+                                            Applic
+                                              (LambdaSimple ([],
+                                                             Applic (LambdaSimple ([], Applic (Var "+", [Var "x"; Var "z"])), [])),
+                                               [])),
+                                 [Var "x"; Const (Sexpr (Number (Int 1)))]);
+                              LambdaSimple ([], Set (Var "x", Var "w")); Applic (Var "w", [Var "w"])])
+           )
+        )
+    );
+    "_3">::(fun _ ->
+      assert_equal_expr_tag
+        (
+          If' (Applic' (LambdaSimple' (["y"], Var' (VarFree "x")), []), Applic' (LambdaSimple' (["x"], Seq' ([Set' (Var' (VarParam ("x", 0)), Var' (VarFree "y"));LambdaSimple' ([], Set' (Var' (VarBound ("x", 0, 0)), Const' (Sexpr (Number (Int (1))))))])), [Const' (Sexpr (Symbol "a"))]), LambdaSimple' (["x"], Set' (Var' (VarParam ("x", 0)), Var' (VarFree "y"))))
+        )
+        (Semantics.annotate_lexical_addresses(
+             If (Applic (LambdaSimple (["y"], Var "x"), []),
+                 Applic
+                   (LambdaSimple (["x"],
+                                  Seq
+                                    [Set (Var "x", Var "y");
+                                     LambdaSimple ([], Set (Var "x", Const (Sexpr (Number (Int 1)))))]),
+                    [Const (Sexpr (Symbol "a"))]),
+                 LambdaSimple (["x"], Set (Var "x", Var "y")))
+           )
+        )
+    );
+    "_4">::(fun _ ->
+      assert_equal_expr_tag
+        (
+          Def' (Var' (VarFree "a"), Applic' (LambdaSimple' ([], LambdaOpt' ([], "x", Seq' ([Var' (VarParam ("x", 0));LambdaOpt' ([], "y", Set' (Var' (VarParam ("y", 0)), Const' (Sexpr (Number (Int (1))))))]))), []))
+        )
+        (Semantics.annotate_lexical_addresses(
+             Def (Var "a",
+                  Applic
+                    (LambdaSimple ([],
+                                   LambdaOpt ([], "x",
+                                              Seq
+                                                [Var "x";
+                                                 LambdaOpt ([], "y", Set (Var "y", Const (Sexpr (Number (Int 1)))))])),
+                     []))
+           )
+        )
+    );
   ];;
 
 let () =
