@@ -1,0 +1,6 @@
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: Start test list_suite:0:(a b c).
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: Test list_suite:0:(a b c) is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: End test list_suite:0:(a b c).
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: Start test list_suite:6:(a         b #;#t .c).
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: Test list_suite:6:(a         b #;#t .c) is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: End test list_suite:6:(a         b #;#t .c).

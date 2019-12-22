@@ -1,0 +1,118 @@
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Runner: processes
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Chooser: simple
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Configuration suite_name = "char suite"
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Configuration cache_filename = "/users/studs/bsc/2019/alonbrav/our_compiler/oUnit-$(suite_name).cache"
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Configuration display = "true"
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Configuration results_style_1_X = "false"
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Configuration verbose = "false"
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Configuration health_check_interval = "1."
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Configuration testdata_dir = "none"
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Configuration chooser = "simple"
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Configuration output_html_dir = "none"
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Configuration processes_kill_period = "5."
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Configuration runner = "processes"
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Configuration shards = "6"
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Configuration processes_grace_period = "5."
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Configuration log_encoding = "utf-8"
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Configuration output_junit_file = "none"
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Configuration output_file = "/users/studs/bsc/2019/alonbrav/our_compiler/oUnit-$(suite_name)-$(shard_id).log"
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Using 6 workers maximum.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Starting worker number se142row3-4_lnx#01.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Worker se142row3-4_lnx#01 started.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Starting worker number se142row3-4_lnx#02.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Worker se142row3-4_lnx#02 started.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Starting worker number se142row3-4_lnx#03.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Worker se142row3-4_lnx#03 started.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Starting worker number se142row3-4_lnx#04.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Worker se142row3-4_lnx#04 started.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Starting worker number se142row3-4_lnx#05.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Worker se142row3-4_lnx#05 started.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Starting worker number se142row3-4_lnx#06.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Worker se142row3-4_lnx#06 started.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: 6 tests running: char suite:5:page in sensitive, char suite:4:newline, char suite:3:out_of_range_space, char suite:2:out_of_range_128, char suite:1:esc, char suite:0:a.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: Start test char suite:0:a.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#02 I: Start test char suite:1:esc.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#03 I: Start test char suite:2:out_of_range_128.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#04 I: Start test char suite:3:out_of_range_space.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: 6 tests running: char suite:5:page in sensitive, char suite:4:newline, char suite:3:out_of_range_space, char suite:2:out_of_range_128, char suite:1:esc, char suite:0:a.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: Test char suite:0:a is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#02 I: Test char suite:1:esc is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: 6 tests running: char suite:5:page in sensitive, char suite:4:newline, char suite:3:out_of_range_space, char suite:2:out_of_range_128, char suite:1:esc, char suite:0:a.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: End test char suite:0:a.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#02 I: End test char suite:1:esc.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: 6 tests running: char suite:5:page in sensitive, char suite:4:newline, char suite:3:out_of_range_space, char suite:2:out_of_range_128, char suite:1:esc, char suite:0:a.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: 6 tests running: char suite:7:with comment, char suite:6:with whitespaces, char suite:5:page in sensitive, char suite:4:newline, char suite:3:out_of_range_space, char suite:2:out_of_range_128.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#02 I: Start test char suite:6:with whitespaces.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: Start test char suite:7:with comment.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: 6 tests running: char suite:7:with comment, char suite:6:with whitespaces, char suite:5:page in sensitive, char suite:4:newline, char suite:3:out_of_range_space, char suite:2:out_of_range_128.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#03 I: Test char suite:2:out_of_range_128 is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#05 I: Start test char suite:4:newline.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: 6 tests running: char suite:7:with comment, char suite:6:with whitespaces, char suite:5:page in sensitive, char suite:4:newline, char suite:3:out_of_range_space, char suite:2:out_of_range_128.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#03 I: End test char suite:2:out_of_range_128.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: 6 tests running: char suite:7:with comment, char suite:6:with whitespaces, char suite:5:page in sensitive, char suite:4:newline, char suite:3:out_of_range_space, char suite:2:out_of_range_128.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: 6 tests running: char suite:8:with comments, char suite:7:with comment, char suite:6:with whitespaces, char suite:5:page in sensitive, char suite:4:newline, char suite:3:out_of_range_space.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#03 I: Start test char suite:8:with comments.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: 6 tests running: char suite:8:with comments, char suite:7:with comment, char suite:6:with whitespaces, char suite:5:page in sensitive, char suite:4:newline, char suite:3:out_of_range_space.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#04 I: Test char suite:3:out_of_range_space is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: 6 tests running: char suite:8:with comments, char suite:7:with comment, char suite:6:with whitespaces, char suite:5:page in sensitive, char suite:4:newline, char suite:3:out_of_range_space.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#04 I: End test char suite:3:out_of_range_space.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: 6 tests running: char suite:8:with comments, char suite:7:with comment, char suite:6:with whitespaces, char suite:5:page in sensitive, char suite:4:newline, char suite:3:out_of_range_space.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Still 6 tests running : char suite:9:with sexpr comment, char suite:8:with comments, char suite:7:with comment, char suite:6:with whitespaces, char suite:5:page in sensitive, char suite:4:newline.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: 6 tests running: char suite:9:with sexpr comment, char suite:8:with comments, char suite:7:with comment, char suite:6:with whitespaces, char suite:5:page in sensitive, char suite:4:newline.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#04 I: Start test char suite:9:with sexpr comment.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Still 6 tests running : char suite:9:with sexpr comment, char suite:8:with comments, char suite:7:with comment, char suite:6:with whitespaces, char suite:5:page in sensitive, char suite:4:newline.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: 6 tests running: char suite:9:with sexpr comment, char suite:8:with comments, char suite:7:with comment, char suite:6:with whitespaces, char suite:5:page in sensitive, char suite:4:newline.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#05 I: Test char suite:4:newline is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#06 I: Start test char suite:5:page in sensitive.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#02 I: Test char suite:6:with whitespaces is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: Test char suite:7:with comment is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#03 I: Test char suite:8:with comments is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#04 I: Test char suite:9:with sexpr comment is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Still 6 tests running : char suite:9:with sexpr comment, char suite:8:with comments, char suite:7:with comment, char suite:6:with whitespaces, char suite:5:page in sensitive, char suite:4:newline.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: 6 tests running: char suite:9:with sexpr comment, char suite:8:with comments, char suite:7:with comment, char suite:6:with whitespaces, char suite:5:page in sensitive, char suite:4:newline.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#05 I: End test char suite:4:newline.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#06 I: Test char suite:5:page in sensitive is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#02 I: End test char suite:6:with whitespaces.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: End test char suite:7:with comment.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#03 I: End test char suite:8:with comments.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#04 I: End test char suite:9:with sexpr comment.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Still 6 tests running : char suite:9:with sexpr comment, char suite:8:with comments, char suite:7:with comment, char suite:6:with whitespaces, char suite:5:page in sensitive, char suite:4:newline.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: 6 tests running: char suite:9:with sexpr comment, char suite:8:with comments, char suite:7:with comment, char suite:6:with whitespaces, char suite:5:page in sensitive, char suite:4:newline.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#06 I: End test char suite:5:page in sensitive.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Still 1 tests running : char suite:5:page in sensitive.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: 1 tests running: char suite:5:page in sensitive.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: 0 tests running: .
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Worker se142row3-4_lnx#04 has ended.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Worker se142row3-4_lnx#06 has ended.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: 0 tests running: .
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Worker se142row3-4_lnx#05 has ended.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Worker se142row3-4_lnx#02 has ended.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Worker se142row3-4_lnx#01 has ended.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Worker se142row3-4_lnx#03 has ended.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Used 6 worker during test execution.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Run 2 tests with shard se142row3-4_lnx#03.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Run 1 tests with shard se142row3-4_lnx#06.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Run 2 tests with shard se142row3-4_lnx#04.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Run 1 tests with shard se142row3-4_lnx#05.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Run 2 tests with shard se142row3-4_lnx#02.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Run 2 tests with shard se142row3-4_lnx#01.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: ==============
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Summary:
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Test char suite:5:page in sensitive is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Test char suite:9:with sexpr comment is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Test char suite:8:with comments is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Test char suite:7:with comment is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Test char suite:6:with whitespaces is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Test char suite:4:newline is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Test char suite:3:out_of_range_space is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Test char suite:2:out_of_range_128 is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Test char suite:1:esc is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Test char suite:0:a is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Ran: 10 tests in: 0.12 seconds.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Cases: 10.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Tried: 10.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Errors: 0.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Failures: 0.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Skip: 0.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Todo: 0.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#00 I: Timeout: 0.

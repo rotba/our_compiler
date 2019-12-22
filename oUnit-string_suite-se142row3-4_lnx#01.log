@@ -1,0 +1,9 @@
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: Start test string_suite:0:moshe.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: Test string_suite:0:moshe is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: End test string_suite:0:moshe.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: Start test string_suite:6:with comment.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: Test string_suite:6:with comment is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: End test string_suite:6:with comment.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: Start test string_suite:8:with nested sexpr comments.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: Test string_suite:8:with nested sexpr comments is successful.
+2019-12-22T16:18:28+00:00 se142row3-4_lnx#01 I: End test string_suite:8:with nested sexpr comments.

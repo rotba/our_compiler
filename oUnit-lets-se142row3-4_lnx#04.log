@@ -1,0 +1,6 @@
+2019-12-22T16:18:31+00:00 se142row3-4_lnx#04 I: Start test lets:3:(let* () x).
+2019-12-22T16:18:31+00:00 se142row3-4_lnx#04 I: Test lets:3:(let* () x) is successful.
+2019-12-22T16:18:31+00:00 se142row3-4_lnx#04 I: End test lets:3:(let* () x).
+2019-12-22T16:18:31+00:00 se142row3-4_lnx#04 I: Start test lets:7:test_tag_let_rec_expression_parser_2.
+2019-12-22T16:18:31+00:00 se142row3-4_lnx#04 I: Test lets:7:test_tag_let_rec_expression_parser_2 is successful.
+2019-12-22T16:18:31+00:00 se142row3-4_lnx#04 I: End test lets:7:test_tag_let_rec_expression_parser_2.
