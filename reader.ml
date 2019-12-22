@@ -207,7 +207,8 @@ let nt_radix_digit base =
 let nt_sign = (PC.maybe (PC.disj (PC.char '+') (PC.char '-')));;
 let nt_int_gen nt_digis = (PC.caten nt_sign nt_digis);;
 let nt_int = 
- PC.not_followed_by (nt_int_gen nt_natural) (PC.disj nt_letter_ci nt_Punc);;
+  PC.not_followed_by (nt_int_gen nt_natural) (PC.disj nt_letter_ci nt_Punc);;
+let nt_int_for_science = nt_int_gen nt_natural;;
 
 (* let nt_int = (PC.caten nt_sign nt_natural);; *)
 let tok_int = 
@@ -294,14 +295,14 @@ let nt_float_to_string =
 
 
 let nt_int_to_string s = 
-  PC.pack nt_int ( fun (x) ->
+  PC.pack nt_int_for_science ( fun (x) ->
   match x with
     | (None, e) -> (list_to_string e)
     | (Some(s), e) -> (list_to_string (s::e))) s;;
 
 
 let nt_num_to_string s = 
-try (PC.pack (PC.not_followed_by nt_int (PC.char '.')) ( fun (x) ->
+try (PC.pack (PC.not_followed_by nt_int_for_science (PC.char '.')) ( fun (x) ->
 match x with
   | (None, e) -> (list_to_string e)
   | (Some(s), e) -> (list_to_string (s::e))) s)
