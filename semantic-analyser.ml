@@ -51,6 +51,7 @@ let rec expr'_eq e1 e2 =
 	
                        
 exception X_syntax_error;;
+exception X_bug_error;;
 
 module type SEMANTICS = sig
   val run_semantics : expr -> expr'
@@ -61,7 +62,64 @@ end;;
 
 module Semantics : SEMANTICS = struct
 
-let annotate_lexical_addresses e = raise X_not_yet_implemented;;
+
+type env =
+  |Nil
+  |Env of string list * env;;
+
+let rec get_index v l =
+  match l with
+  |[] -> raise X_bug_error
+  |first::rest ->
+    if(first = v)
+    then 0
+    else
+      let acc = (get_index v rest) in
+      1+acc;;
+
+let rec handle_bound v env major_index=
+  match env with
+  |Nil -> Var'(VarFree(v))
+  |Env(l,env) ->
+    if(List.exists (fun(x)->x=v)) l
+    then
+      let minor_index = (get_index v l) in
+      Var'(VarBound(v,major_index, minor_index))
+    else (handle_bound v env (major_index +1))
+
+let handle_var env v =
+  let Env(l , prev_env) = env in
+  if(List.exists (fun(x)->x=v) l)
+  then
+    let index = (get_index v l) in
+    Var'(VarParam(v, index))
+  else (handle_bound v prev_env 0);;
+
+;;
+                      
+let rec rec_anno_lex env e =
+  match e with
+  |Var(v) -> handle_var env v
+  |LambdaSimple(params, body) -> handle_lambda env params body
+  |Applic(proc, args) -> handle_applic env proc args
+                               
+and handle_lambda env params body =
+  let env = Env(params, env) in
+  let body' = (rec_anno_lex env body) in
+  LambdaSimple'(params, body')
+
+and handle_applic env proc args =
+  let proc' = rec_anno_lex env proc in
+  let map_func = rec_anno_lex env in
+  let args' = (List.map map_func args) in
+  Applic'(proc', args')
+;;
+  
+
+let annotate_lexical_addresses e =
+  let env = Env([],Nil) in
+  rec_anno_lex env e
+;;
 
 let annotate_tail_calls e = raise X_not_yet_implemented;;
 
