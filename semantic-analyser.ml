@@ -67,6 +67,13 @@ type env =
   |Nil
   |Env of string list * env;;
 
+type oenv =
+  |Nil
+  |Oenv of int * string list * oenv;;
+
+type occurence =
+  |Occurence of var * expr' * oenv * bool
+
 let rec get_index v l =
   match l with
   |[] -> raise X_bug_error
@@ -201,6 +208,38 @@ and map in_tp l =
   List.map map_func l
 ;;
 
+
+let rec box_s env e =
+  match e with
+  | Const'(c) -> Const'(c)
+  | Var'(v) -> Var'(v)
+  | LambdaSimple'(params, body)->
+     let body' = (List.fold_left box_param body params) in
+     1
+(* | If' of expr' * expr' * expr'
+ * | Seq' of expr' list
+ * | Set' of expr' * expr'
+ * | Def' of expr' * expr'
+ * | Or' of expr' list
+ * | LambdaOpt' of string list * string * expr'
+ * | Applic' of expr' * (expr' list)
+ * | ApplicTP' of expr' * (expr' list) *)
+
+and box_param p body =
+  let occurences = find_occurences p body in
+  let is_box_required = check_box_required occurences in
+  if(is_box_required)
+  then
+    box p body
+  else
+    body
+  
+and find_occurences p body =
+  match body with
+  |Var'(v) ->
+       
+;;
+
 let annotate_lexical_addresses e =
   let env = Env([],Nil) in
   rec_anno_lex env e
@@ -212,7 +251,9 @@ let annotate_tail_calls e =
 
 
 
-let box_set e = raise X_not_yet_implemented;;
+let box_set e =
+  box_s Nil e 
+;;
 
 let run_semantics expr =
   box_set
