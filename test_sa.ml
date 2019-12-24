@@ -66,6 +66,7 @@ and exp'_to_string  =
   |Var'(VarBound(v,major, minor)) -> String.concat "" ["Var' ( VarBound ( "; v;" , ";(string_of_int major); " , "; (string_of_int major) ; " ) )"]
   |LambdaSimple'(params, body) -> String.concat "" ["(LambdaSimple'( ";" ( " ; (string_list_to_string params ); " ) " ; ", ["; (exp'_to_string body)  ;"] )"]
   |Applic'(name,params) -> String.concat "" ["Applic'( "; (exp'_to_string name);" , ["; (seq'_to_string params exp'_to_string)  ;"] )"]
+  |If'(e1,e2,e3)-> String.concat "" ["(If'( "; (exp'_to_string e1 ); " , " ; (exp'_to_string e2) ; "," ; (exp'_to_string e3)  ;" )"]
   |_->"not_implemented"
   
 ;;
@@ -137,6 +138,23 @@ let simple_suite =
 let last_year =
 "last year">:::
   [
+    "_0">::(fun _ ->
+      assert_equal_expr_tag
+        (
+          Applic' (LambdaSimple' (["x"], If' (Applic' (Var' (VarParam ("x", 0)), [Const' (Sexpr (Number (Int (1))))]), Applic' (Var' (VarParam ("x", 0)), [Const' (Sexpr (Number (Int (2))))]), Applic' (LambdaSimple' (["x"], Set' (Var' (VarParam ("x", 0)), Const' (Sexpr (Number (Int (0)))))), [Const' (Sexpr (Number (Int (3))))]))), [LambdaSimple' (["x"], Var' (VarParam ("x", 0)))])
+        )
+        (Semantics.annotate_lexical_addresses(
+             Applic
+               (LambdaSimple (["x"],
+                              If (Applic (Var "x", [Const (Sexpr (Number (Int 1)))]),
+                                  Applic (Var "x", [Const (Sexpr (Number (Int 2)))]),
+                                  Applic
+                                    (LambdaSimple (["x"], Set (Var "x", Const (Sexpr (Number (Int 0))))),
+                                     [Const (Sexpr (Number (Int 3)))]))),
+                [LambdaSimple (["x"], Var "x")])
+           )
+        )
+    );
     "_1">::(fun _ ->
       assert_equal_expr_tag
         (

@@ -146,14 +146,71 @@ and handle_def env var vall =
   let vall' = rec_anno_lex env vall in
   Def'(var',vall')
 ;;
-  
+
+
+let rec annotate_tc in_tp e =
+  match e with
+  |Applic'(proc, args) ->
+    let proc' = (annotate_tc false proc) in
+    let args' = (map false args) in
+    if(in_tp)
+    then
+      ApplicTP'(proc', args')
+    else
+      Applic'(proc', args')
+  |LambdaSimple'(params, body)->
+    let body' = annotate_tc true body in
+    LambdaSimple'(params, body')
+  |LambdaOpt'(params, opt, body)->
+    let body' = annotate_tc true body in
+    LambdaOpt'(params,opt, body')
+  |If'(test, dit, dif)->
+    let test'= annotate_tc false test  in
+    let dit' = annotate_tc in_tp dit  in
+    let dif' = annotate_tc in_tp dif  in
+    If'(test',dit', dif')
+  | Const'(c) -> Const'(c)
+  | Var'(v) -> Var'(v)
+  | Seq'(l) ->
+     let rec map_list =function
+       |[] -> []
+       |last::[] -> [(annotate_tc in_tp last)]
+       |car::cdr -> (annotate_tc false car)::(map_list cdr)
+     in
+     let l =(map_list l) in
+     Seq'(l)
+  | Set'(var,vall) ->
+     let var' = annotate_tc false var in
+     let vall' = annotate_tc false vall  in
+     Set'(var', vall')
+  | Def'(var,vall) ->
+     let var' = annotate_tc false var  in
+     let vall' = annotate_tc false var  in
+     Def'(var', vall')
+  | Or'(args) ->
+     let rec map_list =function
+       |[] -> []
+       |last::[] -> [(annotate_tc in_tp last)]
+       |car::cdr -> (annotate_tc false car)::(map_list cdr)
+     in
+     let args' =map_list args in
+     Or'(args')
+
+and map in_tp l =
+  let map_func = annotate_tc in_tp in
+  List.map map_func l
+;;
 
 let annotate_lexical_addresses e =
   let env = Env([],Nil) in
   rec_anno_lex env e
 ;;
 
-let annotate_tail_calls e = raise X_not_yet_implemented;;
+let annotate_tail_calls e =
+  annotate_tc false e 
+;;
+
+
 
 let box_set e = raise X_not_yet_implemented;;
 
