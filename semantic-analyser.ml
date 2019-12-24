@@ -214,7 +214,7 @@ let rec box_s env e =
   | Const'(c) -> Const'(c)
   | Var'(v) -> Var'(v)
   | LambdaSimple'(params, body)->
-     let body' = (List.fold_left box_param body params) in
+     let body' = (List.fold_left box_param body params e Oenv((get_index ()), params, env)) in
      1
 (* | If' of expr' * expr' * expr'
  * | Seq' of expr' list
@@ -225,8 +225,8 @@ let rec box_s env e =
  * | Applic' of expr' * (expr' list)
  * | ApplicTP' of expr' * (expr' list) *)
 
-and box_param p body =
-  let occurences = find_occurences p body in
+and box_param p body lambda env =
+  let occurences = find_occurences p body lambda env in
   let is_box_required = check_box_required occurences in
   if(is_box_required)
   then
@@ -234,9 +234,30 @@ and box_param p body =
   else
     body
   
-and find_occurences p body =
+and find_occurences p body lambda env =
   match body with
-  |Var'(v) ->
+  |Var'(v) -> (
+    match v with
+    | VarFree(v) -> (if (v = p)
+                      then
+                      ([Occurence(VarFree(v), lambda, env, false]))
+                      else
+                      ([])
+                      )
+    | VarParam(v) -> (if (v = p)
+                      then
+                      ([Occurence(VarParam(v), lambda, env, false]))
+                      else
+                      ([])
+                      )
+    | VarBound(v) -> (if (v = p)
+                      then
+                      ([Occurence(VarBound(v), lambda, env, false]))
+                      else
+                      ([])
+                      )
+  )
+  | Set'(var,vall) ->  (handle_set p body lambda env var vall)
        
 ;;
 
@@ -249,7 +270,12 @@ let annotate_tail_calls e =
   annotate_tc false e 
 ;;
 
-
+let gen_id = 
+  let id = ref (-1) in
+  let func = fun () ->(
+    id := !id + 1; !id
+  ) in 
+  func;; 
 
 let box_set e =
   box_s Nil e 
