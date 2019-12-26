@@ -1,6 +1,6 @@
 #use "tag-parser.ml";;
 
-let debug = true;;
+let debug = false;;
 
 
 type var = 
@@ -25,18 +25,29 @@ type expr' =
   | ApplicTP' of expr' * (expr' list);;
 
 
+let var_to_string = function
+  |VarFree(v) -> String.concat "" ["VarFree ( "; v; " )"]
+  |VarParam(v,i) -> String.concat "" ["VarParam ( "; v;" , ";(string_of_int i) ; " )"]
+  |VarBound(v,major, minor) -> String.concat "" ["VarBound ( "; v;" , ";(string_of_int major); " , "; (string_of_int major) ; " )"];;
+
 let rec exp'_to_string  =
   function
-  |Var'(VarFree(v)) -> String.concat "" ["Var' ( VarFree ( "; v; " ) )"]
-  |Var'(VarParam(v,i)) -> String.concat "" ["Var' ( VarParam ( "; v;" , ";(string_of_int i) ; " ) )"]
-  |Var'(VarBound(v,major, minor)) -> String.concat "" ["Var' ( VarBound ( "; v;" , ";(string_of_int major); " , "; (string_of_int major) ; " ) )"]
+  |Const'(Sexpr(s)) -> String.concat "" ["Const' ( ";(sexpr_to_string s) ; ")"]
+  |Var'(v) -> String.concat "" ["Var' ( ";(var_to_string v) ; ")"]
   |LambdaSimple'(params, body) -> String.concat "" ["(LambdaSimple'( ";" ( " ; (string_list_to_string params ); " ) " ; ", ["; (exp'_to_string body)  ;"] )"]
+  |LambdaOpt'(params,opt, body) -> String.concat "" ["(LambdaOpt'( ";" ( " ; (string_list_to_string params ); " . ";opt ;" ), "  ; ", ["; (exp'_to_string body)  ;"] )"]
   |Applic'(name,params) -> String.concat "" ["Applic'( "; (exp'_to_string name);" , ["; (seq'_to_string params exp'_to_string)  ;"] )"]
   |ApplicTP'(name,params) -> String.concat "" ["ApplicTP'( "; (exp'_to_string name);" , ["; (seq'_to_string params exp'_to_string)  ;"] )"]
   |If'(e1,e2,e3)-> String.concat "" ["(If'( "; (exp'_to_string e1 ); " , " ; (exp'_to_string e2) ; "," ; (exp'_to_string e3)  ;" )"]
-  |Def'(var,vall)-> String.concat "" ["(Def'( "; (exp'_to_string var ); " , " ; (exp'_to_string vall) ; "," ;" )"]
+  |Def'(var,vall)-> String.concat "" ["Def'( "; (exp'_to_string var ); " , " ; (exp'_to_string vall)  ;" )"]
   |Seq'(l)-> String.concat "" ["(Seq'( "; "["; (seq'_to_string l exp'_to_string)  ; "]" ;" )"]
+  |Set'(var,vall)-> String.concat "" ["(Set'( "; (exp'_to_string var);" , "; (exp'_to_string vall)  ;" )"]
+  |BoxSet'(var,vall)-> String.concat "" ["(BoxSet'( "; (var_to_string var);" , "; (exp'_to_string vall)  ;" )"]
+  |BoxGet'(var)-> String.concat "" ["(BoxGet'( "; (var_to_string var);" )"]
+  |Box'(var)-> String.concat "" ["(Box'( "; (var_to_string var);" )"]
+  |Or'(args)-> String.concat "" ["(Or'( "; (seq'_to_string args exp'_to_string);" )"]
   |_->"not_implemented";;
+      
 
 let rec expr'_eq e1 e2 =
   match e1, e2 with
@@ -64,7 +75,16 @@ let rec expr'_eq e1 e2 =
   | ApplicTP'(e1, args1), ApplicTP'(e2, args2) ->
 	 (expr'_eq e1 e2) &&
 	   (List.for_all2 expr'_eq args1 args2)
-  | _ -> false;;
+  | _ ->
+     if(debug)
+     then
+       ((Printf.printf ";;; The not equal expr's tag are:\n%s\n%s\n"
+          (exp'_to_string e1)
+          (exp'_to_string e2)
+       );
+     false)
+     else
+       false;;
 	
                        
 exception X_syntax_error;;
@@ -88,9 +108,13 @@ type oenv =
   |Nil
   |Oenv of int * string list * oenv;;
 
+type frame = Frame of string list * oenv;;
+
 type occurence =
-  |GetOccurence of  var * expr' * oenv
-  |SetOccurence of  var * expr' * oenv;;
+  |GetOccurence of  var * expr' * frame
+  |SetOccurence of  var * expr' * frame;;
+
+
 
 let rec get_index v l =
   match l with
@@ -126,20 +150,35 @@ let get_var_string = function
 ;;
 
 let get_rib_id var env =
-  let var = (get_var_string var) in
   let rec get_rib_id =function
-  |Nil -> raise X_bug_error
-  |Oenv(id, l, env) ->
-    if(List.exists (fun(x)-> x=var) l) then id
-    else (get_rib_id env)
+    |Nil -> raise X_bug_error
+    |Oenv(id, l, env) ->
+      if(List.exists (fun(x)-> x=var) l) then id
+      else (get_rib_id env)
   in
   get_rib_id env
 ;;
+
+let check_different_ribs v f1 f2 l1 l2=
+  let Frame(p1,e1) = f1 in
+  let Frame(p2,e2) = f2 in
+  let v = get_var_string v in
+  let one_of_them_is_param =
+    (List.exists (fun(x)-> x= v) p1)||(List.exists (fun(x)-> x= v) p2)
+  in
+  if(one_of_them_is_param)
+  then
+    l1!=l2
+  else
+    let r1id = get_rib_id v e1 in
+    let r2id = get_rib_id v e2 in
+    r1id!=r2id;;
 
 let get_minor lambda p =
   match lambda with
   |LambdaSimple'(params,_) -> (get_index p params)
   |LambdaOpt'(params,opt,_) -> (get_index p (params@[opt]))
+  |_-> raise Exhausting
 ;;
 
 let gen_id = 
@@ -160,12 +199,14 @@ let rec handle_bound v (env: env) major_index=
 ;;
 
 let handle_var env v =
-  let Env(l , prev_env) = env in
-  if(List.exists (fun(x)->x=v) l)
-  then
-    let index = (get_index v l) in
-    Var'(VarParam(v, index))
-  else (handle_bound v prev_env 0);;
+  match env with
+  |Env(l , prev_env) ->
+    if(List.exists (fun(x)->x=v) l)
+    then
+      let index = (get_index v l) in
+      Var'(VarParam(v, index))
+    else (handle_bound v prev_env 0)
+  |Nil -> raise X_bug_error
 
 ;;
 
@@ -257,7 +298,7 @@ let rec annotate_tc in_tp e =
      Set'(var', vall')
   | Def'(var,vall) ->
      let var' = annotate_tc false var  in
-     let vall' = annotate_tc false var  in
+     let vall' = annotate_tc false vall  in
      Def'(var', vall')
   | Or'(args) ->
      let rec map_list =function
@@ -267,6 +308,7 @@ let rec annotate_tc in_tp e =
      in
      let args' =map_list args in
      Or'(args')
+  |(Box' _|BoxGet' _|BoxSet' (_, _)|ApplicTP' (_, _))as id ->id
 
 and map in_tp l =
   let map_func = annotate_tc in_tp in
@@ -274,49 +316,69 @@ and map in_tp l =
 ;;
 
 
-let rec find_occurences p lambda env body =
+let rec find_occurences p lambda frame body =
+  let Frame(fparams, env) = frame in
   let concat_occurences l =
-    let map_func = find_occurences p lambda env in
+    let map_func = find_occurences p lambda frame in
     let l = List.map map_func l in
     List.fold_left List.append [] l
   in
   match body with
+  |Const'(_) -> []
   |Var'(v) ->
     if((is_associated_var p v))
-    then [GetOccurence(v, lambda, env)]
+    then [GetOccurence(v, lambda, frame)]
     else []
   |Set'(Var'(var),vall) ->
+    let val_occ = find_occurences p lambda frame vall in
     if((is_associated_var p var))
-    then [SetOccurence(var,lambda, env)]
-    else []
+    then [SetOccurence(var,lambda, frame)]@val_occ
+    else val_occ
+  |Set'(var,vall) ->
+    concat_occurences [var;vall]
+  |Def'(var,vall) ->
+    concat_occurences [var;vall]
   |LambdaSimple'(params, body) as lambda ->
     let is_param = List.exists (fun(x)->x=p) params in
     if(is_param) then []
-    else find_occurences p lambda (Oenv((gen_id ()),params,env)) body
+    else
+      let new_env = Oenv((gen_id ()), fparams, env) in
+      find_occurences p lambda (Frame(params, new_env)) body
   |LambdaOpt'(params, opt, body) as lambda ->
+    let params = List.append params [opt] in
     let is_param = List.exists (fun(x)->x=p) params in
-    let is_param = is_param || (p = opt) in
     if(is_param) then []
-    else find_occurences p lambda (Oenv((gen_id ()),params,env)) body
+    else
+      let new_env = Oenv((gen_id ()), fparams, env) in
+      find_occurences p lambda (Frame(params, new_env)) body
   |If'(test,dit,dif)->
     concat_occurences [test;dit;dif]
   |ApplicTP'(proc,args) ->
     concat_occurences (proc::args)
+  |Applic'(proc,args) ->
+    concat_occurences (proc::args)
+  |Or'(args)->
+    concat_occurences args
+  |Seq'(exps) ->
+    concat_occurences exps
+  |(Box' _|BoxGet' _|BoxSet' (_, _))  -> []
 ;;
+
+      
+  
 
 let check_box_required occurences=
   let criteria_matched o1 o2 =
     match o1,o2 with
-    |SetOccurence(v,l1,e1),GetOccurence(_,l2,e2)
-     |GetOccurence(v,l1,e1),SetOccurence(_,l2,e2) ->
-      let rib1_id = get_rib_id v e1 in
-      let rib2_id = get_rib_id v e2 in
-      let different_ribs = rib1_id != rib2_id in
+    |SetOccurence(v,l1,f1),GetOccurence(_,l2,f2)
+     |GetOccurence(v,l1,f1),SetOccurence(_,l2,f2) ->
+      let different_ribs = check_different_ribs v f1 f2 l1 l2 in
       let different_closures = l1!=l2 in
       if(debug)
       then
         (Printf.printf ";;; \nDifRibs: %B DifClos: %B\n" different_ribs different_closures) ;
       different_ribs && different_closures
+    |_ ->false
   in
   let rec check_criteria = function
     |[] -> false
@@ -332,14 +394,23 @@ let check_box_required occurences=
 ;;
 
 let rec box_expr p = function
+  |Const'(c) as id-> id
   |Var'(v) as id->
     if((is_associated_var p v))
     then BoxGet'(v)
     else id
-  |Set'(Var'(var),vall) as id ->
+  |Set'(Var'(var),vall) ->
+    let vall = box_expr p vall in
     if((is_associated_var p var))
     then BoxSet'(var, vall)
-    else id
+    else Set'(Var'(var),vall)
+  |Set'(var,vall) ->
+    let vall = box_expr p vall in
+    Set'(var, vall)
+  |Def'(var,vall) ->
+    let var = box_expr p var in
+    let vall = box_expr p vall in
+    Def'(var, vall)
   |LambdaSimple'(params, body) ->
     let body = box_expr p body in
     LambdaSimple'(params, body)
@@ -355,6 +426,24 @@ let rec box_expr p = function
     let proc = box_expr p  proc in
     let args = List.map (box_expr p) args in
     ApplicTP'(proc,args)
+  |Applic'(proc,args) ->
+    let proc = box_expr p  proc in
+    let args = List.map (box_expr p) args in
+    Applic'(proc,args)
+  |Seq'(exps) ->
+    let exps = List.map (box_expr p) exps in
+    Seq'(exps) 
+  |Or'(args) ->
+    let args = List.map (box_expr p) args in
+    Or'(args)
+  |(Box' _|BoxGet' _|BoxSet' (_, _)) as id -> id
+  
+  (* |x ->
+   *   (Printf.printf ";;; Pattern matching in box_expr failed with the expression:\n %s\n"
+   *         (exp'_to_string x)
+   *   );
+   *   raise X_bug_error *)
+;;
 
 let box p minor body =
   let body = box_expr p body in
@@ -362,9 +451,9 @@ let box p minor body =
   Seq'([box_set_param;body])
 ;;
 
-let box_param lambda env body p=
+let box_param lambda frame body p=
   let minor = (get_minor lambda p) in
-  let occurences = find_occurences p lambda env body in
+  let occurences = find_occurences p lambda frame body in
   let is_box_required = check_box_required occurences in
   if(is_box_required)
   then
@@ -374,31 +463,48 @@ let box_param lambda env body p=
 ;;
 
 let rec box_s env e =
+  let map =
+    let map_func = box_s env in
+    List.map map_func
+  in
   match e with
   | Const'(c) -> Const'(c)
   | Var'(v) -> Var'(v)
   | LambdaSimple'(params, body) as lambda->
-     let curr_env = (Oenv((gen_id ()), params, env)) in
-     let fold_func = box_param lambda curr_env in
+     let curr_frame = Frame(params, env)  in
+     let fold_func = box_param lambda curr_frame in
      let body = (List.fold_left fold_func body params) in
      LambdaSimple'(params, body)
+  | LambdaOpt'(params, opt,body) as lambda->
+     let curr_frame = Frame(params@[opt], env)  in
+     let fold_func = box_param lambda curr_frame in
+     let body = (List.fold_left fold_func body (params@[opt])) in
+     LambdaOpt'(params, opt,body)
   |Def'(var, vall) ->
     let var = box_s env var in
     let vall = box_s env vall in
     Def'(var, vall)
-  |_ ->
-    (Printf.printf ";;; Pattern matching in box_set failed with the expression:\n %s\n"
-          (exp'_to_string e)
-    );
-    raise X_bug_error
-(* | If' of expr' * expr' * expr'
- * | Seq' of expr' list
- * | Set' of expr' * expr'
- * | Def' of expr' * expr'
- * | Or' of expr' list
- * | LambdaOpt' of string list * string * expr'
- * | Applic' of expr' * (expr' list)
- * | ApplicTP' of expr' * (expr' list) *)
+  |Applic'(proc, args) ->
+    let proc = box_s env proc in
+    let args = map args in
+    Applic'(proc, args)
+  |ApplicTP'(proc, args) ->
+    let proc = box_s env proc in
+    let args = map args in
+    ApplicTP'(proc, args)
+  |If'(test, dit, dif) ->
+    let test = box_s env test in
+    let dit = box_s env dit in
+    let dif = box_s env dif in
+    If'(test, dit,dif)
+  |Or'(args) ->
+    Or'((map args))
+  |Seq'(args) ->
+    Seq'((map args))
+  |Set'(var, vall) ->
+    Set'((box_s env var),(box_s env vall))
+  |(Box' _|BoxGet' _|BoxSet' (_, _)) as id -> id
+   
 ;;
                        
   
@@ -414,7 +520,7 @@ let annotate_tail_calls e =
 ;;
 
 let box_set e =
-  box_s Oenv(-1,[],Nil) e 
+  box_s (Oenv(-1,[],Nil)) e 
 ;;
 
 let run_semantics expr =
