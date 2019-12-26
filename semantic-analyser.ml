@@ -72,7 +72,8 @@ type oenv =
   |Oenv of int * string list * oenv;;
 
 type occurence =
-  |Occurence of var * expr' * oenv * bool
+  |GetOccurence of  var * expr' * oenv
+  |SetOccurence of  var * expr' * oenv;;
 
 let rec get_index v l =
   match l with
@@ -84,7 +85,54 @@ let rec get_index v l =
       let acc = (get_index v rest) in
       1+acc;;
 
-let rec handle_bound v env major_index=
+let is_associated_var v var =
+  match var with
+  |VarFree(s) -> s=v
+  |VarParam(s,_)-> s=v
+  |VarBound(s,_,_)-> s=v
+;;
+
+let rec car_pairs car cdr =
+  match cdr with
+  |[] -> []
+  |curr::cdr -> (car,curr)::(car_pairs car cdr)
+and all_pairs = function
+  |[] -> []
+  |car::cdr ->
+    List.append (car_pairs car cdr) (all_pairs cdr)
+;;
+
+let get_var_string = function
+  |VarFree(v)-> v
+  |VarParam(v,_)-> v
+  |VarBound(v,_,_) -> v
+;;
+
+let get_rib_id var env =
+  let var = (get_var_string var) in
+  let rec get_rib_id =function
+  |Nil -> raise X_bug_error
+  |Oenv(id, l, env) ->
+    if(List.exists (fun(x)-> x=var) l) then id
+    else (get_rib_id env)
+  in
+  get_rib_id env
+;;
+
+let get_minor lambda p =
+  match lambda with
+  |LambdaSimple'(params,_) -> (get_index p params)
+  |LambdaOpt'(params,opt,_) -> (get_index p (params@[opt]))
+;;
+
+let gen_id = 
+  let id = ref (-1) in
+  let func = fun () ->(
+    id := !id + 1; !id
+  ) in 
+  func;;
+
+let rec handle_bound v (env: env) major_index=
   match env with
   |Nil -> Var'(VarFree(v))
   |Env(l,env) ->
@@ -93,6 +141,7 @@ let rec handle_bound v env major_index=
       let minor_index = (get_index v l) in
       Var'(VarBound(v,major_index, minor_index))
     else (handle_bound v env (major_index +1))
+;;
 
 let handle_var env v =
   let Env(l , prev_env) = env in
@@ -103,7 +152,7 @@ let handle_var env v =
   else (handle_bound v prev_env 0);;
 
 ;;
-                      
+
 let rec rec_anno_lex env e =
   match e with
   |Const(c) -> Const'(c)
@@ -116,7 +165,7 @@ let rec rec_anno_lex env e =
   |Or(args) -> handle_or env args
   |Seq(exps) -> handle_seq env exps
   |Def(var,vall) -> handle_def env var vall
-                               
+                  
 and handle_lambda env params body =
   let env = Env(params, env) in
   let body' = (rec_anno_lex env body) in
@@ -209,13 +258,105 @@ and map in_tp l =
 ;;
 
 
+let rec find_occurences p lambda env body =
+  let concat_occurences l =
+    let map_func = find_occurences p lambda env in
+    let l = List.map map_func l in
+    List.fold_left List.append [] l
+  in
+  match body with
+  |Var'(v) ->
+    if((is_associated_var p v))
+    then [GetOccurence(v, lambda, env)]
+    else []
+  |Set'(Var'(var),vall) ->
+    if((is_associated_var p var))
+    then [SetOccurence(var,lambda, env)]
+    else []
+  |LambdaSimple'(params, body) ->
+    let is_param = List.exists (fun(x)->x=p) params in
+    if(is_param) then []
+    else find_occurences p lambda env body
+  |LambdaOpt'(params, opt, body) ->
+    let is_param = List.exists (fun(x)->x=p) params in
+    let is_param = is_param || (p = opt) in
+    if(is_param) then []
+    else find_occurences p lambda env body
+  |If'(test,dit,dif)->
+    concat_occurences [test;dit;dif]
+  |ApplicTP'(proc,args) ->
+    concat_occurences (proc::args)
+;;
+
+let check_box_required occurences=
+  let criteria_matched o1 o2 =
+    match o1,o2 with
+    |SetOccurence(v,l1,e1),GetOccurence(_,l2,e2)
+     |GetOccurence(v,l1,e1),SetOccurence(_,l2,e2) ->
+      let rib1_id = get_rib_id v e1 in
+      let rib2_id = get_rib_id v e2 in
+      let different_ribs = rib1_id != rib2_id in
+      let different_closures = l1!=l2 in
+      different_ribs && different_closures
+  in
+  let rec check_criteria = function
+    |[] -> false
+    |(o1,o2)::cdr ->
+      (criteria_matched o1 o2) || (check_criteria cdr)
+  in check_criteria (all_pairs occurences)
+;;
+
+let rec box_expr p = function
+  |Var'(v) as id->
+    if((is_associated_var p v))
+    then BoxGet'(v)
+    else id
+  |Set'(Var'(var),vall) as id ->
+    if((is_associated_var p var))
+    then BoxSet'(var, vall)
+    else id
+  |LambdaSimple'(params, body) ->
+    let body = box_expr p body in
+    LambdaSimple'(params, body)
+  |LambdaOpt'(params, opt, body) ->
+    let body = box_expr p body in
+    LambdaOpt'(params, opt ,body)
+  |If'(test,dit,dif)->
+    let test = box_expr p test in
+    let dit = box_expr p dit in
+    let dif = box_expr p dif in
+    If'(test,dit,dif)
+  |ApplicTP'(proc,args) ->
+    let proc = box_expr p  proc in
+    let args = List.map (box_expr p) args in
+    ApplicTP'(proc,args)
+
+let box p minor body =
+  let body = box_expr p body in
+  let box_set_param = Set'(Var'(VarParam(p,minor)),Box'(VarParam(p,minor))) in
+  Seq'([box_set_param;body])
+;;
+
+let box_param lambda env body p=
+  let minor = (get_minor lambda p) in
+  let occurences = find_occurences p lambda env body in
+  let is_box_required = check_box_required occurences in
+  if(is_box_required)
+  then
+    box p minor body
+  else
+    body
+;;
+
 let rec box_s env e =
   match e with
   | Const'(c) -> Const'(c)
   | Var'(v) -> Var'(v)
-  | LambdaSimple'(params, body)->
-     let body' = (List.fold_left box_param body params e Oenv((get_index ()), params, env)) in
-     1
+  | LambdaSimple'(params, body) as lambda->
+     let curr_env = (Oenv((gen_id ()), params, env)) in
+     let fold_func = box_param lambda curr_env in
+     let body = (List.fold_left fold_func body params) in
+     LambdaSimple'(params, body)
 (* | If' of expr' * expr' * expr'
  * | Seq' of expr' list
  * | Set' of expr' * expr'
@@ -224,42 +365,10 @@ let rec box_s env e =
  * | LambdaOpt' of string list * string * expr'
  * | Applic' of expr' * (expr' list)
  * | ApplicTP' of expr' * (expr' list) *)
-
-and box_param p body lambda env =
-  let occurences = find_occurences p body lambda env in
-  let is_box_required = check_box_required occurences in
-  if(is_box_required)
-  then
-    box p body
-  else
-    body
-  
-and find_occurences p body lambda env =
-  match body with
-  |Var'(v) -> (
-    match v with
-    | VarFree(v) -> (if (v = p)
-                      then
-                      ([Occurence(VarFree(v), lambda, env, false]))
-                      else
-                      ([])
-                      )
-    | VarParam(v) -> (if (v = p)
-                      then
-                      ([Occurence(VarParam(v), lambda, env, false]))
-                      else
-                      ([])
-                      )
-    | VarBound(v) -> (if (v = p)
-                      then
-                      ([Occurence(VarBound(v), lambda, env, false]))
-                      else
-                      ([])
-                      )
-  )
-  | Set'(var,vall) ->  (handle_set p body lambda env var vall)
-       
 ;;
+                       
+  
+
 
 let annotate_lexical_addresses e =
   let env = Env([],Nil) in
@@ -269,13 +378,6 @@ let annotate_lexical_addresses e =
 let annotate_tail_calls e =
   annotate_tc false e 
 ;;
-
-let gen_id = 
-  let id = ref (-1) in
-  let func = fun () ->(
-    id := !id + 1; !id
-  ) in 
-  func;; 
 
 let box_set e =
   box_s Nil e 

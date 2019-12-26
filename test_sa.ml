@@ -227,6 +227,59 @@ let last_year =
     );
   ];;
 
+let boxing =
+  "boxing">:::
+    [
+      "foo_should_be_boxed">::(fun _ ->
+        assert_equal_expr_tag
+          (
+            Def' (Var'(VarFree("foo")),
+                  LambdaSimple'(
+                      ["x"],
+                      Seq'(
+                          [
+                            Set'(Var'(VarParam("x",0)), Box'(VarParam("x",0)))
+                          ;
+                            ApplicTP'(
+                                Var'(VarFree("list")),
+                                [
+                                  LambdaSimple'([],BoxGet'(VarBound("x", 0, 0)));
+                                  LambdaSimple'(
+                                      ["y"],
+                                      BoxSet'(VarBound("x", 0, 0),Var'(VarParam("y", 0)))
+                                    )
+                                ]
+                              )
+                          ]
+                        )
+
+                    )
+              )
+          )
+        (Semantics.box_set(
+             Def' (Var'(VarFree("foo")),
+                   LambdaSimple'(
+                       ["x"],
+                       ApplicTP'(
+                           Var'(VarFree("list")),
+                           [
+                             LambdaSimple'([],Var'(VarBound("x", 0, 0)));
+                             LambdaSimple'(
+                                 ["y"],
+                                 Set'(Var'(VarBound("x", 0, 0)),Var'(VarParam("y", 0)))
+                               )
+                           ]
+                         )
+                     )
+               )
+           )
+        )
+    );
+    ]
+;;
+    
+  
+
 let () =
   run_test_tt_main simple_suite;
   run_test_tt_main last_year;
