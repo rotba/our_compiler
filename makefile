@@ -18,5 +18,8 @@ clean:
 test:
 	ocaml ${TEST_TO_RUN} && make clean
 
+test_all:
+	for test in $$(ls | grep -i test_); do ocaml $$test; done && make clean
+
 patch:
 	git diff ${FRESH} ${FILES_TO_SUB} > ${PATCH}

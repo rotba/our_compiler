@@ -1,5 +1,8 @@
 #use "tag-parser.ml";;
 
+let debug = true;;
+
+
 type var = 
   | VarFree of string
   | VarParam of string * int
@@ -20,6 +23,20 @@ type expr' =
   | LambdaOpt' of string list * string * expr'
   | Applic' of expr' * (expr' list)
   | ApplicTP' of expr' * (expr' list);;
+
+
+let rec exp'_to_string  =
+  function
+  |Var'(VarFree(v)) -> String.concat "" ["Var' ( VarFree ( "; v; " ) )"]
+  |Var'(VarParam(v,i)) -> String.concat "" ["Var' ( VarParam ( "; v;" , ";(string_of_int i) ; " ) )"]
+  |Var'(VarBound(v,major, minor)) -> String.concat "" ["Var' ( VarBound ( "; v;" , ";(string_of_int major); " , "; (string_of_int major) ; " ) )"]
+  |LambdaSimple'(params, body) -> String.concat "" ["(LambdaSimple'( ";" ( " ; (string_list_to_string params ); " ) " ; ", ["; (exp'_to_string body)  ;"] )"]
+  |Applic'(name,params) -> String.concat "" ["Applic'( "; (exp'_to_string name);" , ["; (seq'_to_string params exp'_to_string)  ;"] )"]
+  |ApplicTP'(name,params) -> String.concat "" ["ApplicTP'( "; (exp'_to_string name);" , ["; (seq'_to_string params exp'_to_string)  ;"] )"]
+  |If'(e1,e2,e3)-> String.concat "" ["(If'( "; (exp'_to_string e1 ); " , " ; (exp'_to_string e2) ; "," ; (exp'_to_string e3)  ;" )"]
+  |Def'(var,vall)-> String.concat "" ["(Def'( "; (exp'_to_string var ); " , " ; (exp'_to_string vall) ; "," ;" )"]
+  |Seq'(l)-> String.concat "" ["(Seq'( "; "["; (seq'_to_string l exp'_to_string)  ; "]" ;" )"]
+  |_->"not_implemented";;
 
 let rec expr'_eq e1 e2 =
   match e1, e2 with
@@ -273,11 +290,11 @@ let rec find_occurences p lambda env body =
     if((is_associated_var p var))
     then [SetOccurence(var,lambda, env)]
     else []
-  |LambdaSimple'(params, body) ->
+  |LambdaSimple'(params, body) as lambda ->
     let is_param = List.exists (fun(x)->x=p) params in
     if(is_param) then []
     else find_occurences p lambda env body
-  |LambdaOpt'(params, opt, body) ->
+  |LambdaOpt'(params, opt, body) as lambda ->
     let is_param = List.exists (fun(x)->x=p) params in
     let is_param = is_param || (p = opt) in
     if(is_param) then []
@@ -297,13 +314,22 @@ let check_box_required occurences=
       let rib2_id = get_rib_id v e2 in
       let different_ribs = rib1_id != rib2_id in
       let different_closures = l1!=l2 in
+      if(debug)
+      then
+        (Printf.printf ";;; \nDifRibs: %B DifClos: %B\n" different_ribs different_closures) ;
       different_ribs && different_closures
   in
   let rec check_criteria = function
     |[] -> false
     |(o1,o2)::cdr ->
       (criteria_matched o1 o2) || (check_criteria cdr)
-  in check_criteria (all_pairs occurences)
+  in
+  let ans = check_criteria (all_pairs occurences) in
+  if(debug)
+  then
+    (Printf.printf ";;; NeedToBox:\n %B\n" ans) ;
+  ans
+  
 ;;
 
 let rec box_expr p = function
@@ -357,6 +383,15 @@ let rec box_s env e =
      let fold_func = box_param lambda curr_env in
      let body = (List.fold_left fold_func body params) in
      LambdaSimple'(params, body)
+  |Def'(var, vall) ->
+    let var = box_s env var in
+    let vall = box_s env vall in
+    Def'(var, vall)
+  |_ ->
+    (Printf.printf ";;; Pattern matching in box_set failed with the expression:\n %s\n"
+          (exp'_to_string e)
+    );
+    raise X_bug_error
 (* | If' of expr' * expr' * expr'
  * | Seq' of expr' list
  * | Set' of expr' * expr'
