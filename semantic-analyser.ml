@@ -148,7 +148,6 @@ let gen_id =
     id := !id + 1; !id
   ) in 
   func;;
-
 let rec handle_bound v (env: env) major_index=
   match env with
   |Nil -> Var'(VarFree(v))
@@ -293,12 +292,12 @@ let rec find_occurences p lambda env body =
   |LambdaSimple'(params, body) as lambda ->
     let is_param = List.exists (fun(x)->x=p) params in
     if(is_param) then []
-    else find_occurences p lambda env body
+    else find_occurences p lambda (Oenv((gen_id ()),params,env)) body
   |LambdaOpt'(params, opt, body) as lambda ->
     let is_param = List.exists (fun(x)->x=p) params in
     let is_param = is_param || (p = opt) in
     if(is_param) then []
-    else find_occurences p lambda env body
+    else find_occurences p lambda (Oenv((gen_id ()),params,env)) body
   |If'(test,dit,dif)->
     concat_occurences [test;dit;dif]
   |ApplicTP'(proc,args) ->
@@ -415,7 +414,7 @@ let annotate_tail_calls e =
 ;;
 
 let box_set e =
-  box_s Nil e 
+  box_s Oenv(-1,[],Nil) e 
 ;;
 
 let run_semantics expr =
