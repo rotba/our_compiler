@@ -345,7 +345,8 @@ let rec find_occurences p lambda frame body =
   |LambdaSimple'(params, body) as lambda ->
     let is_param = List.exists (fun(x)->x=p) params in
     if(is_param)
-    then []
+    then
+      []
     else
       let new_env = Oenv((gen_id ()), fparams, env) in
       find_occurences p lambda (Frame(params, new_env)) body
