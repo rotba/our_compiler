@@ -271,6 +271,10 @@ let rec annotate_tc in_tp e =
       ApplicTP'(proc', args')
     else
       Applic'(proc', args')
+  |ApplicTP' (proc, args)->
+    let proc' = (annotate_tc false proc) in
+    let args' = (map false args) in
+    ApplicTP' (proc', args')
   |LambdaSimple'(params, body)->
     let body' = annotate_tc true body in
     LambdaSimple'(params, body')
@@ -308,7 +312,7 @@ let rec annotate_tc in_tp e =
      in
      let args' =map_list args in
      Or'(args')
-  |(Box' _|BoxGet' _|BoxSet' (_, _)|ApplicTP' (_, _))as id ->id
+  |(Box' _|BoxGet' _|BoxSet' (_, _))as id ->id
 
 and map in_tp l =
   let map_func = annotate_tc in_tp in
@@ -340,7 +344,8 @@ let rec find_occurences p lambda frame body =
     concat_occurences [var;vall]
   |LambdaSimple'(params, body) as lambda ->
     let is_param = List.exists (fun(x)->x=p) params in
-    if(is_param) then []
+    if(is_param)
+    then []
     else
       let new_env = Oenv((gen_id ()), fparams, env) in
       find_occurences p lambda (Frame(params, new_env)) body
@@ -361,13 +366,42 @@ let rec find_occurences p lambda frame body =
     concat_occurences args
   |Seq'(exps) ->
     concat_occurences exps
-  |(Box' _|BoxGet' _|BoxSet' (_, _))  -> []
+  |BoxSet' (_, vall) -> find_occurences p lambda frame vall
+  |(Box' _|BoxGet' _)  -> []
 ;;
 
       
   
 
 let check_box_required occurences=
+  (* let () =
+   *   if(debug)
+   *   then
+   *     let rec print_o = function
+   *       |[] -> ()
+   *       |(SetOccurence(v1,l1,f1),GetOccurence(v2,l2,f2))::cdr
+   *        |(GetOccurence(v1,l1,f1),SetOccurence(v2,l2,f2))::cdr ->
+   *         (Printf.printf ";;; \nO1: %s O2: %s\n"
+   *            (var_to_string v1) (var_to_string v2));
+   *         print_o cdr in
+   *     print_o (all_pairs occurences)
+   *   else
+   *     ()
+   * in *)
+  let () =
+    if(debug)
+    then
+      let rec print_o = function
+        |[] -> ()
+        |SetOccurence(v1,l1,f1)::cdr
+         |GetOccurence(v1,l1,f1)::cdr ->
+          (Printf.printf ";;; \nOcc: %s\n"
+             (var_to_string v1));
+          print_o cdr in
+      print_o occurences
+    else
+      ()
+  in
   let criteria_matched o1 o2 =
     match o1,o2 with
     |SetOccurence(v,l1,f1),GetOccurence(_,l2,f2)
@@ -436,7 +470,8 @@ let rec box_expr p = function
   |Or'(args) ->
     let args = List.map (box_expr p) args in
     Or'(args)
-  |(Box' _|BoxGet' _|BoxSet' (_, _)) as id -> id
+  |BoxSet' (v,vall) -> BoxSet'(v, (box_expr p vall))
+  |(Box' _|BoxGet' _) as id -> id
   
   (* |x ->
    *   (Printf.printf ";;; Pattern matching in box_expr failed with the expression:\n %s\n"
@@ -448,7 +483,9 @@ let rec box_expr p = function
 let box p minor body =
   let body = box_expr p body in
   let box_set_param = Set'(Var'(VarParam(p,minor)),Box'(VarParam(p,minor))) in
-  Seq'([box_set_param;body])
+  match body with
+  |Seq'(Set'(_,Box'(_)) as first_box::cdr)-> Seq'(box_set_param::(first_box::cdr))
+  |_-> Seq'([box_set_param;body])
 ;;
 
 let box_param lambda frame body p=
@@ -473,12 +510,16 @@ let rec box_s env e =
   | LambdaSimple'(params, body) as lambda->
      let curr_frame = Frame(params, env)  in
      let fold_func = box_param lambda curr_frame in
-     let body = (List.fold_left fold_func body params) in
+     let rparams = List.rev params in
+     let body = (List.fold_left fold_func body rparams) in
+     let body = box_s (Oenv((gen_id ()), params, env)) body in
      LambdaSimple'(params, body)
   | LambdaOpt'(params, opt,body) as lambda->
      let curr_frame = Frame(params@[opt], env)  in
      let fold_func = box_param lambda curr_frame in
-     let body = (List.fold_left fold_func body (params@[opt])) in
+     let rparams = List.rev (params@[opt]) in
+     let body = (List.fold_left fold_func body rparams) in
+     let body = box_s (Oenv((gen_id ()), params@[opt], env)) body in
      LambdaOpt'(params, opt,body)
   |Def'(var, vall) ->
     let var = box_s env var in

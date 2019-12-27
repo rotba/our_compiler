@@ -322,7 +322,7 @@ let boxing =
       "last_year_6">::(fun _ ->
         assert_equal_expr_tag
           (
-            LambdaOpt' (["x";"y";"z"], "w", Seq' ([Var' (VarParam ("z", 2));Applic' (LambdaSimple' ([], Seq' ([Set' (Var' (VarBound ("w", 0, 3)), Var' (VarBound ("w", 0, 3)));Applic' (Applic' (Var' (VarBound ("y", 0, 1)), [Var' (VarBound ("x", 0, 0))]), [])])), [])]))
+            LambdaOpt' (["x";"y";"z"], "w", Seq' ([Var' (VarParam ("z", 2));ApplicTP' (LambdaSimple' ([], Seq' ([Set' (Var' (VarBound ("w", 0, 3)), Var' (VarBound ("w", 0, 3)));ApplicTP' (Applic' (Var' (VarBound ("y", 0, 1)), [Var' (VarBound ("x", 0, 0))]), [])])), [])]))
           )
           (Semantics.run_semantics(
                LambdaOpt (["x"; "y"; "z"], "w",
@@ -355,7 +355,33 @@ let boxing =
       "last_year_8">::(fun _ ->
         assert_equal_expr_tag
           (
-            LambdaSimple' (["x";"y"], Seq' ([Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));Set' (Var' (VarParam ("y", 1)), Box' (VarParam ("y", 1)));Seq' ([Applic' (BoxGet' (VarParam ("x", 0)), [BoxGet' (VarParam ("y", 1))]);LambdaSimple' ([], LambdaSimple' ([], LambdaSimple' ([], BoxSet' (VarBound ("x", 2, 0), Applic' (LambdaSimple' (["z"], BoxSet' (VarBound ("y", 3, 1), BoxGet' (VarBound ("x", 3, 0)))), [BoxGet' (VarBound ("y", 2, 1))])))))])]))
+            LambdaSimple' (["x";"y"],
+                           Seq' ([
+                                 Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+                                 Set' (Var' (VarParam ("y", 1)), Box' (VarParam ("y", 1)));
+                                 Seq' ([
+                                       Applic' (BoxGet' (VarParam ("x", 0)), [BoxGet' (VarParam ("y", 1))]);
+                                       LambdaSimple' (
+                                           [],
+                                           LambdaSimple' ([],
+                                                          LambdaSimple' ([],
+                                                                         BoxSet' (VarBound ("x", 2, 0),
+                                                                                  Applic' (
+                                                                                      LambdaSimple' (["z"],
+                                                                                                     BoxSet' (VarBound ("y", 3, 1), BoxGet' (VarBound ("x", 3, 0)))
+                                                                                        ),
+                                                                                      [BoxGet' (VarBound ("y", 2, 1))]
+                                                                                    )
+                                                                           )
+                                                            )
+                                             )
+                                         )
+                                     ]
+                                   )
+                               ]
+                             )
+              )
+          
           )
           (Semantics.run_semantics(
                LambdaSimple (["x"; "y"],
@@ -369,13 +395,58 @@ let boxing =
              )
           )
       );
+      "last_year_9">::(fun _ ->
+        assert_equal_expr_tag
+          (
+            LambdaSimple' ([], Seq' ([Applic' (LambdaSimple' ([], Var' (VarFree "x")), []);Applic' (LambdaSimple' (["x"], Seq' ([Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));Seq' ([BoxSet' (VarParam ("x", 0), Const' (Sexpr (Number (Int (1)))));LambdaSimple' ([], BoxGet' (VarBound ("x", 0, 0)))])])), [Const' (Sexpr (Number (Int (2))))]);ApplicTP' (LambdaOpt' ([], "x", Var' (VarParam ("x", 0))), [Const' (Sexpr (Number (Int (3))))])]))
+          )
+          (Semantics.run_semantics(
+               LambdaSimple ([],
+                             Seq
+                               [Applic (LambdaSimple ([], Var "x"), []);
+                                Applic
+                                  (LambdaSimple (["x"],
+                                                 Seq
+                                                   [Set (Var "x", Const (Sexpr (Number (Int 1))));
+                                                    LambdaSimple ([], Var "x")]),
+                                   [Const (Sexpr (Number (Int 2)))]);
+                                Applic (LambdaOpt ([], "x", Var "x"), [Const (Sexpr (Number (Int 3)))])])
+             )
+          )
+      );
     ]
 ;;
-    
+
+
+let single =
+  "single">:::
+    [
+      "last_year_9">::(fun _ ->
+        assert_equal_expr_tag
+          (
+            LambdaSimple' ([], Seq' ([Applic' (LambdaSimple' ([], Var' (VarFree "x")), []);Applic' (LambdaSimple' (["x"], Seq' ([Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));Seq' ([BoxSet' (VarParam ("x", 0), Const' (Sexpr (Number (Int (1)))));LambdaSimple' ([], BoxGet' (VarBound ("x", 0, 0)))])])), [Const' (Sexpr (Number (Int (2))))]);ApplicTP' (LambdaOpt' ([], "x", Var' (VarParam ("x", 0))), [Const' (Sexpr (Number (Int (3))))])]))
+          )
+          (Semantics.run_semantics(
+               LambdaSimple ([],
+                             Seq
+                               [Applic (LambdaSimple ([], Var "x"), []);
+                                Applic
+                                  (LambdaSimple (["x"],
+                                                 Seq
+                                                   [Set (Var "x", Const (Sexpr (Number (Int 1))));
+                                                    LambdaSimple ([], Var "x")]),
+                                   [Const (Sexpr (Number (Int 2)))]);
+                                Applic (LambdaOpt ([], "x", Var "x"), [Const (Sexpr (Number (Int 3)))])])
+             )
+          )
+      );
+    ]
+;;    
   
 
 let () =
   run_test_tt_main simple_suite;
   run_test_tt_main last_year;
   run_test_tt_main boxing;
+  (* run_test_tt_main single; *)
 ;;
