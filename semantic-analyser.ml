@@ -447,11 +447,20 @@ let rec box_expr p = function
     let vall = box_expr p vall in
     Def'(var, vall)
   |LambdaSimple'(params, body) ->
-    let body = box_expr p body in
-    LambdaSimple'(params, body)
+    let not_to_box = (List.exists (fun (x) -> String.equal x p) params) in
+    
+    if (not_to_box)
+    then (
+      LambdaSimple'(params, body))
+    else (let new_body = box_expr p body in
+      LambdaSimple'(params, new_body))
   |LambdaOpt'(params, opt, body) ->
-    let body = box_expr p body in
-    LambdaOpt'(params, opt ,body)
+  let not_to_box = (List.exists (fun (x) -> String.equal x p) (params@[opt])) in
+    
+    if (not_to_box)
+    then (LambdaOpt'(params, opt ,body))
+    else (let new_body = box_expr p body in
+      LambdaOpt'(params, opt ,new_body))
   |If'(test,dit,dif)->
     let test = box_expr p test in
     let dit = box_expr p dit in
