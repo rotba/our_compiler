@@ -8,6 +8,26 @@ open Format;;
 exception X_not_yet_implemented;;
 exception X_this_should_not_happen;;
 exception Exhausting;;
+let seq_to_string params to_string=
+  let rec aggregate = function
+  |[] -> []
+  |f::r -> (to_string f) :: (aggregate r) in
+  let params = (aggregate params) in
+  String.concat " , " params;;
+
+let seq'_to_string params to_string=
+  let rec aggregate = function
+  |[] -> []
+  |f::r -> (to_string f) :: (aggregate r) in
+  let params = (aggregate params) in
+  String.concat " , " params;;
+
+let string_list_to_string params=
+  let rec aggregate = function
+  |[] -> []
+  |f::r -> f :: (aggregate r) in
+  let params = (aggregate params) in
+  String.concat " , " params;;
 
   
 type number =
@@ -24,6 +44,19 @@ type sexpr =
   | Pair of sexpr * sexpr
   | TaggedSexpr of string * sexpr
   | TagRef of string;;
+
+let rec sexpr_to_string  =
+  function
+  |Char(x) -> String.make 1  x
+  |String(x) -> x
+  |Nil-> "Nil"
+  |Symbol(x)-> x
+  |Number(Float(x))-> string_of_float x
+  |Number(Int(x))-> string_of_int x                           
+  |Pair(x,y) -> String.concat "" ["Pair( "; (sexpr_to_string x); " , "; (sexpr_to_string y) ;" )"]
+  |TaggedSexpr(s,e) -> String.concat " , "["TaggedSexpr("; s;  (sexpr_to_string e) ;")"]
+  |TagRef(x)->x
+  |_ -> "not_implemented";;
 
 let rec sexpr_eq s1 s2 =
   match s1, s2 with
