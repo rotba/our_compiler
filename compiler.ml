@@ -1,5 +1,9 @@
 #use "code-gen.ml";;
 
+
+let debug = true;;
+let print_debug s = (Printf.printf ";;; \n%s\n" s) ;;
+let () = if(debug) then (print_debug "got_here")
 let file_to_string f =
   let ic = open_in f in
   let s = really_input_string ic (in_channel_length ic) in

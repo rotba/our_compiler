@@ -382,6 +382,13 @@ let nt_line_comment =
   PC.pack nt (fun _ -> String "");;
 
 
+let nt_print_and_fail char_list  = 
+  let () =
+    (Printf.printf ";;; Reader failed :\n%s\n"
+     (list_to_string char_list)
+     )in
+     raise PC.X_no_match
+      ;;
 
 
 let rec nt_comment s = (PC.disj nt_line_comment nt_sexpr_comment) s
@@ -437,7 +444,7 @@ and nt_sexpr s =
         nt_qqoute;
         nt_unqoute;
         nt_unqoute_splicing;
-        nt_tagged
+        nt_tagged;
       ] in
   let spaced = make_spaced all_rules in
   spaced s;;

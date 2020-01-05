@@ -92,7 +92,7 @@
 	mov byte [%1], %3
 	mov qword [%1+TYPE_SIZE], %2
 %endmacro
-
+	
 %define MAKE_INT(r,val) MAKE_LONG_VALUE r, val, T_INTEGER
 %define MAKE_FLOAT(r,val) MAKE_LONG_VALUE r, val, T_FLOAT
 %define MAKE_CHAR(r,val) MAKE_CHAR_VALUE r, val
