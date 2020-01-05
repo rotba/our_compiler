@@ -475,7 +475,7 @@ index e69de29..012e0c5 100644
 +Rotem Barak 308339597
 +We assert that the work we submitted is 100% our own. We have not received anypart from any other student in the class, nor have we give parts of it for use to others.Nor have we used code from other sources: Courses taught previously at this university,courses taught at other universities, various bits of code found on the internet, etc.We realize that should our code be found to contain code from other sources, that aformal case shall be opened against us withva’adat mishma’at, in pursuit of disciplinaryaction
 diff --git a/semantic-analyser.ml b/semantic-analyser.ml
-index 2f5ff59..d4c77ff 100644
+index 2f5ff59..eebad22 100644
 --- a/semantic-analyser.ml
 +++ b/semantic-analyser.ml
 @@ -1,5 +1,8 @@
@@ -541,7 +541,7 @@ index 2f5ff59..d4c77ff 100644
  
  module type SEMANTICS = sig
    val run_semantics : expr -> expr'
-@@ -61,11 +99,469 @@ end;;
+@@ -61,11 +99,480 @@ end;;
  
  module Semantics : SEMANTICS = struct
  
@@ -792,7 +792,9 @@ index 2f5ff59..d4c77ff 100644
 +    concat_occurences [var;vall]
 +  |LambdaSimple'(params, body) as lambda ->
 +    let is_param = List.exists (fun(x)->x=p) params in
-+    if(is_param) then []
++    if(is_param)
++    then
++      []
 +    else
 +      let new_env = Oenv((gen_id ()), fparams, env) in
 +      find_occurences p lambda (Frame(params, new_env)) body
@@ -893,11 +895,20 @@ index 2f5ff59..d4c77ff 100644
 +    let vall = box_expr p vall in
 +    Def'(var, vall)
 +  |LambdaSimple'(params, body) ->
-+    let body = box_expr p body in
-+    LambdaSimple'(params, body)
++    let not_to_box = (List.exists (fun (x) -> String.equal x p) params) in
++    
++    if (not_to_box)
++    then (
++      LambdaSimple'(params, body))
++    else (let new_body = box_expr p body in
++      LambdaSimple'(params, new_body))
 +  |LambdaOpt'(params, opt, body) ->
-+    let body = box_expr p body in
-+    LambdaOpt'(params, opt ,body)
++  let not_to_box = (List.exists (fun (x) -> String.equal x p) (params@[opt])) in
++    
++    if (not_to_box)
++    then (LambdaOpt'(params, opt ,body))
++    else (let new_body = box_expr p body in
++      LambdaOpt'(params, opt ,new_body))
 +  |If'(test,dit,dif)->
 +    let test = box_expr p test in
 +    let dit = box_expr p dit in
