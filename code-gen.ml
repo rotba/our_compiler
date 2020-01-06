@@ -30,14 +30,42 @@ module type CODE_GEN = sig
 end;;
 
 module Code_Gen : CODE_GEN = struct
+  let rec get_consts = function
+    |Const'(c) ->[c]
+    |Var'(_) -> []
+    |Box'(_) -> []
+    |BoxGet'(_) -> []
+    |BoxSet'(_, e) -> (get_consts e)
+    |If'(test,dit,dif) -> (get_consts test)^(get_consts dit)^(get_consts dif)
+    (* | Seq'
+     * | Set' of expr' * expr'
+     * | Def' of expr' * expr'
+     * | Or' of expr' list
+     * | LambdaSimple' of string list * expr'
+     * | LambdaOpt' of string list * string * expr'
+     * | Applic' of expr' * (expr' list)
+     * | ApplicTP' of expr' * (expr' list) *)
+  ;;
+                
   let make_consts_tbl asts =
+    let firsts = 
     [
       (Void,(0, "MAKE_VOID"));
       (Sexpr(Nil),(1, "MAKE_NIL"));
       (Sexpr(Bool(false)) ,(2 , "MAKE_BOOL(0)"));
       (Sexpr(Bool(true)) ,(4 , "MAKE_BOOL(1)"));
-      (Sexpr(Number(Int(1))), (6,"MAKE_LITERAL_INT(1)" ))
     ]
+    in
+    let fold_func acc curr = List.concat [acc; (get_consts curr)] in
+    let rest = List.fold_left fold_func [] asts in
+    let fold_func acc curr = 
+      let (sexpr, (index, _)) = get_last accin
+      let sob_size = (calc_sob_size sexpr) in
+      let next_index = index + sob_size in
+      let byte_rep = gen_const_byte_rep curr in
+      acc::(curr, (next_index, byte_rep)) in
+    List.fold_left fold_func firsts rest;;
+
   ;;
   let make_fvars_tbl asts = [];;
   let generate consts fvars e = "mov rax, const_tbl+6*1";;
