@@ -29,7 +29,8 @@ let make_prologue consts_tbl fvars_tbl =
     (* Adapt the addressing here to your fvar addressing scheme:
        This imlementation assumes fvars are offset from the base label fvar_tbl *)
 "    MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, " ^ label  ^ ")
-    mov [fvar_tbl+" ^  (string_of_int (List.assoc prim fvars_tbl)) ^ "], rax" in
+                                                      mov [fvar_tbl+" ^  (string_of_int (List.assoc prim fvars_tbl)) ^ "], rax" in
+  let make_primitive_closure (prim, label) = ";NULLIFIEDmake_primitive_closureNULLIFIED" in 
   let constant_bytes (c, (a, s)) = s in
 "
 ;;; All the macros and the scheme-object printing procedure
@@ -43,6 +44,7 @@ malloc_pointer:
 
 section .data
 const_tbl:
+
 " ^ (String.concat "\n" (List.map constant_bytes consts_tbl)) ^ "
 
 ;;; These macro definitions are required for the primitive
@@ -105,20 +107,28 @@ exception X_missing_input_file;;
 try
   let () = if(debug) then (print_debug "got_here") in
   let infile = Sys.argv.(1) in
+  let () = if(debug) then (print_debug "got_here") in
   let code =  (file_to_string infile) in
+  let () = if(debug) then (print_debug "got_here") in
   let asts = string_to_asts code in
+  let () = if(debug) then (print_debug "got_here") in
   let consts_tbl = Code_Gen.make_consts_tbl asts in
+  let () = if(debug) then (print_debug "got_here") in
   let fvars_tbl = Code_Gen.make_fvars_tbl asts in
+  let () = if(debug) then (print_debug "got_here") in
   let generate = Code_Gen.generate consts_tbl fvars_tbl in
+  let () = if(debug) then (print_debug "got_here") in
   let code_fragment = String.concat "\n\n"
                         (List.map
                            (fun ast -> (generate ast) ^ "\n\tcall write_sob_if_not_void")
                            asts) in
+  let () = if(debug) then (print_debug "got_here") in
   (* clean_exit contains instructions to clean the dummy stack
      and return exit code 0 ("all's well") from procedure main. *)
   let clean_exit = "\n\n\tmov rax, 0\n\tadd rsp, 4*8\n\tpop rbp\n\tret\n\n" in
+  let () = if(debug) then (print_debug "got_here") in
   let provided_primitives = file_to_string "prims.s" in
-                   
+  let () = if(debug) then (print_debug code_fragment) in
   print_string ((make_prologue consts_tbl fvars_tbl)  ^
                   code_fragment ^ clean_exit ^
                     provided_primitives ^ "\n" ^ epilogue)

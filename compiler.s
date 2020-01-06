@@ -9,6 +9,21 @@
 %define T_SYMBOL 8
 %define T_CLOSURE 9
 %define T_PAIR 10
+
+;;; ;;;;;WE ADDED:::::::::::
+
+%macro MAKE_LITERAL 2
+	db %1
+	%2
+%endmacro
+
+%define MAKE_LITERAL_INT(val) MAKE_LITERAL T_INTEGER, dq val
+%define MAKE_LITERAL_CHAR(val) MAKE_LITERAL T_CHAR, db val
+%define MAKE_NIL db T_NIL
+%define MAKE_VOID db T_VOID
+%define MAKE_BOOL(val) MAKE_LITERAL T_BOOL, db val
+
+;;; ;;;;;;;;;;
 	
 %define CHAR_NUL 0
 %define CHAR_TAB 9
@@ -64,7 +79,9 @@
 %define SOB_VOID T_VOID
 %define SOB_FALSE word T_BOOL
 %define SOB_TRUE word (1 << TYPE_SIZE | T_BOOL)
-
+	
+%define MAKE_LITERAL
+	
 ; returns %2 allocated bytes in register %1
 ; Supports using with %1 = %2
 %macro MALLOC 2

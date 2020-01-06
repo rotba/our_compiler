@@ -31,12 +31,15 @@ end;;
 
 module Code_Gen : CODE_GEN = struct
   let make_consts_tbl asts =
-    let firsts = [
-        (Void,(0, "SOB_VOID")),
-        (Sexpr(Nil),(1, "SOB_VOID"))
-      ]
+    [
+      (Void,(0, "MAKE_VOID"));
+      (Sexpr(Nil),(1, "MAKE_NIL"));
+      (Sexpr(Bool(false)) ,(2 , "MAKE_BOOL(0)"));
+      (Sexpr(Bool(true)) ,(4 , "MAKE_BOOL(1)"));
+      (Sexpr(Number(Int(1))), (6,"MAKE_LITERAL_INT(1)" ))
+    ]
   ;;
-  let make_fvars_tbl asts = raise X_not_yet_implemented;;
-  let generate consts fvars e = raise X_not_yet_implemented;;
+  let make_fvars_tbl asts = [];;
+  let generate consts fvars e = "mov rax, qword[const_tbl+6*1]";;
 end;;
 

@@ -6,6 +6,8 @@
 
 (* general list-processing procedures *)
 
+exception X_make_sure_the_exception_is_thrown_fron_here;;
+
 let rec ormap f s =
   match s with
   | [] -> false
