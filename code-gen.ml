@@ -40,6 +40,6 @@ module Code_Gen : CODE_GEN = struct
     ]
   ;;
   let make_fvars_tbl asts = [];;
-  let generate consts fvars e = "mov rax, qword[const_tbl+6*1]";;
+  let generate consts fvars e = "mov rax, const_tbl+6*1";;
 end;;
 
