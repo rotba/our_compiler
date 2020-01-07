@@ -50,7 +50,7 @@ let rec sexpr_to_string  =
   |Char(x) -> String.make 1  x
   |String(x) -> x
   |Nil-> "Nil"
-  |Symbol(x)-> x
+  |Symbol(x)-> Printf.sprintf "Symbol(%s)" x
   |Number(Float(x))-> string_of_float x
   |Number(Int(x))-> string_of_int x                           
   |Pair(x,y) -> String.concat "" ["Pair( "; (sexpr_to_string x); " , "; (sexpr_to_string y) ;" )"]
