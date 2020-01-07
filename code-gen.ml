@@ -44,7 +44,7 @@ module Code_Gen : CODE_GEN = struct
       |(Number(_)|Nil|Bool _|Char _|String _) as id -> [Sexpr(id)]
       |Pair(car,cdr) as id ->
         let ex_car = (sextend_constants car) in
-        let ex_cdr = (sextend_constants car) in
+        let ex_cdr = (sextend_constants cdr) in
         [Sexpr(id)]@ex_car@ex_cdr
       |no_match -> raise_not_imp "sextend_constants" (Const(Sexpr(no_match))) exp_to_string
     in
@@ -57,6 +57,7 @@ module Code_Gen : CODE_GEN = struct
     |_ -> raise (X_bug_error_m "get last");;
   let rec calc_const_sob_size = function
     |Void -> type_size
+    |Sexpr(Nil) -> type_size
     |(Sexpr(Number(Int(_))) |Sexpr(Number(Float(_))))->type_size + 8
     |Sexpr(Bool(_))->type_size + 1
     |Sexpr(Pair(_,_)) -> type_size + 2*8
@@ -90,7 +91,7 @@ module Code_Gen : CODE_GEN = struct
 
   let rec find_rel_idx const rest =
       match rest with
-      |[] -> raise (X_bug_error_m "find_rel_idx")
+      |[] -> raise (X_bug_error_m (Printf.sprintf "find_rel_idx: %s"  (exp_to_string (Const(const)))))
       |(car,(index,_))::cdr ->
         if((equal_consts car const))
         then
@@ -99,31 +100,36 @@ module Code_Gen : CODE_GEN = struct
           (find_rel_idx const cdr);;
   
    let gen_const_byte_rep curr rest=
-    match curr with
-    |Sexpr(Number(Int(vall))) -> "MAKE_LITERAL_INT("^(string_of_int vall) ^")"
-    |Sexpr(Pair(car,cdr)) ->
-      let car_rel_idx = (find_rel_idx (Sexpr(car)) rest) in
-      let cdr_rel_idx = (find_rel_idx (Sexpr(cdr)) rest)  in
-      let car_address = const_address car_rel_idx in
-      let cdr_address = const_address cdr_rel_idx in
-      "MAKE_LITERAL_PAIR("^car_address^","^cdr_address^")"
-    |_ -> raise (X_not_yet_implemented "get_const_byte_rep");;
+     match curr with
+     |Void -> "MAKE_VOID"
+     |Sexpr(Nil) -> "MAKE_NIL"
+     |Sexpr(Bool(false)) -> "MAKE_BOOL(0)"
+     |Sexpr(Bool(true)) -> "MAKE_BOOL(1)"
+     |Sexpr(Number(Int(vall))) -> "MAKE_LITERAL_INT("^(string_of_int vall) ^")"
+     |Sexpr(Pair(car,cdr)) ->
+       let car_rel_idx = (find_rel_idx (Sexpr(car)) rest) in
+       let cdr_rel_idx = (find_rel_idx (Sexpr(cdr)) rest)  in
+       let car_address = const_address car_rel_idx in
+       let cdr_address = const_address cdr_rel_idx in
+       "MAKE_LITERAL_PAIR("^car_address^","^cdr_address^")"
+     |_ -> raise (X_not_yet_implemented "get_const_byte_rep");;
    
   let make_consts_tbl asts =
     let firsts =  
     [
-      (Void,(0, "MAKE_VOID"));
-      (Sexpr(Nil),(1, "MAKE_NIL"));
-      (Sexpr(Bool(false)) ,(2 , "MAKE_BOOL(0)"));
-      (Sexpr(Bool(true)) ,(4 , "MAKE_BOOL(1)"));
+      Void;
+      Sexpr(Nil);
+      Sexpr(Bool(false));
+      Sexpr(Bool(true));
     ]
     in
     let fold_func curr acc = (get_consts curr)@acc in
-    let rest = List.fold_right fold_func asts [] in
-    let rest = List.map extend_constants rest in
+    let consts = List.fold_right fold_func asts [] in
+    let consts = List.map extend_constants consts in
     let fold_func acc curr = acc@curr in
-    let rest = List.fold_left fold_func [] rest in
-    let rest = remove_duplicates rest in
+    let consts = List.fold_left fold_func [] consts in
+    let consts = consts@firsts in
+    let consts = remove_duplicates consts in
     let fold_func curr acc =
       let index =
         match acc with
@@ -135,7 +141,7 @@ module Code_Gen : CODE_GEN = struct
       in
       let byte_rep = gen_const_byte_rep curr acc in
       List.append acc [(curr, (index, byte_rep))]  in
-    List.fold_right fold_func rest firsts;;
+    List.fold_right fold_func consts [];;
 
   ;;
   let make_fvars_tbl asts = [];;
