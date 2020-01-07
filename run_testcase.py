@@ -12,6 +12,7 @@ def main():
                 print("all_good")
         else:
                 print("fail")
+                print("expected: {}, got: ".format(exp, act))
           
 if __name__== "__main__":
         main()
