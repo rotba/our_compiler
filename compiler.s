@@ -659,7 +659,17 @@ section .data
 %define MAKE_NIL db T_NIL
 %define MAKE_VOID db T_VOID
 %define MAKE_BOOL(val) MAKE_LITERAL T_BOOL, db val
-%define MAKE_LITERAL_INT(val) MAKE_LITERAL T_INTEGER, dq val
+%define MAKE_LITERAL_INT(val) MAKE_LITERAL T_INTEGER, dq val	
+%define MAKE_LITERAL_SYMBOl(val) MAKE_LITERAL T_SYMBOL, dq val
 %define MAKE_LITERAL_PAIR(car, cdr) \
 	MAKE_WORDS_LIT T_PAIR, car, cdr
+	
+%macro MAKE_LITERAL_STRING 1
+	db T_STRING
+	dq (%%end_str - %%str)
+%%str:
+	db %1
+%%end_str:	
+%endmacro
+	
 ;;; ;;;;;;;;;;;
