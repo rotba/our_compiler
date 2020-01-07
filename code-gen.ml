@@ -125,11 +125,16 @@ module Code_Gen : CODE_GEN = struct
     let rest = List.fold_left fold_func [] rest in
     let rest = remove_duplicates rest in
     let fold_func curr acc =
-      let ((sexpr, (index, _))::_) = acc in
-      let sob_size = (calc_const_sob_size sexpr) in
-      let next_index = index + sob_size in
+      let index =
+        match acc with
+        |[] -> 0
+        |acc ->
+          let (sexpr, (index, _)) = get_last acc in
+          let sob_size = (calc_const_sob_size sexpr) in
+          index +sob_size
+      in
       let byte_rep = gen_const_byte_rep curr acc in
-      List.append [(curr, (next_index, byte_rep))] acc in
+      List.append acc [(curr, (index, byte_rep))]  in
     List.fold_right fold_func rest firsts;;
 
   ;;
