@@ -1,5 +1,5 @@
 #use "semantic-analyser.ml";;
-
+exception X_not_yet_implemented of string;;
 (* This module is here for you convenience only!
    You are not required to use it.
    you are allowed to change it. *)
@@ -30,21 +30,27 @@ module type CODE_GEN = sig
 end;;
 
 module Code_Gen : CODE_GEN = struct
-  let rec get_consts = function
+  let type_size =1;;
+  let rec get_last = function
+    |[last] -> last
+    |car::cdr -> get_last cdr
+    |_ -> raise X_bug_error;;
+  let calc_const_sob_size = function
+    |(Sexpr(Number(Int(_))) |Sexpr(Number(Float(_))))->type_size + 8
+    |Sexpr(Bool(_))->type_size + 1
+    |no_match ->
+      let msg = "calc_const_sob_size :" in
+      let msg = msg^(exp_to_string (Const(no_match))) in
+      raise (X_not_yet_implemented msg);;
+  ;;
+
+  let gen_const_byte_rep =function
+    |Sexpr(Number(Int(vall))) -> "MAKE_LITERAL_INT("^(string_of_int vall) ^")"
+    |_ -> raise (X_not_yet_implemented "get_const_byte_rep");;
+  
+  let rec get_consts= function
     |Const'(c) ->[c]
-    |Var'(_) -> []
-    |Box'(_) -> []
-    |BoxGet'(_) -> []
-    |BoxSet'(_, e) -> (get_consts e)
-    |If'(test,dit,dif) -> (get_consts test)^(get_consts dit)^(get_consts dif)
-    (* | Seq'
-     * | Set' of expr' * expr'
-     * | Def' of expr' * expr'
-     * | Or' of expr' list
-     * | LambdaSimple' of string list * expr'
-     * | LambdaOpt' of string list * string * expr'
-     * | Applic' of expr' * (expr' list)
-     * | ApplicTP' of expr' * (expr' list) *)
+    |_ ->raise (X_not_yet_implemented "get_consts");;
   ;;
                 
   let make_consts_tbl asts =
@@ -58,12 +64,12 @@ module Code_Gen : CODE_GEN = struct
     in
     let fold_func acc curr = List.concat [acc; (get_consts curr)] in
     let rest = List.fold_left fold_func [] asts in
-    let fold_func acc curr = 
-      let (sexpr, (index, _)) = get_last accin
-      let sob_size = (calc_sob_size sexpr) in
+    let fold_func acc curr =
+      let (sexpr, (index, _)) = get_last acc in
+      let sob_size = (calc_const_sob_size sexpr) in
       let next_index = index + sob_size in
       let byte_rep = gen_const_byte_rep curr in
-      acc::(curr, (next_index, byte_rep)) in
+      List.append acc [(curr, (next_index, byte_rep))] in
     List.fold_left fold_func firsts rest;;
 
   ;;

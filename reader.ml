@@ -56,7 +56,8 @@ let rec sexpr_to_string  =
   |Pair(x,y) -> String.concat "" ["Pair( "; (sexpr_to_string x); " , "; (sexpr_to_string y) ;" )"]
   |TaggedSexpr(s,e) -> String.concat " , "["TaggedSexpr("; s;  (sexpr_to_string e) ;")"]
   |TagRef(x)->x
-  |_ -> "not_implemented";;
+  |Bool(false)-> "false"
+  |Bool(true) -> "true";;
 
 let rec sexpr_eq s1 s2 =
   match s1, s2 with
