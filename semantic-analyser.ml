@@ -180,11 +180,15 @@ let get_minor lambda p =
   |LambdaOpt'(params,opt,_) -> (get_index p (params@[opt]))
   |_-> raise Exhausting
 ;;
-
+let id = ref (-1);;
 let gen_id = 
-  let id = ref (-1) in
   let func = fun () ->(
     id := !id + 1; !id
+  ) in 
+  func;;
+let reset_id = 
+  let func = fun () ->(
+    id := -1; !id
   ) in 
   func;;
 let rec handle_bound v (env: env) major_index=
