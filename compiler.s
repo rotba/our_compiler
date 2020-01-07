@@ -11,16 +11,26 @@
 %define T_PAIR 10
 
 
+;;; ;;;;;WE ADDED;;;;;;;;
+
 %macro MAKE_LITERAL 2
 	db %1
 	%2
+%endmacro
+
+%macro MAKE_WORDS_LIT 3
+	db %1
+	dq %2
+	dq %3
 %endmacro
 	
 %define MAKE_NIL db T_NIL
 %define MAKE_VOID db T_VOID
 %define MAKE_BOOL(val) MAKE_LITERAL T_BOOL, db val
-%define MAKE_LITERAL_INT(val) MAKE_LITERAL T_INTEGER, dq val	
-
+%define MAKE_LITERAL_INT(val) MAKE_LITERAL T_INTEGER, dq val
+%define MAKE_LITERAL_PAIR(car, cdr) \
+	MAKE_WORDS_LIT T_PAIR, car, cdr
+;;; ;;;;;;;;;;;
 	
 %define CHAR_NUL 0
 %define CHAR_TAB 9
