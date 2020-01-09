@@ -8,11 +8,14 @@ def main():
 		act = f.read().strip('\n')
 	with open(expected_path, "r") as f:
 		exp = f.read().strip('\n')
-        if act==exp:
+        if eq(exp, act):
                 print("all_good")
         else:
                 print("fail")
-                print("expected: {}, got: ".format(exp, act))
+                print("expected: {}, got: {} ".format(exp, act))
+
+def eq(exp, act):
+        sub
           
 if __name__== "__main__":
         main()

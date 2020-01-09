@@ -1,0 +1,1 @@
+(equal? '"moshe" '"moshe")

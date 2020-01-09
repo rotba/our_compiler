@@ -38,16 +38,17 @@ module Code_Gen : CODE_GEN = struct
   let type_size =1;;
   let consts_table_address = "const_tbl";;
   let const_address idx = consts_table_address^"+"^(string_of_int idx);;
-  
+
+  let rec sextend_constants = function
+    |(Number(_)|Nil|Bool _|Char _|String _) as id -> [Sexpr(id)]
+    |Symbol(s) as id -> [Sexpr(id);Sexpr(String(s))]
+    |Pair(car,cdr) as id ->
+      let ex_car = (sextend_constants car) in
+      let ex_cdr = (sextend_constants cdr) in
+      [Sexpr(id)]@ex_car@ex_cdr
+    |no_match -> raise_not_imp "sextend_constants" (Const(Sexpr(no_match))) exp_to_string
+  ;;
   let rec extend_constants const=
-    let rec sextend_constants = function
-      |(Number(_)|Nil|Bool _|Char _|String _) as id -> [Sexpr(id)]
-      |Pair(car,cdr) as id ->
-        let ex_car = (sextend_constants car) in
-        let ex_cdr = (sextend_constants cdr) in
-        [Sexpr(id)]@ex_car@ex_cdr
-      |no_match -> raise_not_imp "sextend_constants" (Const(Sexpr(no_match))) exp_to_string
-    in
     match const with
     |Void ->[Void]
     |Sexpr(s) -> sextend_constants s
@@ -55,12 +56,15 @@ module Code_Gen : CODE_GEN = struct
     |[last] -> last
     |car::cdr -> get_last cdr
     |_ -> raise (X_bug_error_m "get last");;
+  
   let rec calc_const_sob_size = function
     |Void -> type_size
     |Sexpr(Nil) -> type_size
     |(Sexpr(Number(Int(_))) |Sexpr(Number(Float(_))))->type_size + 8
+    |Sexpr(String(s))->type_size + 8 + (String.length s)
     |Sexpr(Bool(_))->type_size + 1
     |Sexpr(Pair(_,_)) -> type_size + 2*8
+    |Sexpr(Symbol(_)) -> type_size +8
     |no_match ->
       let msg = "calc_const_sob_size :" in
       let msg = msg^(exp_to_string (Const(no_match))) in
@@ -105,7 +109,12 @@ module Code_Gen : CODE_GEN = struct
      |Sexpr(Nil) -> "MAKE_NIL"
      |Sexpr(Bool(false)) -> "MAKE_BOOL(0)"
      |Sexpr(Bool(true)) -> "MAKE_BOOL(1)"
-     |Sexpr(Number(Int(vall))) -> "MAKE_LITERAL_INT("^(string_of_int vall) ^")"
+     |Sexpr(Number(Int(vall))) -> Printf.sprintf "MAKE_LITERAL_INT(%s)" (string_of_int vall)
+     |Sexpr(String(s)) -> Printf.sprintf "MAKE_LITERAL_STRING \"%s\", %d" s (String.length s)
+     |Sexpr(Symbol(s)) ->
+       let sym_str_rel_idx = (find_rel_idx (Sexpr(String(s))) rest) in
+       let sym_str_address = const_address sym_str_rel_idx in
+       Printf.sprintf "MAKE_LITERAL_SYMBOl(%s)" sym_str_address
      |Sexpr(Pair(car,cdr)) ->
        let car_rel_idx = (find_rel_idx (Sexpr(car)) rest) in
        let cdr_rel_idx = (find_rel_idx (Sexpr(cdr)) rest)  in
