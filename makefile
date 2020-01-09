@@ -9,6 +9,7 @@ MKDIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 BASEDIR := $(PWD)
 
 
+
 .PHONY:clean
 
 
@@ -16,7 +17,16 @@ clean:
 	rm -f *.log *.cache *TESTCASE*
 
 test:
-	for test in $$(ls our_compiler/testcases/ | grep -i ^TESTCASE_ | cut -f 1 -d '.'); do cd $(MKDIR) && ocaml our_compiler.ml $(BASEDIR)/our_compiler/testcases/$$test.scm > $$test.s && nasm -f elf64 -o $$test.o $$test.s && gcc -static -m64 -o $$test $$test.o  &&  ./$$test > ACTUAL_$$test.txt && python run_testcase.py ACTUAL_$$test.txt EXPECTED_$$test.txt our_compiler/testcases/&& make -f makefile clean; done 
+	for test in $$(ls our_compiler/testcases/ | grep -i ^TESTCASE_ | cut -f 1 -d '.');\
+	do\
+		cd $(MKDIR) ;\
+		ocaml our_compiler.ml $(BASEDIR)/our_compiler/testcases/$$test.scm > $$test.s ;\
+		nasm -f elf64 -o $$test.o $$test.s ;\
+		gcc -static -m64 -o $$test $$test.o ;\
+		set o1 = `scheme -q < testcases/$$test.scm`; set o2 = `./$$test`;\
+		echo "$o1" ;\
+	done;\
+	make -f makefile clean;
 
 test_no_clean:
 	for test in $$(ls our_compiler/testcases/ | grep -i ^TESTCASE_ | cut -f 1 -d '.'); do cd $(MKDIR) && ocaml our_compiler.ml $(BASEDIR)/our_compiler/testcases/$$test.scm > $$test.s && nasm -f elf64 -o $$test.o $$test.s && gcc -static -m64 -o $$test $$test.o  &&  ./$$test > ACTUAL_$$test.txt && python run_testcase.py ACTUAL_$$test.txt EXPECTED_$$test.txt our_compiler/testcases/; done 

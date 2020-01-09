@@ -109,8 +109,8 @@ module Code_Gen : CODE_GEN = struct
      |Sexpr(Nil) -> "MAKE_NIL"
      |Sexpr(Bool(false)) -> "MAKE_BOOL(0)"
      |Sexpr(Bool(true)) -> "MAKE_BOOL(1)"
-     |Sexpr(Number(Int(vall))) -> "MAKE_LITERAL_INT("^(string_of_int vall) ^")"
-     |Sexpr(String(s)) -> Printf.sprintf "MAKE_LITERAL_STRING(\"%s\")" s
+     |Sexpr(Number(Int(vall))) -> "MAKE_LITERAL_INT("^("3") ^")"
+     |Sexpr(String(s)) -> Printf.sprintf "MAKE_LITERAL_STRING \"%s\", %d" s (String.length s)
      |Sexpr(Symbol(s)) ->
        let sym_str_rel_idx = (find_rel_idx (Sexpr(String(s))) rest) in
        let sym_str_address = const_address sym_str_rel_idx in

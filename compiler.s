@@ -664,9 +664,9 @@ section .data
 %define MAKE_LITERAL_PAIR(car, cdr) \
 	MAKE_WORDS_LIT T_PAIR, car, cdr
 	
-%macro MAKE_LITERAL_STRING 1
+%macro MAKE_LITERAL_STRING 2
 	db T_STRING
-	dq (%%end_str - %%str)
+	dq %2
 %%str:
 	db %1
 %%end_str:	
