@@ -25,11 +25,11 @@ let primitive_names_to_labels =
 (* you can add yours here *)];;
 
 let make_prologue consts_tbl fvars_tbl =
-  let make_primitive_closure (prim, label) =
-    (* Adapt the addressing here to your fvar addressing scheme:
-       This imlementation assumes fvars are offset from the base label fvar_tbl *)
-"    MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, " ^ label  ^ ")
-                                                      mov [fvar_tbl+" ^  (string_of_int (List.assoc prim fvars_tbl)) ^ "], rax" in
+  (* let make_primitive_closure (prim, label) =
+ *     (\* Adapt the addressing here to your fvar addressing scheme:
+ *        This imlementation assumes fvars are offset from the base label fvar_tbl *\)
+ * "    MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, " ^ label  ^ ")
+ *                                                       mov [fvar_tbl+" ^  (string_of_int (List.assoc prim fvars_tbl)) ^ "], rax" in *)
   let make_primitive_closure (prim, label) = ";NULLIFIEDmake_primitive_closureNULLIFIED" in 
   let constant_bytes (c, (a, s)) = s in
 "

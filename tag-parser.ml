@@ -21,6 +21,7 @@ type expr =
 
 let rec exp_to_string  =
   function
+  |Const Void -> "Void"
   |Const(Sexpr(s)) -> String.concat "" ["Const ( Sexpr ( "; (sexpr_to_string s); " ) )"]
   |Var(v) -> v
   |Set(exp1,exp2) -> String.concat " " ["(set!"; (exp_to_string exp1); (exp_to_string exp2);")"]
@@ -28,7 +29,8 @@ let rec exp_to_string  =
   |Applic(name,params) -> String.concat "" ["Applic( "; (exp_to_string name);" , ["; (seq_to_string params exp_to_string)  ;"] )"]
   |LambdaSimple(params,body) -> String.concat "" ["(LambdaSimple( ";" ( " ; (string_list_to_string params ); " ) " ; ", ["; (exp_to_string body)  ;"] )"]
   |If(e1,e2,e3)-> String.concat "" ["(If( "; (exp_to_string e1 ); " , " ; (exp_to_string e2) ; "," ; (exp_to_string e3)  ;" )"]
-  |_->"not_implemented";;
+  |_ -> "not_implemented to_string"
+;;
 
 let rec expr_eq e1 e2 =
   match e1, e2 with

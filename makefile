@@ -13,10 +13,10 @@ BASEDIR := $(PWD)
 
 
 clean:
-	rm -f *.log *.cache *TESTCASE_*
+	rm -f *.log *.cache *TESTCASE*
 
 test:
-	for test in $$(ls | grep -i ^TESTCASE_ | cut -f 1 -d '.'); do cd $(MKDIR) && ocaml compiler.ml $(BASEDIR)/$$test.scm > $$test.s && nasm -f elf64 -o $$test.o $$test.s && gcc -static -m64 -o $$test $$test.o  &&  ./$$test > ACTUAL_$$test.txt && python run_testcase.py ACTUAL_$$test.txt EXPECTED_$$test.txt ; done && make clean
+	for test in $$(ls our_compiler/testcases/ | grep -i ^TESTCASE_ | cut -f 1 -d '.'); do cd $(MKDIR) && ocaml our_compiler.ml $(BASEDIR)/our_compiler/testcases/$$test.scm > $$test.s && nasm -f elf64 -o $$test.o $$test.s && gcc -static -m64 -o $$test $$test.o  &&  ./$$test > ACTUAL_$$test.txt && python run_testcase.py ACTUAL_$$test.txt EXPECTED_$$test.txt ; done && make -f makefile clean
 
 old_test:
 	ocaml ${TEST_TO_RUN} && make clean
