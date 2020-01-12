@@ -5,6 +5,28 @@ let raise_not_imp func_name no_match to_string =
   let msg =func_name ^": " in
   let msg = msg^(to_string no_match) in
   raise (X_not_yet_implemented msg);
+
+
+
+module Labels : sig
+  val make_label : string -> string
+  val make_labels : string list -> string list
+end = struct
+  let label_counter = ref 0;;
+    
+  let count () =
+    ( label_counter := 1 + !label_counter ;
+      !label_counter );;
+    
+  let make_label base =
+    Printf.sprintf "%s_%d" base (count());;
+    
+  let make_labels bases =
+    let n = count() in
+    List.map (fun base -> Printf.sprintf "%s_%d" base n)
+        bases;;
+end;;
+
 (* This module is here for you convenience only!
    You are not required to use it.
    you are allowed to change it. *)
@@ -184,6 +206,7 @@ module Code_Gen : CODE_GEN = struct
     | ApplicTP'(e,lst) -> (get_fvars e)@(List.fold_left fold [] lst)
     | _ -> [];;
 
+  (reset_id());;
   let make_fvars_tbl asts = 
     let cons_uniq xs x = if List.mem x xs then xs else x :: xs in
     let remove_from_left xs = List.rev (List.fold_left cons_uniq [] xs) in
@@ -213,10 +236,6 @@ module Code_Gen : CODE_GEN = struct
       let address = const_address address_in_consts in 
       let code = Printf.sprintf "mov rax, %s" address in
       code
-    |Var'(VarFree(v)) -> 
-      let address_in_vars = find_fvar_indx v fvars in
-      let code =Printf.sprintf "mov rax, [fvar_tbl+%d*8]" address_in_vars in
-      code
     | Set'(Var'(VarFree(v)),e) -> 
       let code = generate consts fvars e in
       let address_in_vars = find_fvar_indx v fvars in
@@ -230,8 +249,13 @@ module Code_Gen : CODE_GEN = struct
       let exps = List.map (generate consts fvars) lst in 
       let code = String.concat "\ncmp rax, SOB_FALSE_ADDRESS \n jne Lexit \n" exps in
       code ^ "\nLexit:\n"
-    (* | If' *)
-    |Applic'(e,l) ->
+    | If'(a,b,c) -> 
+      let i = (generate consts fvars a) in
+      let t = (generate consts fvars b) in
+      let e = (generate consts fvars c) in
+      let labels = Labels.make_labels ["Lelse";"Lexit"] in
+      Printf.sprintf "%s \n cmp rax, SOB_FALSE_ADDRESS \n je %s \n %s \n jmp %s \n %s: \n %s \n %s:\n" i (List.nth labels 0) t (List.nth labels 1) (List.nth labels 0) e (List.nth labels 1)
+    | Applic'(e,l) ->
       let fold_args curr acc=
         let arg_i = (generate consts fvars curr) in
         let push_res = "push rax" in
@@ -277,8 +301,35 @@ module Code_Gen : CODE_GEN = struct
            "add rsp, rbx"
          ]
       )
-          
-          
+
+    | Var'(VarParam(_, minor)) -> 
+        Printf.sprintf "mov rax, qword [rbp+8*(4+%d)]" minor
+    | Set'(Var'(VarParam(_, minor)),e) ->
+        String.concat "\n" [
+          (generate consts fvars e);
+          (Printf.sprintf "mov qword [rbp+8*(4+%d)], rax" minor);
+          "mov rax, SOB_VOID_ADDRESS"
+        ]
+
+    | Var'(VarBound(_, major, minor)) -> 
+       String.concat "\n" [
+          "mov rax, qword[rbp+8*2]";
+          Printf.sprintf "mov rax, qword[rax+8*%d]" major;
+          Printf.sprintf"mov rax, qword[rax+8*%d]" minor
+        ]
+
+    | Set'(Var'(VarBound(_,major,minor)),e) -> 
+        String.concat "\n" [
+          (generate consts fvars e);
+          "mov rbx, qword[rbp+8*2]";
+          Printf.sprintf "mov rbx, qword[rbx+8*%d]" major;
+          Printf.sprintf"mov qword[rbx+8*%d], rax" minor;
+          "mov rax, SOB_VOID_ADDRESS"
+        ]
+    |Var'(VarFree(v)) -> 
+      let address_in_vars = find_fvar_indx v fvars in
+      let code =Printf.sprintf "mov rax, [fvar_tbl+%d*8]" address_in_vars in
+      code     
         
       
     |no_match -> raise_not_imp "generate" no_match exp'_to_string
