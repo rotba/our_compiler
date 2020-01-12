@@ -203,6 +203,8 @@ module Code_Gen : CODE_GEN = struct
     | Some((a,b)) -> b
     | _ -> raise (X_bug_error_m  "fail find_fvar_indx: :( ");;
 
+  let concat_lines lines =
+    String.concat "\n" lines;;
   
   let rec generate consts fvars e =
     match e with
@@ -213,7 +215,7 @@ module Code_Gen : CODE_GEN = struct
       code
     |Var'(VarFree(v)) -> 
       let address_in_vars = find_fvar_indx v fvars in
-      let code = Printf.sprintf "mov rax, [fvar_tbl+%d*8]" address_in_vars in
+      let code =Printf.sprintf "mov rax, [fvar_tbl+%d*8]" address_in_vars in
       code
     | Set'(Var'(VarFree(v)),e) -> 
       let code = generate consts fvars e in
@@ -229,6 +231,56 @@ module Code_Gen : CODE_GEN = struct
       let code = String.concat "\ncmp rax, SOB_FALSE_ADDRESS \n jne Lexit \n" exps in
       code ^ "\nLexit:\n"
     (* | If' *)
+    |Applic'(e,l) ->
+      let fold_args curr acc=
+        let arg_i = (generate consts fvars curr) in
+        let push_res = "push rax" in
+        (concat_lines 
+           [
+             acc;
+             arg_i;
+             push_res
+           ]
+        )
+      in
+      let push_args = List.fold_right fold_args l "" in
+      let push_n = Printf.sprintf "push %d" (List.length l) in
+      let proc = generate consts fvars e in
+      let verifiy_closure = "" in
+      let push_env =
+        (concat_lines
+           [
+             "CLOSURE_ENV rbx, rax";
+             "push rbx"
+           ]
+        )
+      in
+      let call_code =
+        (concat_lines
+           [
+             "CLOSURE_CODE rbx, rax";
+             "call rbx"
+           ]
+        )
+      in
+      (concat_lines
+         [
+           push_args;
+           push_n;
+           proc;
+           verifiy_closure;
+           push_env;
+           call_code;
+           "add rsp, 8*1";
+           "pop rbx";
+           "shl rbx, 3";
+           "add rsp, rbx"
+         ]
+      )
+          
+          
+        
+      
     |no_match -> raise_not_imp "generate" no_match exp'_to_string
   ;;
   

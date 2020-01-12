@@ -1,1 +1,1 @@
-(if (equal? '"moshe" '"moshe") 'PASSED! '(Excpected Result: "moshe",     Actual Result: "moshe") )
+(if (equal? '3 '3) 'PASSED! '(Excpected Result: 3,     Actual Result: 3) )
