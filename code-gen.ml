@@ -74,6 +74,12 @@ module Code_Gen : CODE_GEN = struct
   let rec get_consts= function
     |Const'(c) ->[c]
     |Var'(_) ->[]
+    |Applic'(proc,args) ->
+      (List.fold_left
+         (fun acc curr -> acc @ (get_consts curr))
+         (get_consts proc)
+         args
+      )
     |_ ->raise (X_not_yet_implemented "get_consts");;
   ;;
 
@@ -185,13 +191,15 @@ module Code_Gen : CODE_GEN = struct
     ;;
 
   let find_fvar_indx v fvars = 
-    let pair = Printf.printf "test1\n";(List.find_opt (fun x -> match x with (a,b) -> String.equal a v) fvars) in 
-    Printf.printf "test2\n";match pair with
+    let pair = (List.find_opt (fun x -> match x with (a,b) -> String.equal a v) fvars) in 
+    match pair with
     | Some((a,b)) -> b
     |_ -> raise (X_bug_error_m  "fail find_fvar_indx: :( ");;
 
+  let concat_lines lines =
+    String.concat "\n" lines;;
   
-  let generate consts fvars e =
+  let rec generate consts fvars e =
     match e with
     |Const'(e) ->
       let address_in_consts = find_rel_idx e consts in
@@ -200,8 +208,58 @@ module Code_Gen : CODE_GEN = struct
       code
     |Var'(VarFree(v)) -> 
       let address_in_vars = find_fvar_indx v fvars in
-      let code = Printf.sprintf "mov rax, [fvar_tbl+%d*8]" address_in_vars in
+      let code =Printf.sprintf "mov rax, [fvar_tbl+%d*8]" address_in_vars in
       code
+    |Applic'(e,l) ->
+      let fold_args curr acc=
+        let arg_i = (generate consts fvars curr) in
+        let push_res = "push rax" in
+        (concat_lines 
+           [
+             acc;
+             arg_i;
+             push_res
+           ]
+        )
+      in
+      let push_args = List.fold_right fold_args l "" in
+      let push_n = Printf.sprintf "push %d" (List.length l) in
+      let proc = generate consts fvars e in
+      let verifiy_closure = "" in
+      let push_env =
+        (concat_lines
+           [
+             "CLOSURE_ENV rbx, rax";
+             "push rbx"
+           ]
+        )
+      in
+      let call_code =
+        (concat_lines
+           [
+             "CLOSURE_CODE rbx, rax";
+             "call rbx"
+           ]
+        )
+      in
+      (concat_lines
+         [
+           push_args;
+           push_n;
+           proc;
+           verifiy_closure;
+           push_env;
+           call_code;
+           "add rsp, 8*1";
+           "pop rbx";
+           "shl rbx, 3";
+           "add rsp, rbx"
+         ]
+      )
+          
+          
+        
+      
     |no_match -> raise_not_imp "generate" no_match exp'_to_string
   ;;
   
