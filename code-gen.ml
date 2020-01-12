@@ -228,7 +228,7 @@ module Code_Gen : CODE_GEN = struct
       let exps = List.map (generate consts fvars) lst in 
       let code = String.concat "\ncmp rax, SOB_FALSE_ADDRESS \n jne Lexit \n" exps in
       code ^ "\nLexit:\n"
-    | If'
+    (* | If' *)
     |no_match -> raise_not_imp "generate" no_match exp'_to_string
   ;;
   
