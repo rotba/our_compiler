@@ -15,22 +15,22 @@ let string_to_asts s = List.map Semantics.run_semantics
                             (Reader.read_sexprs s));;
 
 let primitive_names_to_labels = 
-  ["boolean?", "is_boolean"; "float?", "is_float"; "integer?", "is_integer"; "pair?", "is_pair";
+  (* ["boolean?", "is_boolean"; "float?", "is_float"; "integer?", "is_integer"; "pair?", "is_pair";
    "null?", "is_null"; "char?", "is_char"; "string?", "is_string";
    "procedure?", "is_procedure"; "symbol?", "is_symbol"; "string-length", "string_length";
    "string-ref", "string_ref"; "string-set!", "string_set"; "make-string", "make_string";
    "symbol->string", "symbol_to_string"; 
    "char->integer", "char_to_integer"; "integer->char", "integer_to_char"; "eq?", "is_eq";
    "+", "bin_add"; "*", "bin_mul"; "-", "bin_sub"; "/", "bin_div"; "<", "bin_lt"; "=", "bin_equ"
-(* you can add yours here *)];;
+(* you can add yours here *)];; *)
+["+", "bin_add";(* you can add yours here *)];;
 
 let make_prologue consts_tbl fvars_tbl =
-  (* let make_primitive_closure (prim, label) =
- *     (\* Adapt the addressing here to your fvar addressing scheme:
- *        This imlementation assumes fvars are offset from the base label fvar_tbl *\)
- * "    MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, " ^ label  ^ ")
- *                                                       mov [fvar_tbl+" ^  (string_of_int (List.assoc prim fvars_tbl)) ^ "], rax" in *)
-  let make_primitive_closure (prim, label) = ";NULLIFIEDmake_primitive_closureNULLIFIED" in 
+  let make_primitive_closure (prim, label) =
+    (* Adapt the addressing here to your fvar addressing scheme:
+       This imlementation assumes fvars are offset from the base label fvar_tbl *)
+"    MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, " ^ label  ^ ")
+                                                      mov [fvar_tbl+" ^  (string_of_int (List.assoc prim fvars_tbl)) ^ "], rax" in
   let constant_bytes (c, (a, s)) = s in
 "
 ;;; All the macros and the scheme-object printing procedure
