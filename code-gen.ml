@@ -153,7 +153,31 @@ module Code_Gen : CODE_GEN = struct
     List.fold_right fold_func consts [];;
 
   ;;
-  let make_fvars_tbl asts = [];;
+  let rec get_fvars =
+    let fold a b = a@(get_fvars b) in
+    function
+    | Var'(VarFree(v)) -> [v]
+    | Box'(VarFree(v)) -> [v]
+    | BoxGet'(VarFree(v)) -> [v]
+    | BoxSet'(VarFree(v), b) -> [v]@(get_fvars b)
+    | If'(a,b,c) -> (get_fvars a)@(get_fvars b)@(get_fvars c)
+    | Seq'(lst) -> (List.fold_left fold [] lst)
+    | Set'(a,b) -> (get_fvars a)@(get_fvars b)
+    | Def'(a,b) -> (get_fvars a)@(get_fvars b)
+    | Or'(lst) -> (List.fold_left fold [] lst)
+    | LambdaSimple'(sl, e) -> (get_fvars e)
+    | LambdaOpt'(sl,s, e) -> (get_fvars e)
+    | Applic'(e,lst) -> (get_fvars e)@(List.fold_left fold [] lst)
+    | ApplicTP'(e,lst) -> (get_fvars e)@(List.fold_left fold [] lst)
+    | _ -> [];;
+  let make_fvars_tbl asts = 
+    let cons_uniq xs x = if List.mem x xs then xs else x :: xs in
+    let remove_from_left xs = List.rev (List.fold_left cons_uniq [] xs) in
+    let vars = (get_fvars asts) in
+    let vars = remove_from_left vars in 
+    let fold_fun acc b = (acc@[(b, (gen_id()))]) in
+    List.fold_left fold_fun [] vars 
+    ;;
 
   
   let generate consts fvars e =

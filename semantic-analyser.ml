@@ -86,7 +86,18 @@ let rec expr'_eq e1 e2 =
      else
        false;;
 	
-                       
+let id = ref (-1);;
+let gen_id = 
+  let func = fun () ->(
+    id := !id + 1; !id
+  ) in 
+  func;;
+let reset_id = 
+  let func = fun () ->(
+    id := -1; !id
+  ) in 
+  func;;
+  
 exception X_syntax_error;;
 exception X_bug_error;;
 
@@ -180,17 +191,6 @@ let get_minor lambda p =
   |LambdaOpt'(params,opt,_) -> (get_index p (params@[opt]))
   |_-> raise Exhausting
 ;;
-let id = ref (-1);;
-let gen_id = 
-  let func = fun () ->(
-    id := !id + 1; !id
-  ) in 
-  func;;
-let reset_id = 
-  let func = fun () ->(
-    id := -1; !id
-  ) in 
-  func;;
 let rec handle_bound v (env: env) major_index=
   match env with
   |Nil -> Var'(VarFree(v))
