@@ -1,1 +1,1 @@
-(equal? '() '())
+(equal? '"moshe" '"moshe")
