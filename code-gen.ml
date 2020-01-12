@@ -72,10 +72,22 @@ module Code_Gen : CODE_GEN = struct
   ;;
   
   let rec get_consts= function
-    |Const'(c) ->[c]
-    |Var'(_) ->[]
-    |_ ->raise (X_not_yet_implemented "get_consts");;
-  ;;
+    | Const'(c) ->[c]
+    | Var'(_) ->[]
+    | Box'(_) -> []
+    | BoxGet'(_) -> []
+    | BoxSet'(_,e) -> get_consts e
+    | If'(a,b,c) -> (get_consts a)@(get_consts b)@(get_consts c)
+    | Seq'(lst) -> (List.fold_left (fun a b -> a@(get_consts b)) [] lst)
+    | Set'(a,b) -> (get_consts a)@(get_consts b)
+    | Def'(a,b) -> (get_consts a)@(get_consts b)
+    | Or'(lst) -> (List.fold_left (fun a b -> a@(get_consts b)) [] lst)
+    | LambdaSimple'(_,e) -> (get_consts e)
+    | LambdaOpt'(_,_,e) -> (get_consts e)
+    | Applic'(e,es) -> (get_consts e)@(List.fold_left (fun a b -> a@(get_consts b)) [] es)
+    | ApplicTP'(e,es) -> (get_consts e)@(List.fold_left (fun a b -> a@(get_consts b)) [] es);;
+    (* |_ ->raise (X_not_yet_implemented "get_consts");; *)
+  
 
   let equal_consts c1 c2 =
     match c1,c2 with
@@ -171,6 +183,7 @@ module Code_Gen : CODE_GEN = struct
     | Applic'(e,lst) -> (get_fvars e)@(List.fold_left fold [] lst)
     | ApplicTP'(e,lst) -> (get_fvars e)@(List.fold_left fold [] lst)
     | _ -> [];;
+
   let make_fvars_tbl asts = 
     let cons_uniq xs x = if List.mem x xs then xs else x :: xs in
     let remove_from_left xs = List.rev (List.fold_left cons_uniq [] xs) in
@@ -185,13 +198,13 @@ module Code_Gen : CODE_GEN = struct
     ;;
 
   let find_fvar_indx v fvars = 
-    let pair = Printf.printf "test1\n";(List.find_opt (fun x -> match x with (a,b) -> String.equal a v) fvars) in 
-    Printf.printf "test2\n";match pair with
+    let pair = (List.find_opt (fun x -> match x with (a,b) -> String.equal a v) fvars) in 
+    match pair with
     | Some((a,b)) -> b
-    |_ -> raise (X_bug_error_m  "fail find_fvar_indx: :( ");;
+    | _ -> raise (X_bug_error_m  "fail find_fvar_indx: :( ");;
 
   
-  let generate consts fvars e =
+  let rec generate consts fvars e =
     match e with
     |Const'(e) ->
       let address_in_consts = find_rel_idx e consts in
@@ -202,6 +215,20 @@ module Code_Gen : CODE_GEN = struct
       let address_in_vars = find_fvar_indx v fvars in
       let code = Printf.sprintf "mov rax, [fvar_tbl+%d*8]" address_in_vars in
       code
+    | Set'(Var'(VarFree(v)),e) -> 
+      let code = generate consts fvars e in
+      let address_in_vars = find_fvar_indx v fvars in
+      let code = code ^ (Printf.sprintf "mov qword[fvar_tbl+%d*8] \n rax mov rax \n sob_void" address_in_vars) in
+      code
+    |Seq'(lst) ->
+      let exps = List.map (generate consts fvars) lst in 
+      let code = String.concat "\n" exps in
+      code
+    |Or'(lst) ->
+      let exps = List.map (generate consts fvars) lst in 
+      let code = String.concat "\ncmp rax, SOB_FALSE_ADDRESS \n jne Lexit \n" exps in
+      code ^ "\nLexit:\n"
+    | If'
     |no_match -> raise_not_imp "generate" no_match exp'_to_string
   ;;
   
