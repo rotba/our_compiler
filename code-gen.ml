@@ -394,7 +394,7 @@ module Code_Gen : CODE_GEN = struct
              "sub rsi, 8;Env[i-1]";
              "mov r8, rdx;ExtEnv";
              "add r8, rcx;ExtEnv[i]";
-             "mov r9, qword[rsi];r9 is the i'th rib";
+             "mov r9, rsi;r9 is the i'th rib";
              "mov qword[r8], r9; ExtEnv[i] = Env[i-1]";
              "shr rcx, 3";
              (Printf.sprintf "loop %s" label_env_loop);
