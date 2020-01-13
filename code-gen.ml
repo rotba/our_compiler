@@ -1,6 +1,8 @@
 #use "semantic-analyser.ml";;
+
 exception X_not_yet_implemented of string;;
 exception X_bug_error_m of string;;
+
 let raise_not_imp func_name no_match to_string =
   let msg =func_name ^": " in
   let msg = msg^(to_string no_match) in
@@ -30,6 +32,41 @@ end;;
 (* This module is here for you convenience only!
    You are not required to use it.
    you are allowed to change it. *)
+module Labels : sig
+  val make_label : string -> string
+  val make_labels : string list -> string list
+end = struct
+  let label_counter = ref 0;;
+    
+  let count () =
+    ( label_counter := 1 + !label_counter ;
+      !label_counter );;
+    
+  let make_label base =
+    Printf.sprintf "%s_%d" base (count());;
+    
+  let make_labels bases =
+    let n = count() in
+    List.map (fun base -> Printf.sprintf "%s_%d" base n)
+	     bases;;
+end;;module Labels : sig
+  val make_label : string -> string
+  val make_labels : string list -> string list
+end = struct
+  let label_counter = ref 0;;
+    
+  let count () =
+    ( label_counter := 1 + !label_counter ;
+      !label_counter );;
+    
+  let make_label base =
+    Printf.sprintf "%s_%d" base (count());;
+    
+  let make_labels bases =
+    let n = count() in
+    List.map (fun base -> Printf.sprintf "%s_%d" base n)
+	     bases;;
+end;;
 module type CODE_GEN = sig
   (* This signature assumes the structure of the constants table is
      a list of key-value pairs:
@@ -331,6 +368,76 @@ module Code_Gen : CODE_GEN = struct
       let code =Printf.sprintf "mov rax, [fvar_tbl+%d*8]" address_in_vars in
       code     
         
+    |LambdaSimple'(params, body) ->
+      let create_env =
+        let label_is_empty = (Labels.make_label "is_empty") in
+        let label_env_loop = (Labels.make_label "env_loop") in
+        let label_params_loop = (Labels.make_label "params_loop") in
+        let label_no_more_params = (Labels.make_label "no_more_params") in
+        (concat_lines
+           [
+             "GET_ENV rbx";
+             "mov rcx, 0";
+             "cmp rbx,SOB_NIL_ADDRESS";
+             (Printf.sprintf "je %s" label_is_empty);
+             "ENV_LENGTH rbx";
+             (Printf.sprintf "%s:" label_is_empty);
+             "mov rdi, rcx";
+             "inc rdi";
+             "shl rdi, 3";
+             "MALLOC rdx, rdi";
+             "inc rcx";
+             (Printf.sprintf "%s:" label_env_loop);
+             "shl rcx, 3";
+             "mov rsi, rbx;Env";
+             "add rsi, rcx;Env[i]";
+             "sub rsi, 8;Env[i-1]";
+             "mov r8, rdx;ExtEnv";
+             "add r8, rcx;ExtEnv[i]";
+             "mov r9, qword[rsi];r9 is the i'th rib";
+             "mov qword[r8], r9; ExtEnv[i] = Env[i-1]";
+             "shr rcx, 3";
+             (Printf.sprintf "loop %s" label_env_loop);
+             (Printf.sprintf "mov rcx, %d" (List.length params));
+             "shl rcx, 3";
+             "MALLOC rbx, rcx;rbx is the new rib";
+             "shr rcx, 3";
+             "cmp rcx, 0";
+             Printf.sprintf "je %s" label_no_more_params;
+             (Printf.sprintf "%s:" label_params_loop);
+             "GET_ARG rsi, rcx;in rsi is the value of arg_i, i.e the content in the stack";
+             "shl rcx, 3";
+             "mov r8, rbx";
+             "add r8, rcx; r8 is &new_rib[i]";
+             "mov qword[r8], rsi";
+             "shr rcx, 3";
+             (Printf.sprintf "loop %s" label_params_loop);
+             (Printf.sprintf "%s:" label_no_more_params);
+             "mov qword[rdx], rbx";
+             ";;RDX IS THE EXTENV!!!"
+           ]
+        )
+      in
+      let label_code = Labels.make_label "Lcode" in
+      let label_cont = Labels.make_label "Lcode" in
+      let create_closure =
+        Printf.sprintf "MAKE_CLOSURE(rax, rdx, %s)" label_code
+      in
+      (concat_lines
+         [
+           create_env;
+           create_closure;
+           (Printf.sprintf "jmp %s" label_cont);
+           (Printf.sprintf "%s:" label_code);
+           "push rbp";
+           "mov rbp, rsp";
+           (generate consts fvars body);
+           "leave";
+           "ret";
+           (Printf.sprintf "%s:" label_cont);
+         ]
+      )
+      
       
     |no_match -> raise_not_imp "generate" no_match exp'_to_string
   ;;

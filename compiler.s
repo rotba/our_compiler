@@ -9,6 +9,7 @@
 %define T_SYMBOL 8
 %define T_CLOSURE 9
 %define T_PAIR 10
+	
 
 
 
@@ -663,6 +664,7 @@ section .data
 %define MAKE_LITERAL_SYMBOl(val) MAKE_LITERAL T_SYMBOL, dq val
 %define MAKE_LITERAL_PAIR(car, cdr) \
 	MAKE_WORDS_LIT T_PAIR, car, cdr
+
 	
 %macro MAKE_LITERAL_STRING 2
 	db T_STRING
@@ -671,5 +673,36 @@ section .data
 	db %1
 %%end_str:	
 %endmacro
+
+
+%macro GET_ENV 1
+	mov %1, qword[rbp +8*2] 
+%endmacro	
+
+%macro GET_ARG 2
+	push rcx
+	push rdi
+	mov rcx, %2
+	shl rcx, 3
+	mov rdi, rbp
+	add rdi, rcx
+	mov %1, qword[rdi]
+	pop rdi
+	pop rcx
+%endmacro
+
+%macro ENV_LENGTH 1
+	mov rcx, 0
+	%%loop:
+	shl rcx, 3
+	mov rsi, %1
+	add rsi, rcx
+	shr rcx, 3
+	cmp qword[rsi], SOB_NIL_ADDRESS
+	je %%end
+	inc rcx
+	jmp %%loop
+	%%end:
 	
+%endmacro
 ;;; ;;;;;;;;;;;
