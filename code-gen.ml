@@ -319,41 +319,46 @@ module Code_Gen : CODE_GEN = struct
         let label_is_empty = (Labels.make_label "is_empty") in
         let label_env_loop = (Labels.make_label "env_loop") in
         let label_params_loop = (Labels.make_label "params_loop") in
+        let label_no_more_params = (Labels.make_label "no_more_params") in
         (concat_lines
            [
              "GET_ENV rbx";
              "mov rcx, 0";
-             "cmp T_UNDEFINED, rbx";
+             "cmp rbx,SOB_NIL_ADDRESS";
              (Printf.sprintf "je %s" label_is_empty);
-             "ENV_LENGTH rcx, rbx";
+             "ENV_LENGTH rbx";
              (Printf.sprintf "%s:" label_is_empty);
              "mov rdi, rcx";
              "inc rdi";
              "shl rdi, 3";
              "MALLOC rdx, rdi";
+             "inc rcx";
              (Printf.sprintf "%s:" label_env_loop);
              "shl rcx, 3";
              "mov rsi, rbx;Env";
              "add rsi, rcx;Env[i]";
-             "mov r0, rdx;ExtEnv";
-             "add r0, rcx;ExtEnv[i]";
-             "add r0, 8;ExtEnv[i+1]";
-             "mov r1, qword[rsi];r1 is the i'th rib";
-             "mov qword[r0], r1; ExtEnv[i+1] = Env[i]";
+             "sub rsi, 8;Env[i-1]";
+             "mov r8, rdx;ExtEnv";
+             "add r8, rcx;ExtEnv[i]";
+             "mov r9, qword[rsi];r9 is the i'th rib";
+             "mov qword[r8], r9; ExtEnv[i] = Env[i-1]";
              "shr rcx, 3";
              (Printf.sprintf "loop %s" label_env_loop);
              (Printf.sprintf "mov rcx, %d" (List.length params));
-             (Printf.sprintf "%s:" label_params_loop);
              "shl rcx, 3";
              "MALLOC rbx, rcx;rbx is the new rib";
              "shr rcx, 3";
+             "cmp rcx, 0";
+             Printf.sprintf "je %s" label_no_more_params;
+             (Printf.sprintf "%s:" label_params_loop);
              "GET_ARG rsi, rcx;in rsi is the value of arg_i, i.e the content in the stack";
              "shl rcx, 3";
-             "mov r0, rbx";
-             "add r0, rcx; r0 is &new_rib[i]";
-             "mov qword[r0], rsi";
+             "mov r8, rbx";
+             "add r8, rcx; r8 is &new_rib[i]";
+             "mov qword[r8], rsi";
              "shr rcx, 3";
              (Printf.sprintf "loop %s" label_params_loop);
+             (Printf.sprintf "%s:" label_no_more_params);
              "mov qword[rdx], rbx";
              ";;RDX IS THE EXTENV!!!"
            ]
@@ -362,7 +367,7 @@ module Code_Gen : CODE_GEN = struct
       let label_code = Labels.make_label "Lcode" in
       let label_cont = Labels.make_label "Lcode" in
       let create_closure =
-        Printf.sprintf "MAKE_CLOSURE rax, rdx, %s" label_code
+        Printf.sprintf "MAKE_CLOSURE(rax, rdx, %s)" label_code
       in
       (concat_lines
          [

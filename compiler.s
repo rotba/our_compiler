@@ -691,20 +691,18 @@ section .data
 	pop rcx
 %endmacro
 
-%macro ENV_LENGTH 2
-	push rcx
+%macro ENV_LENGTH 1
 	mov rcx, 0
 	%%loop:
 	shl rcx, 3
-	mov rsi, %2
+	mov rsi, %1
 	add rsi, rcx
 	shr rcx, 3
-	cmp qword[rsi], T_UNDEFINED
+	cmp qword[rsi], SOB_NIL_ADDRESS
 	je %%end
 	inc rcx
 	jmp %%loop
 	%%end:
-	mov %1, rcx
-	pop rcx
+	
 %endmacro
 ;;; ;;;;;;;;;;;
