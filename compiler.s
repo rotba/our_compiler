@@ -691,7 +691,7 @@ section .data
 	pop rcx
 %endmacro
 
-%macro GET_ARG 2 	; %1 will contain the qword[rbp + 8*(4+%)2]
+%macro GET_ARG 2 	; %1 will contain the qword[rbp + 8*(4+%2)]
 	push rcx
 	push rdi
 	mov rcx, %2

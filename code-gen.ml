@@ -457,7 +457,7 @@ module Code_Gen : CODE_GEN = struct
              "cmp rcx, 0";
              Printf.sprintf "je %s" label_no_more_params;
              (Printf.sprintf "%s:" label_params_loop);
-             "GET_ARG rsi, rcx;in rsi is the value of arg_i, i.e the content in the stack";
+             "GET_ARG rsi, rcx;in rsi is the value of arg_i";
              "shl rcx, 3";
              "mov r8, rbx";
              "add r8, rcx; r8 is &new_rib[i]";

@@ -119,7 +119,7 @@ shr rcx, 3
 cmp rcx, 0
 je no_more_params_4
 params_loop_3:
-GET_ARG rsi, rcx;in rsi is the value of arg_i, i.e the content in the stack
+GET_ARG rsi, rcx;in rsi is the value of arg_i
 shl rcx, 3
 mov r8, rbx
 add r8, rcx; r8 is &new_rib[i]
@@ -167,7 +167,7 @@ shr rcx, 3
 cmp rcx, 0
 je no_more_params_10
 params_loop_9:
-GET_ARG rsi, rcx;in rsi is the value of arg_i, i.e the content in the stack
+GET_ARG rsi, rcx;in rsi is the value of arg_i
 shl rcx, 3
 mov r8, rbx
 add r8, rcx; r8 is &new_rib[i]
