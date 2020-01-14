@@ -650,7 +650,7 @@ section .data
 
 
 ;;; ;;;;;WE ADDED;;;;;;;;
-
+%define ELEMENTS_ON_STACK 4
 %macro MAKE_LITERAL 2
 	db %1
 	%2
@@ -704,5 +704,23 @@ section .data
 	jmp %%loop
 	%%end:
 	
+%endmacro
+
+%define GET_PARAM_COUNT qword[rbp +3*8]
+	
+%macro SHIFT_FRAME 1
+	push rax
+	push rbx
+	mov rax, GET_PARAM_COUNT
+	add rax, ELEMENTS_ON_STACK
+%assign i 0
+%rep %1
+	dec rax
+	mov rbx , qword[rbp - 8*i]
+	mov qword[rbp +8*rax], rbx
+%assign i i+1
+%endrep
+	pop rbx
+	pop rax
 %endmacro
 ;;; ;;;;;;;;;;;

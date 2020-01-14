@@ -2,7 +2,7 @@
 
 exception X_not_yet_implemented of string;;
 exception X_bug_error_m of string;;
-
+let elements_on_stack = 4;;
 let raise_not_imp func_name no_match to_string =
   let msg =func_name ^": " in
   let msg = msg^(to_string no_match) in
@@ -265,8 +265,26 @@ module Code_Gen : CODE_GEN = struct
 
   let concat_lines lines =
     String.concat "\n" lines;;
+
+  
+    
   
   let rec generate consts fvars e =
+    let generate_push_args args =
+      let fold_args curr acc=
+        let arg_i = (generate consts fvars curr) in
+        let push_res = "push rax" in
+        (concat_lines 
+           [
+             acc;
+             arg_i;
+             push_res
+           ]
+        )
+      in
+      List.fold_right fold_args args ""
+    in
+    let verify_closure = "" in
     match e with
     |Const'(e) ->
       let address_in_consts = find_rel_idx e consts in
@@ -293,21 +311,9 @@ module Code_Gen : CODE_GEN = struct
       let labels = Labels.make_labels ["Lelse";"Lexit"] in
       Printf.sprintf "%s \n cmp rax, SOB_FALSE_ADDRESS \n je %s \n %s \n jmp %s \n %s: \n %s \n %s:\n" i (List.nth labels 0) t (List.nth labels 1) (List.nth labels 0) e (List.nth labels 1)
     | Applic'(e,l) ->
-      let fold_args curr acc=
-        let arg_i = (generate consts fvars curr) in
-        let push_res = "push rax" in
-        (concat_lines 
-           [
-             acc;
-             arg_i;
-             push_res
-           ]
-        )
-      in
-      let push_args = List.fold_right fold_args l "" in
+      let push_args = generate_push_args l in
       let push_n = Printf.sprintf "push %d" (List.length l) in
       let proc = generate consts fvars e in
-      let verifiy_closure = "" in
       let push_env =
         (concat_lines
            [
@@ -329,7 +335,7 @@ module Code_Gen : CODE_GEN = struct
            push_args;
            push_n;
            proc;
-           verifiy_closure;
+           verify_closure;
            push_env;
            call_code;
            "add rsp, 8*1";
@@ -338,6 +344,52 @@ module Code_Gen : CODE_GEN = struct
            "add rsp, rbx"
          ]
       )
+
+    | ApplicTP'(e,l) ->
+       let push_args = generate_push_args l in
+       let push_n = Printf.sprintf "push %d" (List.length l) in
+       let proc = generate consts fvars e in
+       let push_env =
+         (concat_lines
+            [
+              "CLOSURE_ENV rbx, rax";
+              "push rbx"
+            ]
+         )
+       in
+       let push_old_ret = "push qword[rbp +8*1]" in
+       let jmp_code =
+         (concat_lines
+            [
+              "CLOSURE_CODE rbx, rax";
+              "jmp rbx"
+            ]
+         )
+       in
+       let fix_stack =
+         (concat_lines
+            [
+              Printf.sprintf "SHIFT_FRAME %d" (1*(elements_on_stack+(List.length l)));
+              Printf.sprintf "add rsp , %d" (8*((List.length l) +elements_on_stack))
+            ]
+         )
+       in
+       (concat_lines
+          [
+            push_args;
+            push_n;
+            proc;
+            verify_closure;
+            push_env;
+            push_old_ret;
+            fix_stack;
+            jmp_code;
+            "add rsp, 8*1";
+            "pop rbx";
+            "shl rbx, 3";
+            "add rsp, rbx"
+          ]
+       )
 
     | Var'(VarParam(_, minor)) -> 
         Printf.sprintf "mov rax, qword [rbp+8*(4+%d)]" minor
@@ -419,7 +471,7 @@ module Code_Gen : CODE_GEN = struct
         )
       in
       let label_code = Labels.make_label "Lcode" in
-      let label_cont = Labels.make_label "Lcode" in
+      let label_cont = Labels.make_label "Lcont" in
       let create_closure =
         Printf.sprintf "MAKE_CLOSURE(rax, rdx, %s)" label_code
       in
