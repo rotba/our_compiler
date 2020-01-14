@@ -22,7 +22,7 @@ let primitive_names_to_labels =
    *  "symbol->string", "symbol_to_string"; 
    *  "char->integer", "char_to_integer"; "integer->char", "integer_to_char"; "eq?", "is_eq";
    *  "+", "bin_add"; "*", "bin_mul"; "-", "bin_sub"; "/", "bin_div"; "<", "bin_lt"; "=", "bin_equ"] *)
-  ["+", "bin_add"; "cons", "cons"]
+  ["+", "bin_add";]
 ;;
 
 let make_prologue consts_tbl fvars_tbl =
@@ -76,7 +76,9 @@ main:
     ;; from the top level (which SHOULD NOT HAPPEN
     ;; AND IS A BUG) will cause a segfault.
     push 0
-    push qword SOB_NIL_ADDRESS
+    MALLOC rdi, 8
+    mov qword[rdi] ,SOB_NIL_ADDRESS
+    push rdi
     push qword T_UNDEFINED
     push rsp
     mov rbp,rsp

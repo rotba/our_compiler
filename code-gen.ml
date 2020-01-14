@@ -252,7 +252,7 @@ module Code_Gen : CODE_GEN = struct
     let vars = (List.fold_left fold_fun ["boolean?"; "float?"; "integer?"; "pair?";
     "null?"; "char?"; "string?"; "procedure?"; "symbol?"; "string-length";
     "string-ref"; "string-set!"; "make-string"; "symbol->string"; 
-    "char->integer"; "integer->char"; "eq?"; "+"; "*"; "-"; "/"; "<"; "="; "cons"] asts) in
+    "char->integer"; "integer->char"; "eq?"; "+"; "*"; "-"; "/"; "<"; "="; ] asts) in
     let vars = remove_from_left vars in 
     let fold_fun acc b = (acc@[(b, (gen_id()))]) in
     List.fold_left fold_fun [] vars 
@@ -430,7 +430,7 @@ module Code_Gen : CODE_GEN = struct
            [
              "GET_ENV rbx";
              "mov rcx, 0";
-             "cmp rbx,SOB_NIL_ADDRESS";
+             "cmp qword[rbx],SOB_NIL_ADDRESS";
              (Printf.sprintf "je %s" label_is_empty);
              "ENV_LENGTH rbx";
              (Printf.sprintf "%s:" label_is_empty);
@@ -446,7 +446,7 @@ module Code_Gen : CODE_GEN = struct
              "sub rsi, 8;Env[i-1]";
              "mov r8, rdx;ExtEnv";
              "add r8, rcx;ExtEnv[i]";
-             "mov r9, rsi;r9 is the i'th rib";
+             "mov r9, qword[rsi];r9 is the i'th rib";
              "mov qword[r8], r9; ExtEnv[i] = Env[i-1]";
              "shr rcx, 3";
              (Printf.sprintf "loop %s" label_env_loop);
@@ -457,7 +457,7 @@ module Code_Gen : CODE_GEN = struct
              "cmp rcx, 0";
              Printf.sprintf "je %s" label_no_more_params;
              (Printf.sprintf "%s:" label_params_loop);
-             "GET_STACK_ELEMENT rsi, rcx;in rsi is the value of arg_i, i.e the content in the stack";
+             "GET_ARG rsi, rcx;in rsi is the value of arg_i, i.e the content in the stack";
              "shl rcx, 3";
              "mov r8, rbx";
              "add r8, rcx; r8 is &new_rib[i]";

@@ -1,11 +1,18 @@
-cons:
-	push rbp
-	mov rbp, rsp
-	GET_ARG rsi, 0
-	GET_ARG rdx, 1
-	MAKE_PAIR(rax, rsi, rdx)
-	leave
-	ret
+;; cons:
+;; 	push rbp
+;; 	mov rbp, rsp
+;; 	GET_ARG rsi, 0
+;; 	GET_ARG rdx, 1
+;; 	MAKE_PAIR(rax, rsi, rdx)
+;; 	leave
+;; 	ret
+;; car:
+;; 	push rbp
+;; 	mov rbp, rsp
+;; 	GET_ARG rsi, 0
+;; 	CAR rax, rsi
+;; 	leave
+;; 	ret
 is_boolean:
     push rbp
     mov rbp, rsp

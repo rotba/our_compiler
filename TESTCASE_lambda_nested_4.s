@@ -16,6 +16,7 @@ MAKE_BOOL(0)
 MAKE_NIL
 MAKE_VOID
 MAKE_LITERAL_INT(1)
+MAKE_LITERAL_INT(2)
 
 ;;; These macro definitions are required for the primitive
 ;;; definitions in the epilogue to work properly
@@ -25,7 +26,6 @@ MAKE_LITERAL_INT(1)
 %define SOB_TRUE_ADDRESS const_tbl+0
 
 fvar_tbl:
-dq T_UNDEFINED
 dq T_UNDEFINED
 dq T_UNDEFINED
 dq T_UNDEFINED
@@ -66,7 +66,9 @@ main:
     ;; from the top level (which SHOULD NOT HAPPEN
     ;; AND IS A BUG) will cause a segfault.
     push 0
-    push qword SOB_NIL_ADDRESS
+    MALLOC rdi, 8
+    mov qword[rdi] ,SOB_NIL_ADDRESS
+    push rdi
     push qword T_UNDEFINED
     push rsp
     mov rbp,rsp
@@ -77,16 +79,138 @@ main:
     ;; This is where we emulate the missing (define ...) expressions
     ;; for all the primitive procedures.
     MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, bin_add)
-     mov [fvar_tbl+8*17], rax
-    MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, cons)
-     mov [fvar_tbl+8*23], rax
+     mov [fvar_tbl+8*20], rax
 
 user_code_fragment:
 ;;; The code you compiled will be catenated here.
 ;;; It will be executed immediately after the closures for 
 ;;; the primitive procedures are set up.
 
+
 mov rax, const_tbl+6
+push rax
+push 1
+GET_ENV rbx
+mov rcx, 0
+cmp qword[rbx],SOB_NIL_ADDRESS
+je is_empty_1
+ENV_LENGTH rbx
+is_empty_1:
+mov rdi, rcx
+inc rdi
+shl rdi, 3
+MALLOC rdx, rdi
+inc rcx
+env_loop_2:
+shl rcx, 3
+mov rsi, rbx;Env
+add rsi, rcx;Env[i]
+sub rsi, 8;Env[i-1]
+mov r8, rdx;ExtEnv
+add r8, rcx;ExtEnv[i]
+mov r9, qword[rsi];r9 is the i'th rib
+mov qword[r8], r9; ExtEnv[i] = Env[i-1]
+shr rcx, 3
+loop env_loop_2
+mov rcx, 1
+shl rcx, 3
+MALLOC rbx, rcx;rbx is the new rib
+shr rcx, 3
+cmp rcx, 0
+je no_more_params_4
+params_loop_3:
+GET_ARG rsi, rcx;in rsi is the value of arg_i, i.e the content in the stack
+shl rcx, 3
+mov r8, rbx
+add r8, rcx; r8 is &new_rib[i]
+mov qword[r8], rsi
+shr rcx, 3
+loop params_loop_3
+no_more_params_4:
+mov qword[rdx], rbx
+;;RDX IS THE EXTENV!!!
+MAKE_CLOSURE(rax, rdx, Lcode_5)
+jmp Lcont_6
+Lcode_5:
+push rbp
+mov rbp, rsp
+
+mov rax, const_tbl+15
+push rax
+push 1
+GET_ENV rbx
+mov rcx, 0
+cmp qword[rbx],SOB_NIL_ADDRESS
+je is_empty_7
+ENV_LENGTH rbx
+is_empty_7:
+mov rdi, rcx
+inc rdi
+shl rdi, 3
+MALLOC rdx, rdi
+inc rcx
+env_loop_8:
+shl rcx, 3
+mov rsi, rbx;Env
+add rsi, rcx;Env[i]
+sub rsi, 8;Env[i-1]
+mov r8, rdx;ExtEnv
+add r8, rcx;ExtEnv[i]
+mov r9, qword[rsi];r9 is the i'th rib
+mov qword[r8], r9; ExtEnv[i] = Env[i-1]
+shr rcx, 3
+loop env_loop_8
+mov rcx, 1
+shl rcx, 3
+MALLOC rbx, rcx;rbx is the new rib
+shr rcx, 3
+cmp rcx, 0
+je no_more_params_10
+params_loop_9:
+GET_ARG rsi, rcx;in rsi is the value of arg_i, i.e the content in the stack
+shl rcx, 3
+mov r8, rbx
+add r8, rcx; r8 is &new_rib[i]
+mov qword[r8], rsi
+shr rcx, 3
+loop params_loop_9
+no_more_params_10:
+mov qword[rdx], rbx
+;;RDX IS THE EXTENV!!!
+MAKE_CLOSURE(rax, rdx, Lcode_11)
+jmp Lcont_12
+Lcode_11:
+push rbp
+mov rbp, rsp
+mov rax, qword[rbp+8*2]
+mov rax, qword[rax+8*0]
+mov rax, qword[rax+8*0]
+leave
+ret
+Lcont_12:
+
+CLOSURE_ENV rbx, rax
+push rbx
+push qword[rbp +8*1]
+SHIFT_FRAME 4
+CLOSURE_CODE rbx, rax
+jmp rbx
+add rsp, 8*1
+pop rbx
+shl rbx, 3
+add rsp, rbx
+leave
+ret
+Lcont_6:
+
+CLOSURE_ENV rbx, rax
+push rbx
+CLOSURE_CODE rbx, rax
+call rbx
+add rsp, 8*1
+pop rbx
+shl rbx, 3
+add rsp, rbx
 	call write_sob_if_not_void
 
 	mov rax, 0
@@ -94,14 +218,21 @@ mov rax, const_tbl+6
 	pop rbp
 	ret
 
-cons:
-	push rbp
-	mov rbp, rsp
-	GET_ARG rsi, 0
-	GET_ARG rdx, 1
-	MAKE_PAIR(rax, rsi, rdx)
-	leave
-	ret
+;; cons:
+;; 	push rbp
+;; 	mov rbp, rsp
+;; 	GET_ARG rsi, 0
+;; 	GET_ARG rdx, 1
+;; 	MAKE_PAIR(rax, rsi, rdx)
+;; 	leave
+;; 	ret
+;; car:
+;; 	push rbp
+;; 	mov rbp, rsp
+;; 	GET_ARG rsi, 0
+;; 	CAR rax, rsi
+;; 	leave
+;; 	ret
 is_boolean:
     push rbp
     mov rbp, rsp

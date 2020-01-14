@@ -704,7 +704,7 @@ section .data
 	pop rcx
 %endmacro
 	
-%macro ENV_LENGTH 1
+	%macro ENV_LENGTH 1
 	mov rcx, 0
 	%%loop:
 	shl rcx, 3
@@ -716,6 +716,7 @@ section .data
 	inc rcx
 	jmp %%loop
 	%%end:
+	
 	
 %endmacro
 
