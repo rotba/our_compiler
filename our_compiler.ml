@@ -16,14 +16,14 @@ let string_to_asts s = List.map Semantics.run_semantics
 
 let primitive_names_to_labels = 
   (* ["boolean?", "is_boolean"; "float?", "is_float"; "integer?", "is_integer"; "pair?", "is_pair";
-   "null?", "is_null"; "char?", "is_char"; "string?", "is_string";
-   "procedure?", "is_procedure"; "symbol?", "is_symbol"; "string-length", "string_length";
-   "string-ref", "string_ref"; "string-set!", "string_set"; "make-string", "make_string";
-   "symbol->string", "symbol_to_string"; 
-   "char->integer", "char_to_integer"; "integer->char", "integer_to_char"; "eq?", "is_eq";
-   "+", "bin_add"; "*", "bin_mul"; "-", "bin_sub"; "/", "bin_div"; "<", "bin_lt"; "=", "bin_equ"
-(* you can add yours here *)];; *)
-["+", "bin_add";(* you can add yours here *)];;
+   *  "null?", "is_null"; "char?", "is_char"; "string?", "is_string";
+   *  "procedure?", "is_procedure"; "symbol?", "is_symbol"; "string-length", "string_length";
+   *  "string-ref", "string_ref"; "string-set!", "string_set"; "make-string", "make_string";
+   *  "symbol->string", "symbol_to_string"; 
+   *  "char->integer", "char_to_integer"; "integer->char", "integer_to_char"; "eq?", "is_eq";
+   *  "+", "bin_add"; "*", "bin_mul"; "-", "bin_sub"; "/", "bin_div"; "<", "bin_lt"; "=", "bin_equ"] *)
+  ["+", "bin_add"; "cons", "cons"]
+;;
 
 let make_prologue consts_tbl fvars_tbl =
   let make_primitive_closure (prim, label) =

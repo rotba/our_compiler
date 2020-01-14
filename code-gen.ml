@@ -252,7 +252,7 @@ module Code_Gen : CODE_GEN = struct
     let vars = (List.fold_left fold_fun ["boolean?"; "float?"; "integer?"; "pair?";
     "null?"; "char?"; "string?"; "procedure?"; "symbol?"; "string-length";
     "string-ref"; "string-set!"; "make-string"; "symbol->string"; 
-    "char->integer"; "integer->char"; "eq?"; "+"; "*"; "-"; "/"; "<"; "="] asts) in
+    "char->integer"; "integer->char"; "eq?"; "+"; "*"; "-"; "/"; "<"; "="; "cons"] asts) in
     let vars = remove_from_left vars in 
     let fold_fun acc b = (acc@[(b, (gen_id()))]) in
     List.fold_left fold_fun [] vars 
@@ -457,7 +457,7 @@ module Code_Gen : CODE_GEN = struct
              "cmp rcx, 0";
              Printf.sprintf "je %s" label_no_more_params;
              (Printf.sprintf "%s:" label_params_loop);
-             "GET_ARG rsi, rcx;in rsi is the value of arg_i, i.e the content in the stack";
+             "GET_STACK_ELEMENT rsi, rcx;in rsi is the value of arg_i, i.e the content in the stack";
              "shl rcx, 3";
              "mov r8, rbx";
              "add r8, rcx; r8 is &new_rib[i]";

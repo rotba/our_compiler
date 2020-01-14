@@ -679,7 +679,7 @@ section .data
 	mov %1, qword[rbp +8*2] 
 %endmacro	
 
-%macro GET_ARG 2
+%macro GET_STACK_ELEMENT 2 	; %1 will contain the qword[rbp + 8*%2]
 	push rcx
 	push rdi
 	mov rcx, %2
@@ -691,6 +691,19 @@ section .data
 	pop rcx
 %endmacro
 
+%macro GET_ARG 2 	; %1 will contain the qword[rbp + 8*(4+%)2]
+	push rcx
+	push rdi
+	mov rcx, %2
+	add rcx, 4
+	shl rcx, 3
+	mov rdi, rbp
+	add rdi, rcx
+	mov %1, qword[rdi]
+	pop rdi
+	pop rcx
+%endmacro
+	
 %macro ENV_LENGTH 1
 	mov rcx, 0
 	%%loop:
