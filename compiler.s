@@ -713,7 +713,8 @@ section .data
 	push rbx
 	mov rax, GET_PARAM_COUNT
 	add rax, ELEMENTS_ON_STACK
-%assign i 0
+	mov r15, rax
+%assign i 1
 %rep %1
 	dec rax
 	mov rbx , qword[rbp - 8*i]
@@ -722,5 +723,8 @@ section .data
 %endrep
 	pop rbx
 	pop rax
+	shl r15, 3
+	add rsp, r15
+	add rbp, r15
 %endmacro
 ;;; ;;;;;;;;;;;

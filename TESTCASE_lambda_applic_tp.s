@@ -141,8 +141,7 @@ mov rax, [fvar_tbl+18*8]
 CLOSURE_ENV rbx, rax
 push rbx
 push qword[rbp +8*1]
-SHIFT_FRAME 6
-add rsp , 48
+SHIFT_FRAME 5
 CLOSURE_CODE rbx, rax
 jmp rbx
 add rsp, 8*1

@@ -3,6 +3,7 @@
 exception X_not_yet_implemented of string;;
 exception X_bug_error_m of string;;
 let elements_on_stack = 4;;
+let elements_on_stack_no_rbp = 3;;
 let raise_not_imp func_name no_match to_string =
   let msg =func_name ^": " in
   let msg = msg^(to_string no_match) in
@@ -369,8 +370,7 @@ module Code_Gen : CODE_GEN = struct
        let fix_stack =
          (concat_lines
             [
-              Printf.sprintf "SHIFT_FRAME %d" (1*(elements_on_stack+(List.length l)));
-              Printf.sprintf "add rsp , %d" (8*((List.length l) +elements_on_stack))
+              Printf.sprintf "SHIFT_FRAME %d" (1*(elements_on_stack_no_rbp+(List.length l)));
             ]
          )
        in
