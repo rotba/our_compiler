@@ -18,7 +18,7 @@ let primitive_names_to_labels =
    "symbol->string", "symbol_to_string"; 
    "char->integer", "char_to_integer"; "integer->char", "integer_to_char"; "eq?", "is_eq";
    "+", "bin_add"; "*", "bin_mul"; "-", "bin_sub"; "/", "bin_div"; "<", "bin_lt"; "=", "bin_equ";
-   "cons", "cons"; "car", "car";
+   "cons", "cons"; "car", "car";"apply","apply"
    ]
 ;;
 
@@ -57,6 +57,7 @@ fvar_tbl:
   (String.concat "\n" (List.map (fun _ -> "dq T_UNDEFINED") fvars_tbl)) ^ "
 
 global main
+extern memmove
 section .text
 main:
     push rbp
