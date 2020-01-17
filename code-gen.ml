@@ -252,7 +252,7 @@ module Code_Gen : CODE_GEN = struct
     let vars = (List.fold_left fold_fun ["boolean?"; "float?"; "integer?"; "pair?";
     "null?"; "char?"; "string?"; "procedure?"; "symbol?"; "string-length";
     "string-ref"; "string-set!"; "make-string"; "symbol->string"; 
-    "char->integer"; "integer->char"; "eq?"; "+"; "*"; "-"; "/"; "<"; "="; ] asts) in
+    "char->integer"; "integer->char"; "eq?"; "+"; "*"; "-"; "/"; "<"; "="; "cons";"car";] asts) in
     let vars = remove_from_left vars in 
     let fold_fun acc b = (acc@[(b, (gen_id()))]) in
     List.fold_left fold_fun [] vars 

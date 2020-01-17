@@ -80,6 +80,10 @@ main:
     ;; for all the primitive procedures.
     MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, bin_add)
      mov [fvar_tbl+8*17], rax
+    MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, cons)
+     mov [fvar_tbl+8*23], rax
+    MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, car)
+     mov [fvar_tbl+8*24], rax
 
 user_code_fragment:
 ;;; The code you compiled will be catenated here.
@@ -93,7 +97,7 @@ push rax
 mov rax, const_tbl+15
 push rax
 push 2
-mov rax, [fvar_tbl+24*8]
+mov rax, [fvar_tbl+23*8]
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -105,7 +109,7 @@ shl rbx, 3
 add rsp, rbx
 push rax
 push 1
-mov rax, [fvar_tbl+23*8]
+mov rax, [fvar_tbl+24*8]
 
 CLOSURE_ENV rbx, rax
 push rbx

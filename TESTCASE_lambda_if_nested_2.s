@@ -50,6 +50,8 @@ dq T_UNDEFINED
 dq T_UNDEFINED
 dq T_UNDEFINED
 dq T_UNDEFINED
+dq T_UNDEFINED
+dq T_UNDEFINED
 
 global main
 section .text
@@ -79,6 +81,10 @@ main:
     ;; for all the primitive procedures.
     MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, bin_add)
      mov [fvar_tbl+8*20], rax
+    MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, cons)
+     mov [fvar_tbl+8*26], rax
+    MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, car)
+     mov [fvar_tbl+8*27], rax
 
 user_code_fragment:
 ;;; The code you compiled will be catenated here.
