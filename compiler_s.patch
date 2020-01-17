@@ -1,0 +1,145 @@
+diff --git b/compiler.s a/compiler.s
+index ee63dfb..ba38c77 100644
+--- b/compiler.s
++++ a/compiler.s
+@@ -10,6 +10,10 @@
+ %define T_CLOSURE 9
+ %define T_PAIR 10
+ 	
++
++
++
++	
+ %define CHAR_NUL 0
+ %define CHAR_TAB 9
+ %define CHAR_NEWLINE 10
+@@ -25,8 +29,8 @@
+ %define KB(n) n*1024
+ %define MB(n) 1024*KB(n)
+ %define GB(n) 1024*MB(n)
+-
+-
++	
++	
+ %macro SKIP_TYPE_TAG 2
+ 	mov %1, qword [%2+TYPE_SIZE]	
+ %endmacro	
+@@ -64,7 +68,9 @@
+ %define SOB_VOID T_VOID
+ %define SOB_FALSE word T_BOOL
+ %define SOB_TRUE word (1 << TYPE_SIZE | T_BOOL)
++	
+ 
++	
+ ; returns %2 allocated bytes in register %1
+ ; Supports using with %1 = %2
+ %macro MALLOC 2
+@@ -92,7 +98,7 @@
+ 	mov byte [%1], %3
+ 	mov qword [%1+TYPE_SIZE], %2
+ %endmacro
+-
++	
+ %define MAKE_INT(r,val) MAKE_LONG_VALUE r, val, T_INTEGER
+ %define MAKE_FLOAT(r,val) MAKE_LONG_VALUE r, val, T_FLOAT
+ %define MAKE_CHAR(r,val) MAKE_CHAR_VALUE r, val
+@@ -640,3 +646,99 @@ write_sob_if_not_void:
+ section .data
+ .newline:
+ 	db CHAR_NEWLINE, 0
++
++
++
++;;; ;;;;;WE ADDED;;;;;;;;
++%define ELEMENTS_ON_STACK 4
++%macro MAKE_LITERAL 2
++	db %1
++	%2
++%endmacro
++
++	
++%define MAKE_NIL db T_NIL
++%define MAKE_VOID db T_VOID
++%define MAKE_BOOL(val) MAKE_LITERAL T_BOOL, db val
++%define MAKE_LITERAL_INT(val) MAKE_LITERAL T_INTEGER, dq val	
++%define MAKE_LITERAL_SYMBOl(val) MAKE_LITERAL T_SYMBOL, dq val
++%define MAKE_LITERAL_PAIR(car, cdr) \
++	MAKE_WORDS_LIT T_PAIR, car, cdr
++
++	
++%macro MAKE_LITERAL_STRING 2
++	db T_STRING
++	dq %2
++%%str:
++	db %1
++%%end_str:	
++%endmacro
++
++
++%macro GET_ENV 1
++	mov %1, qword[rbp +8*2] 
++%endmacro	
++
++%macro GET_STACK_ELEMENT 2 	; %1 will contain the qword[rbp + 8*%2]
++	push rcx
++	push rdi
++	mov rcx, %2
++	shl rcx, 3
++	mov rdi, rbp
++	add rdi, rcx
++	mov %1, qword[rdi]
++	pop rdi
++	pop rcx
++%endmacro
++
++%macro GET_ARG 2 	; %1 will contain the qword[rbp + 8*(4+%2)]
++	push rcx
++	push rdi
++	mov rcx, %2
++	add rcx, 4
++	shl rcx, 3
++	mov rdi, rbp
++	add rdi, rcx
++	mov %1, qword[rdi]
++	pop rdi
++	pop rcx
++%endmacro
++	
++	%macro ENV_LENGTH 1
++	mov rcx, 0
++	%%loop:
++	shl rcx, 3
++	mov rsi, %1
++	add rsi, rcx
++	shr rcx, 3
++	cmp qword[rsi], SOB_NIL_ADDRESS
++	je %%end
++	inc rcx
++	jmp %%loop
++	%%end:
++	
++	
++%endmacro
++
++%define GET_PARAM_COUNT qword[rbp +3*8]
++	
++%macro SHIFT_FRAME 1
++	push rax
++	push rbx
++	mov rax, GET_PARAM_COUNT
++	add rax, ELEMENTS_ON_STACK
++	mov r15, rax
++%assign i 1
++%rep %1
++	dec rax
++	mov rbx , qword[rbp - 8*i]
++	mov qword[rbp +8*rax], rbx
++%assign i i+1
++%endrep
++	pop rbx
++	pop rax
++	shl r15, 3
++	add rsp, r15
++	add rbp, r15
++%endmacro
++;;; ;;;;;;;;;;;

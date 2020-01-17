@@ -66,9 +66,7 @@ main:
     ;; from the top level (which SHOULD NOT HAPPEN
     ;; AND IS A BUG) will cause a segfault.
     push 0
-    MALLOC rdi, 8
-    mov qword[rdi] ,SOB_NIL_ADDRESS
-    push rdi
+    push SOB_NIL_ADDRESS
     push qword T_UNDEFINED
     push rsp
     mov rbp,rsp
@@ -92,16 +90,18 @@ push rax
 push 1
 GET_ENV rbx
 mov rcx, 0
-cmp qword[rbx],SOB_NIL_ADDRESS
-je is_empty_1
+cmp rbx, SOB_NIL_ADDRESS
+jne is_not_empty_1
+MALLOC rdx, 8
+mov qword[rdx], SOB_NIL_ADDRESS
+jmp is_empty_2
+is_not_empty_1:
 ENV_LENGTH rbx
-is_empty_1:
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-inc rcx
-env_loop_2:
+env_loop_3:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -111,27 +111,26 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_2
+loop env_loop_3
 mov rcx, 1
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_4
-params_loop_3:
-GET_ARG rsi, rcx;in rsi is the value of arg_i
-shl rcx, 3
-mov r8, rbx
-add r8, rcx; r8 is &new_rib[i]
-mov qword[r8], rsi
-shr rcx, 3
-loop params_loop_3
-no_more_params_4:
+je no_more_params_5
+params_loop_4:
+mov rdi, rcx
+dec rdi;rdi is the 0 based index of the current arg
+GET_ARG rsi, rdi
+mov qword[rbx + rdi], rsi
+loop params_loop_4
+no_more_params_5:
+is_empty_2:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_5)
-jmp Lcont_6
-Lcode_5:
+MAKE_CLOSURE(rax, rdx, Lcode_6)
+jmp Lcont_7
+Lcode_6:
 push rbp
 mov rbp, rsp
 
@@ -140,16 +139,18 @@ push rax
 push 1
 GET_ENV rbx
 mov rcx, 0
-cmp qword[rbx],SOB_NIL_ADDRESS
-je is_empty_7
+cmp rbx, SOB_NIL_ADDRESS
+jne is_not_empty_8
+MALLOC rdx, 8
+mov qword[rdx], SOB_NIL_ADDRESS
+jmp is_empty_9
+is_not_empty_8:
 ENV_LENGTH rbx
-is_empty_7:
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-inc rcx
-env_loop_8:
+env_loop_10:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -159,27 +160,26 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_8
+loop env_loop_10
 mov rcx, 1
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_10
-params_loop_9:
-GET_ARG rsi, rcx;in rsi is the value of arg_i
-shl rcx, 3
-mov r8, rbx
-add r8, rcx; r8 is &new_rib[i]
-mov qword[r8], rsi
-shr rcx, 3
-loop params_loop_9
-no_more_params_10:
+je no_more_params_12
+params_loop_11:
+mov rdi, rcx
+dec rdi;rdi is the 0 based index of the current arg
+GET_ARG rsi, rdi
+mov qword[rbx + rdi], rsi
+loop params_loop_11
+no_more_params_12:
+is_empty_9:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_11)
-jmp Lcont_12
-Lcode_11:
+MAKE_CLOSURE(rax, rdx, Lcode_13)
+jmp Lcont_14
+Lcode_13:
 push rbp
 mov rbp, rsp
 mov rax, qword[rbp+8*2]
@@ -187,7 +187,7 @@ mov rax, qword[rax+8*0]
 mov rax, qword[rax+8*0]
 leave
 ret
-Lcont_12:
+Lcont_14:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -201,7 +201,7 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_6:
+Lcont_7:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -218,21 +218,21 @@ add rsp, rbx
 	pop rbp
 	ret
 
-;; cons:
-;; 	push rbp
-;; 	mov rbp, rsp
-;; 	GET_ARG rsi, 0
-;; 	GET_ARG rdx, 1
-;; 	MAKE_PAIR(rax, rsi, rdx)
-;; 	leave
-;; 	ret
-;; car:
-;; 	push rbp
-;; 	mov rbp, rsp
-;; 	GET_ARG rsi, 0
-;; 	CAR rax, rsi
-;; 	leave
-;; 	ret
+cons:
+	push rbp
+	mov rbp, rsp
+	GET_ARG rsi, 0
+	GET_ARG rdx, 1
+	MAKE_PAIR(rax, rsi, rdx)
+	leave
+	ret
+car:
+	push rbp
+	mov rbp, rsp
+	GET_ARG rsi, 0
+	CAR rax, rsi
+	leave
+	ret
 is_boolean:
     push rbp
     mov rbp, rsp

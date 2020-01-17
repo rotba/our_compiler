@@ -422,6 +422,7 @@ module Code_Gen : CODE_GEN = struct
         
     |LambdaSimple'(params, body) ->
       let create_env =
+        let label_is_not_empty = (Labels.make_label "is_not_empty") in
         let label_is_empty = (Labels.make_label "is_empty") in
         let label_env_loop = (Labels.make_label "env_loop") in
         let label_params_loop = (Labels.make_label "params_loop") in
@@ -430,15 +431,17 @@ module Code_Gen : CODE_GEN = struct
            [
              "GET_ENV rbx";
              "mov rcx, 0";
-             "cmp qword[rbx],SOB_NIL_ADDRESS";
-             (Printf.sprintf "je %s" label_is_empty);
+             "cmp rbx, SOB_NIL_ADDRESS";
+             (Printf.sprintf "jne %s" label_is_not_empty);
+             "MALLOC rdx, 8";
+             "mov qword[rdx], SOB_NIL_ADDRESS";
+             (Printf.sprintf "jmp %s" label_is_empty);
+             (Printf.sprintf "%s:" label_is_not_empty);
              "ENV_LENGTH rbx";
-             (Printf.sprintf "%s:" label_is_empty);
              "mov rdi, rcx";
              "inc rdi";
              "shl rdi, 3";
              "MALLOC rdx, rdi";
-             "inc rcx";
              (Printf.sprintf "%s:" label_env_loop);
              "shl rcx, 3";
              "mov rsi, rbx;Env";
@@ -457,14 +460,13 @@ module Code_Gen : CODE_GEN = struct
              "cmp rcx, 0";
              Printf.sprintf "je %s" label_no_more_params;
              (Printf.sprintf "%s:" label_params_loop);
-             "GET_ARG rsi, rcx;in rsi is the value of arg_i";
-             "shl rcx, 3";
-             "mov r8, rbx";
-             "add r8, rcx; r8 is &new_rib[i]";
-             "mov qword[r8], rsi";
-             "shr rcx, 3";
+             "mov rdi, rcx";
+             "dec rdi;rdi is the 0 based index of the current arg";
+             "GET_ARG rsi, rdi";
+             "mov qword[rbx + rdi], rsi";
              (Printf.sprintf "loop %s" label_params_loop);
              (Printf.sprintf "%s:" label_no_more_params);
+             (Printf.sprintf "%s:" label_is_empty);
              "mov qword[rdx], rbx";
              ";;RDX IS THE EXTENV!!!"
            ]

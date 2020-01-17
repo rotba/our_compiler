@@ -692,16 +692,12 @@ section .data
 %endmacro
 
 %macro GET_ARG 2 	; %1 will contain the qword[rbp + 8*(4+%2)]
-	push rcx
-	push rdi
-	mov rcx, %2
-	add rcx, 4
-	shl rcx, 3
-	mov rdi, rbp
-	add rdi, rcx
-	mov %1, qword[rdi]
-	pop rdi
-	pop rcx
+	push rax
+	mov rax, %2
+	add rax, 4
+	shl rax, 3
+	mov %1,qword[rbp +rax]
+	pop rax
 %endmacro
 	
 	%macro ENV_LENGTH 1
@@ -716,6 +712,8 @@ section .data
 	inc rcx
 	jmp %%loop
 	%%end:
+	inc rcx
+	
 	
 	
 %endmacro

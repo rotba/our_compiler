@@ -1,9 +1,5 @@
 #use "code-gen.ml";;
 
-
-let debug = false;;
-let print_debug s = (Printf.printf ";;; \n%s\n" s) ;;
-let () = if(debug) then (print_debug "got_here")
 let file_to_string f =
   let ic = open_in f in
   let s = really_input_string ic (in_channel_length ic) in
@@ -25,7 +21,11 @@ let primitive_names_to_labels =
 (* you can add yours here *)];;
 
 let make_prologue consts_tbl fvars_tbl =
-  let make_primitive_closure (prim, label) = "" in
+  let make_primitive_closure (prim, label) =
+    (* Adapt the addressing here to your fvar addressing scheme:
+       This imlementation assumes fvars are offset from the base label fvar_tbl *)
+"    MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, " ^ label  ^ ")
+    mov [fvar_tbl+" ^  (string_of_int (List.assoc prim fvars_tbl)) ^ "], rax" in
   let constant_bytes (c, (a, s)) = s in
 "
 ;;; All the macros and the scheme-object printing procedure
@@ -100,8 +100,8 @@ exception X_missing_input_file;;
 
 try
   let infile = Sys.argv.(1) in
-  let code =  (file_to_string "stdlib.scm") ^ (file_to_string infile) in
-  let code =  (file_to_string infile) in
+  (* let code =  (file_to_string "stdlib.scm") ^ (file_to_string infile) in *)
+  let code =  file_to_string infile) in
   let asts = string_to_asts code in
   let consts_tbl = Code_Gen.make_consts_tbl asts in
   let fvars_tbl = Code_Gen.make_fvars_tbl asts in
