@@ -17,15 +17,17 @@ let primitive_names_to_labels =
    "string-ref", "string_ref"; "string-set!", "string_set"; "make-string", "make_string";
    "symbol->string", "symbol_to_string"; 
    "char->integer", "char_to_integer"; "integer->char", "integer_to_char"; "eq?", "is_eq";
-   "+", "bin_add"; "*", "bin_mul"; "-", "bin_sub"; "/", "bin_div"; "<", "bin_lt"; "=", "bin_equ"
-(* you can add yours here *)];;
+   "+", "bin_add"; "*", "bin_mul"; "-", "bin_sub"; "/", "bin_div"; "<", "bin_lt"; "=", "bin_equ";
+   "cons", "cons"; "car", "car";
+   ]
+;;
 
 let make_prologue consts_tbl fvars_tbl =
   let make_primitive_closure (prim, label) =
     (* Adapt the addressing here to your fvar addressing scheme:
        This imlementation assumes fvars are offset from the base label fvar_tbl *)
 "    MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, " ^ label  ^ ")
-    mov [fvar_tbl+" ^  (string_of_int (List.assoc prim fvars_tbl)) ^ "], rax" in
+    mov [fvar_tbl+8*" ^  (string_of_int (List.assoc prim fvars_tbl)) ^ "], rax" in
   let constant_bytes (c, (a, s)) = s in
 "
 ;;; All the macros and the scheme-object printing procedure
@@ -70,7 +72,7 @@ main:
     ;; from the top level (which SHOULD NOT HAPPEN
     ;; AND IS A BUG) will cause a segfault.
     push 0
-    push qword SOB_NIL_ADDRESS
+    push SOB_NIL_ADDRESS
     push qword T_UNDEFINED
     push rsp
     mov rbp,rsp
@@ -101,7 +103,7 @@ exception X_missing_input_file;;
 try
   let infile = Sys.argv.(1) in
   (* let code =  (file_to_string "stdlib.scm") ^ (file_to_string infile) in *)
-  let code =  file_to_string infile) in
+  let code =  (file_to_string infile) in
   let asts = string_to_asts code in
   let consts_tbl = Code_Gen.make_consts_tbl asts in
   let fvars_tbl = Code_Gen.make_fvars_tbl asts in

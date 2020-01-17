@@ -244,17 +244,27 @@ module Code_Gen : CODE_GEN = struct
     | ApplicTP'(e,lst) -> (get_fvars e)@(List.fold_left fold [] lst)
     | _ -> [];;
 
-  (reset_id());;
+  (* (reset_id());; *)
   let make_fvars_tbl asts = 
+    let id = ref (-1) in
+  let get_id = 
+    let func = fun () ->(
+      id := !id + 1; !id
+    ) in
+    func in
     let cons_uniq xs x = if List.mem x xs then xs else x :: xs in
     let remove_from_left xs = List.rev (List.fold_left cons_uniq [] xs) in
     let fold_fun a b = a@(get_fvars b) in
     let vars = (List.fold_left fold_fun ["boolean?"; "float?"; "integer?"; "pair?";
-    "null?"; "char?"; "string?"; "procedure?"; "symbol?"; "string-length";
-    "string-ref"; "string-set!"; "make-string"; "symbol->string"; 
-    "char->integer"; "integer->char"; "eq?"; "+"; "*"; "-"; "/"; "<"; "="; "cons";"car";] asts) in
+    "null?"; "char?"; "string?";
+    "procedure?"; "symbol?"; "string-length";
+    "string-ref"; "string-set!"; "make-string";
+    "symbol->string"; 
+    "char->integer"; "integer->char"; "eq?";
+    "+"; "*"; "-"; "/"; "<"; "=";
+    "cons";"car";] asts) in
     let vars = remove_from_left vars in 
-    let fold_fun acc b = (acc@[(b, (gen_id()))]) in
+    let fold_fun acc b = (acc@[(b, (get_id()))]) in
     List.fold_left fold_fun [] vars 
     ;;
 
