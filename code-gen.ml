@@ -2,7 +2,8 @@
 
 exception X_not_yet_implemented of string;;
 exception X_bug_error_m of string;;
-
+let elements_on_stack = 4;;
+let elements_on_stack_no_rbp = 3;;
 let raise_not_imp func_name no_match to_string =
   let msg =func_name ^": " in
   let msg = msg^(to_string no_match) in
@@ -243,17 +244,27 @@ module Code_Gen : CODE_GEN = struct
     | ApplicTP'(e,lst) -> (get_fvars e)@(List.fold_left fold [] lst)
     | _ -> [];;
 
-  (reset_id());;
+  (* (reset_id());; *)
   let make_fvars_tbl asts = 
+    let id = ref (-1) in
+  let get_id = 
+    let func = fun () ->(
+      id := !id + 1; !id
+    ) in
+    func in
     let cons_uniq xs x = if List.mem x xs then xs else x :: xs in
     let remove_from_left xs = List.rev (List.fold_left cons_uniq [] xs) in
     let fold_fun a b = a@(get_fvars b) in
     let vars = (List.fold_left fold_fun ["boolean?"; "float?"; "integer?"; "pair?";
-    "null?"; "char?"; "string?"; "procedure?"; "symbol?"; "string-length";
-    "string-ref"; "string-set!"; "make-string"; "symbol->string"; 
-    "char->integer"; "integer->char"; "eq?"; "+"; "*"; "-"; "/"; "<"; "="] asts) in
+    "null?"; "char?"; "string?";
+    "procedure?"; "symbol?"; "string-length";
+    "string-ref"; "string-set!"; "make-string";
+    "symbol->string"; 
+    "char->integer"; "integer->char"; "eq?";
+    "+"; "*"; "-"; "/"; "<"; "=";
+    "cons";"car";] asts) in
     let vars = remove_from_left vars in 
-    let fold_fun acc b = (acc@[(b, (gen_id()))]) in
+    let fold_fun acc b = (acc@[(b, (get_id()))]) in
     List.fold_left fold_fun [] vars 
     ;;
 
@@ -265,8 +276,26 @@ module Code_Gen : CODE_GEN = struct
 
   let concat_lines lines =
     String.concat "\n" lines;;
+
+  
+    
   
   let rec generate consts fvars e =
+    let generate_push_args args =
+      let fold_args curr acc=
+        let arg_i = (generate consts fvars curr) in
+        let push_res = "push rax" in
+        (concat_lines 
+           [
+             acc;
+             arg_i;
+             push_res
+           ]
+        )
+      in
+      List.fold_right fold_args args ""
+    in
+    let verify_closure = "" in
     match e with
     |Const'(e) ->
       let address_in_consts = find_rel_idx e consts in
@@ -293,21 +322,9 @@ module Code_Gen : CODE_GEN = struct
       let labels = Labels.make_labels ["Lelse";"Lexit"] in
       Printf.sprintf "%s \n cmp rax, SOB_FALSE_ADDRESS \n je %s \n %s \n jmp %s \n %s: \n %s \n %s:\n" i (List.nth labels 0) t (List.nth labels 1) (List.nth labels 0) e (List.nth labels 1)
     | Applic'(e,l) ->
-      let fold_args curr acc=
-        let arg_i = (generate consts fvars curr) in
-        let push_res = "push rax" in
-        (concat_lines 
-           [
-             acc;
-             arg_i;
-             push_res
-           ]
-        )
-      in
-      let push_args = List.fold_right fold_args l "" in
+      let push_args = generate_push_args l in
       let push_n = Printf.sprintf "push %d" (List.length l) in
       let proc = generate consts fvars e in
-      let verifiy_closure = "" in
       let push_env =
         (concat_lines
            [
@@ -329,7 +346,7 @@ module Code_Gen : CODE_GEN = struct
            push_args;
            push_n;
            proc;
-           verifiy_closure;
+           verify_closure;
            push_env;
            call_code;
            "add rsp, 8*1";
@@ -338,6 +355,51 @@ module Code_Gen : CODE_GEN = struct
            "add rsp, rbx"
          ]
       )
+
+    | ApplicTP'(e,l) ->
+       let push_args = generate_push_args l in
+       let push_n = Printf.sprintf "push %d" (List.length l) in
+       let proc = generate consts fvars e in
+       let push_env =
+         (concat_lines
+            [
+              "CLOSURE_ENV rbx, rax";
+              "push rbx"
+            ]
+         )
+       in
+       let push_old_ret = "push qword[rbp +8*1]" in
+       let jmp_code =
+         (concat_lines
+            [
+              "CLOSURE_CODE rbx, rax";
+              "jmp rbx"
+            ]
+         )
+       in
+       let fix_stack =
+         (concat_lines
+            [
+              Printf.sprintf "SHIFT_FRAME %d" (1*(elements_on_stack_no_rbp+(List.length l)));
+            ]
+         )
+       in
+       (concat_lines
+          [
+            push_args;
+            push_n;
+            proc;
+            verify_closure;
+            push_env;
+            push_old_ret;
+            fix_stack;
+            jmp_code;
+            "add rsp, 8*1";
+            "pop rbx";
+            "shl rbx, 3";
+            "add rsp, rbx"
+          ]
+       )
 
     | Var'(VarParam(_, minor)) -> 
         Printf.sprintf "mov rax, qword [rbp+8*(4+%d)]" minor
@@ -370,6 +432,7 @@ module Code_Gen : CODE_GEN = struct
         
     |LambdaSimple'(params, body) ->
       let create_env =
+        let label_is_not_empty = (Labels.make_label "is_not_empty") in
         let label_is_empty = (Labels.make_label "is_empty") in
         let label_env_loop = (Labels.make_label "env_loop") in
         let label_params_loop = (Labels.make_label "params_loop") in
@@ -378,15 +441,17 @@ module Code_Gen : CODE_GEN = struct
            [
              "GET_ENV rbx";
              "mov rcx, 0";
-             "cmp rbx,SOB_NIL_ADDRESS";
-             (Printf.sprintf "je %s" label_is_empty);
+             "cmp rbx, SOB_NIL_ADDRESS";
+             (Printf.sprintf "jne %s" label_is_not_empty);
+             "MALLOC rdx, 8";
+             "mov qword[rdx], SOB_NIL_ADDRESS";
+             (Printf.sprintf "jmp %s" label_is_empty);
+             (Printf.sprintf "%s:" label_is_not_empty);
              "ENV_LENGTH rbx";
-             (Printf.sprintf "%s:" label_is_empty);
              "mov rdi, rcx";
              "inc rdi";
              "shl rdi, 3";
              "MALLOC rdx, rdi";
-             "inc rcx";
              (Printf.sprintf "%s:" label_env_loop);
              "shl rcx, 3";
              "mov rsi, rbx;Env";
@@ -394,7 +459,7 @@ module Code_Gen : CODE_GEN = struct
              "sub rsi, 8;Env[i-1]";
              "mov r8, rdx;ExtEnv";
              "add r8, rcx;ExtEnv[i]";
-             "mov r9, rsi;r9 is the i'th rib";
+             "mov r9, qword[rsi];r9 is the i'th rib";
              "mov qword[r8], r9; ExtEnv[i] = Env[i-1]";
              "shr rcx, 3";
              (Printf.sprintf "loop %s" label_env_loop);
@@ -405,21 +470,20 @@ module Code_Gen : CODE_GEN = struct
              "cmp rcx, 0";
              Printf.sprintf "je %s" label_no_more_params;
              (Printf.sprintf "%s:" label_params_loop);
-             "GET_ARG rsi, rcx;in rsi is the value of arg_i, i.e the content in the stack";
-             "shl rcx, 3";
-             "mov r8, rbx";
-             "add r8, rcx; r8 is &new_rib[i]";
-             "mov qword[r8], rsi";
-             "shr rcx, 3";
+             "mov rdi, rcx";
+             "dec rdi;rdi is the 0 based index of the current arg";
+             "GET_ARG rsi, rdi";
+             "mov qword[rbx + rdi], rsi";
              (Printf.sprintf "loop %s" label_params_loop);
              (Printf.sprintf "%s:" label_no_more_params);
+             (Printf.sprintf "%s:" label_is_empty);
              "mov qword[rdx], rbx";
              ";;RDX IS THE EXTENV!!!"
            ]
         )
       in
       let label_code = Labels.make_label "Lcode" in
-      let label_cont = Labels.make_label "Lcode" in
+      let label_cont = Labels.make_label "Lcont" in
       let create_closure =
         Printf.sprintf "MAKE_CLOSURE(rax, rdx, %s)" label_code
       in

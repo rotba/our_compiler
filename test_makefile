@@ -13,7 +13,7 @@ BASEDIR := $(PWD)
 .PHONY:clean
 
 %:
-	cd $(MKDIR) && ocaml compiler.ml $(BASEDIR)/$@.scm > $@.s && nasm -f elf64 -o $@.o $@.s && gcc -static -m64 -o $@ $@.o && mv $@ $(BASEDIR)
+	cd $(MKDIR) && ocaml compiler.ml $(BASEDIR)/$@.scm > $@.s && nasm -g -f elf64 -o $@.o $@.s && gcc -g -static -m64 -o $@ $@.o && mv $@ $(BASEDIR)
 
 clean:
 	rm -f *.log *.cache *TESTCASE*
@@ -22,14 +22,14 @@ test:
 	for test in $$(ls our_compiler/testcases/ | grep -i ^TESTCASE_ | cut -f 1 -d '.');\
 	do\
 		cd $(MKDIR) ;\
-		ocaml our_compiler.ml $(BASEDIR)/our_compiler/testcases/$$test.scm > $$test.s ;\
-		nasm -f elf64 -o $$test.o $$test.s ;\
-		gcc -static -m64 -o $$test $$test.o ;\
+		ocaml compiler.ml $(BASEDIR)/our_compiler/testcases/$$test.scm > $$test.s ;\
+		nasm -g -f elf64 -o $$test.o $$test.s ;\
+		gcc -g -static -m64 -o $$test $$test.o ;\
 		ACTUAL=`./$$test`;\
 		export ACTUAL;\
 		EXCPECTED=`scheme -q < testcases/$$test.scm`;\
 		export EXCPECTED;\
-		echo "(if (equal? '($$EXCPECTED) '($$ACTUAL)) 'PASSED! '(Excpected Result: $$EXCPECTED,     Actual Result: $$ACTUAL) )" > test.scm;\
+		echo "(if (equal? '($$EXCPECTED) '($$ACTUAL)) 'PASSED! '(Excpected Result: $$EXCPECTED,     Actual Result: $$ACTUAL,    testcase: $$test) )" > test.scm;\
 		scheme -q < test.scm;\
 	done;\
 	make -f makefile clean;
