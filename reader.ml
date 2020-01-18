@@ -55,7 +55,7 @@ let rec sexpr_to_string  =
   |Number(Int(x))-> string_of_int x                           
   |Pair(x,y) -> String.concat "" ["Pair( "; (sexpr_to_string x); " , "; (sexpr_to_string y) ;" )"]
   |TaggedSexpr(s,e) -> String.concat " , "["TaggedSexpr("; s;  (sexpr_to_string e) ;")"]
-  |TagRef(x)->x
+  |TagRef(x)->String.concat " , "["TagRef("; x;")"]
   |Bool(false)-> "false"
   |Bool(true) -> "true";;
 
