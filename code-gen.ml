@@ -98,21 +98,37 @@ module Code_Gen : CODE_GEN = struct
   let consts_table_address = "const_tbl";;
   let const_address idx = consts_table_address^"+"^(string_of_int idx);;
 
+  (* let rec print_const_table_entry =  function
+  | (c,(i,s)) -> (Printf.printf "( %s, ( %d, %s )\n" (exp_to_string (Const(c))) i s)  
+  | _ -> ();; *)
+  
+
+  
+  
   let rec sextend_constants = function
-    |(Number(_)|Nil|Bool _|Char _|String _) as id -> [Sexpr(id)]
+    |(Number(_)|Nil|Bool _|Char _|String _|TagRef(_)) as id -> [Sexpr(id)]
     |Symbol(s) as id -> [Sexpr(id);Sexpr(String(s))]
+    | TaggedSexpr(n,e) -> (sextend_constants e)
     |Pair(car,cdr) as id ->
       let ex_car = (sextend_constants car) in
       let ex_cdr = (sextend_constants cdr) in
-      [Sexpr(id)]@ex_car@ex_cdr
-    |no_match -> raise_not_imp "sextend_constants" (Const(Sexpr(no_match))) exp_to_string
+      match car with
+      (* | TaggedSexpr(n,e) -> ex_car@ex_cdr@[Sexpr(Pair(e,cdr))] *)
+      | _ -> [Sexpr(id)]@ex_car@ex_cdr
+    
   ;;
   let rec extend_constants const=
     match const with
     |Void ->[Void]
     |Sexpr(s) -> sextend_constants s
   let rec get_last = function
-    |[last] -> last
+    | [last] -> last 
+    | car::[last] -> 
+      (match last with
+      (e,(i,s)) -> 
+        match e with
+        | (Sexpr(TagRef(_))) -> car
+        | _ -> last)
     |car::cdr -> get_last cdr
     |_ -> raise (X_bug_error_m "get last");;
   
@@ -124,6 +140,7 @@ module Code_Gen : CODE_GEN = struct
     |Sexpr(Bool(_))->type_size + 1
     |Sexpr(Pair(_,_)) -> type_size + 2*8
     |Sexpr(Symbol(_)) -> type_size +8
+    |Sexpr(TagRef(_)) -> 8
     |no_match ->
       let msg = "calc_const_sob_size :" in
       let msg = msg^(exp_to_string (Const(no_match))) in
@@ -166,14 +183,25 @@ module Code_Gen : CODE_GEN = struct
 
 
   let rec find_rel_idx const rest =
-      match rest with
+    match const with
+    | Sexpr(TaggedSexpr(s,e)) ->
+      (match rest with
       |[] -> raise (X_bug_error_m (Printf.sprintf "find_rel_idx: %s"  (exp_to_string (Const(const)))))
       |(car,(index,_))::cdr ->
-        if((equal_consts car const))
+        if((equal_consts car (Sexpr(e))))
         then
           index
         else
-          (find_rel_idx const cdr);;
+          (find_rel_idx const cdr))
+    | _ ->  
+      (match rest with
+        |[] -> raise (X_bug_error_m (Printf.sprintf "find_rel_idx: %s"  (exp_to_string (Const(const)))))
+        |(car,(index,_))::cdr ->
+          if((equal_consts car const))
+          then
+            index
+          else
+            (find_rel_idx const cdr));;
   
    let gen_const_byte_rep curr rest=
      match curr with
@@ -192,10 +220,46 @@ module Code_Gen : CODE_GEN = struct
        let cdr_rel_idx = (find_rel_idx (Sexpr(cdr)) rest)  in
        let car_address = const_address car_rel_idx in
        let cdr_address = const_address cdr_rel_idx in
-       "MAKE_LITERAL_PAIR("^car_address^","^cdr_address^")"
+        "MAKE_LITERAL_PAIR("^car_address^","^cdr_address^")"
+     |Sexpr(TagRef(_)) -> ""
      |_ -> raise (X_not_yet_implemented "get_const_byte_rep");;
-   
+  
+
+     let rec get_tagged asts =
+      let rec fold_func acc cur = 
+        match cur with
+        | Const'(Sexpr(TaggedSexpr(a,b))) -> acc@[(a,b)]
+        | Const' (Sexpr(Pair(a,b))) -> (fold_func acc (Const'(Sexpr(a))))@(fold_func acc (Const'(Sexpr(b))))
+        | BoxSet'(a,b) -> (fold_func acc b)
+        | If'(a,b,c) -> (fold_func acc a)@(fold_func acc b)@(fold_func acc c)
+        | Seq'(lst) -> (List.fold_left fold_func acc lst)
+        | Set'(a,b) -> (fold_func acc a)@(fold_func acc b)
+        | Def'(a,b) -> (fold_func acc a)@(fold_func acc b)
+        | Or'(lst) -> (List.fold_left fold_func acc lst)
+        | LambdaSimple'(a,b) -> (fold_func acc b)
+        | LambdaOpt'(a,s,b) -> (fold_func acc b)
+        | Applic'(e, lst) -> (fold_func acc e)@(List.fold_left fold_func acc lst)
+        | ApplicTP'(e, lst) -> (fold_func acc e)@(List.fold_left fold_func acc lst)
+        | _ -> acc in
+        List.fold_left fold_func [] asts;; 
+
+
+  let rec get_tagref_const tag_list tag =
+    match tag_list with
+    | [] -> raise (X_not_yet_implemented "get_tagref_const empty")
+    |(a, b)::[] -> 
+      if (String.equal a tag)
+      then (b)
+      else raise (X_not_yet_implemented "get_tagref_const")
+    | (a,b)::c -> 
+      if (String.equal a tag)
+      then b
+      else (get_tagref_const c tag);;
+
+
+  
   let make_consts_tbl asts =
+    let tagged_list = get_tagged asts in
     let firsts =  
     [
       Void;
@@ -210,15 +274,32 @@ module Code_Gen : CODE_GEN = struct
     let fold_func acc curr = acc@curr in
     let consts = List.fold_left fold_func [] consts in
     let consts = consts@firsts in
+    (* let consts = List.rev consts in *)
     let consts = remove_duplicates consts in
     let fold_func curr acc =
       let index =
-        match acc with
-        |[] -> 0
-        |acc ->
-          let (sexpr, (index, _)) = get_last acc in
-          let sob_size = (calc_const_sob_size sexpr) in
-          index +sob_size
+        match curr with
+        | Sexpr(TagRef(x)) -> 
+          let tag_value = (get_tagref_const tagged_list x) in
+          let rec find_tag_index acc tag_value = 
+            match acc with
+            | [] -> raise (X_not_yet_implemented "get_tagged_index empty")
+            |(sexpr, (index, _))::[] -> 
+              if (equal_consts sexpr tag_value)
+              then (index)
+              else raise ( X_not_yet_implemented "get_tagged_index not")
+            |(sexpr, (index, _))::rest -> 
+              if (equal_consts sexpr tag_value)
+              then (index)
+              else find_tag_index rest tag_value in
+            find_tag_index acc (Sexpr(tag_value))
+        | _ ->
+          match acc with
+          |[] -> 0
+          |acc ->
+            let (sexpr, (index, _)) = get_last acc in
+            let sob_size = (calc_const_sob_size sexpr) in
+            index +sob_size
       in
       let byte_rep = gen_const_byte_rep curr acc in
       List.append acc [(curr, (index, byte_rep))]  in
@@ -243,8 +324,11 @@ module Code_Gen : CODE_GEN = struct
     | ApplicTP'(e,lst) -> (get_fvars e)@(List.fold_left fold [] lst)
     | _ -> [];;
 
-  (reset_id());;
   let make_fvars_tbl asts = 
+    let id = ref (-1) in
+    let get_id = fun () ->(
+      id := !id + 1; !id
+      ) in
     let cons_uniq xs x = if List.mem x xs then xs else x :: xs in
     let remove_from_left xs = List.rev (List.fold_left cons_uniq [] xs) in
     let fold_fun a b = a@(get_fvars b) in
@@ -253,7 +337,7 @@ module Code_Gen : CODE_GEN = struct
     "string-ref"; "string-set!"; "make-string"; "symbol->string"; 
     "char->integer"; "integer->char"; "eq?"; "+"; "*"; "-"; "/"; "<"; "="] asts) in
     let vars = remove_from_left vars in 
-    let fold_fun acc b = (acc@[(b, (gen_id()))]) in
+    let fold_fun acc b = (acc@[(b, (get_id()))]) in
     List.fold_left fold_fun [] vars 
     ;;
 
@@ -267,6 +351,7 @@ module Code_Gen : CODE_GEN = struct
     String.concat "\n" lines;;
   
   let rec generate consts fvars e =
+    (* (List.iter (fun a -> (print_const_table_entry a)) consts); *)
     match e with
     |Const'(e) ->
       let address_in_consts = find_rel_idx e consts in
