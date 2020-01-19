@@ -1,3 +1,91 @@
+apply:
+;;; (apply proc x0 ... xn-1 s)
+;;; s id s_0 .. s_m-1
+
+;;; TODO: add closure verification
+	push rbp
+	mov rbp, rsp
+	mov rbx, qword[rbp]
+	mov rsi, qword[rbx -8]	; rsi is s
+	mov rdi, 0		;the length of s
+push_s_loop:
+	cmp rsi, SOB_NIL_ADDRESS
+	je end_push_s
+	inc rdi
+	CAR rbx, rsi
+	push rbx
+	CDR rsi, rsi
+	jmp push_s_loop
+end_push_s:
+;;; s0 ... sm-1 on the stack
+	cmp rdi, 0
+	je reverse_s_end
+	mov rcx, rdi
+	cmp rcx ,1
+	jbe reverse_s_end
+	shr rcx,1 		;rcx is m/2
+reverse_s_loop:
+	mov rdx, rcx
+	dec rdx			    ;rdx is the index (e.g 0 based)
+	mov rbx, qword[rsp + rdx*8] ;rbx is s_i
+	mov r8, rdi
+	dec r8			  ;r8 is the index of le last elemnt
+	sub r8, rdx		;m-i
+	mov r9, qword[rsp + r8*8] ; r9 is s_m-i
+	mov qword[rsp + rdx*8], r9 
+	mov qword[rsp + r8*8], rbx
+	loop reverse_s_loop
+reverse_s_end:
+	mov rcx, qword[rbp+8*3]
+	sub rcx, 2		;rdx is n
+	mov rsi, rcx		;save it for later
+	cmp rsi, 0
+	je no_params
+push_xs_loop:
+	mov rdx, rcx
+	dec rdx			;rdx is index
+	add rdx, 5		;5  and not for because the first parameter is proc
+	push qword[rbp +8*rdx]
+	loop push_xs_loop
+no_params:	
+;;; s_m-1,..,s_0, x_n-1,..x_0 on the stack
+	add rdi, rsi		  ;m+n
+	push rdi
+	mov rbx, qword[rbp + 8*4] ; rbx is proc
+;;; verify that proc is (i.e rbx) a closue
+	CLOSURE_ENV rdx, rbx
+	push rdx
+	mov r8, rbx		;save the closure
+	push qword[rbp+8]	;ret address
+	mov rdx, rsp 		;this is the start of the to be transferred memmory slice
+	push r8
+	mov rbx, rdi		;cacl memmory length
+	add rbx, ELEMENTS_ON_STACK_NO_RBP ;;cacl memmory length
+	shl rbx, 3
+	mov rbp, qword[rbp]	;current rbp is no longer needed and old rbp need to be accesibl
+	mov rsi, rbp
+	sub rsi, rbx		;destination of moving
+	mov rax, 0
+	;; push rbx		;size of memmory to be moved
+	;; push rdx		;start of memmory to be moved
+	;; push rsi		;destination
+	mov rdi, rsi
+	mov rsi, rdx
+	mov rdx, rbx
+	call memmove
+	pop rbx			;proc
+	mov rsp, rax
+	CLOSURE_CODE rdx, rbx
+	jmp rdx
+	
+
+	
+	
+	
+	
+	
+	
+	
 cons:
 	push rbp
 	mov rbp, rsp

@@ -644,6 +644,7 @@ section .data
 
 	;;; ;;;;;WE ADDED;;;;;;;;
 	%define ELEMENTS_ON_STACK 4
+	%define ELEMENTS_ON_STACK_NO_RBP 3
 	%macro MAKE_LITERAL 2
 		db %1
 		%2
@@ -732,4 +733,6 @@ section .data
 		add rsp, r15
 		add rbp, r15
 	%endmacro
+
+
 	;;; ;;;;;;;;;;;
