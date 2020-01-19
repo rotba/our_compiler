@@ -583,26 +583,81 @@ module Code_Gen : CODE_GEN = struct
          ]
       )
 
-    (* |LambdaOpt'(params,opt ,body) ->
-     *   let label_code = Labels.make_label "Lcode" in
-     *   let label_cont = Labels.make_label "Lcont" in
-     *   let create_closure =
-     *     Printf.sprintf "MAKE_CLOSURE(rax, rdx, %s)" label_code
-     *   in
-     *   (concat_lines
-     *      [
-     *        create_env params;
-     *        create_closure;
-     *        (Printf.sprintf "jmp %s" label_cont);
-     *        (Printf.sprintf "%s:" label_code);
-     *        "push rbp";
-     *        "mov rbp, rsp";
-     *        (generate consts fvars body);
-     *        "leave";
-     *        "ret";
-     *        (Printf.sprintf "%s:" label_cont);
-     *      ]
-     *   ) *)
+    |LambdaOpt'(params,opt ,body) ->
+      let label_code = Labels.make_label "Lcode" in
+      let label_cont = Labels.make_label "Lcont" in
+      let fix_stack =
+        let label_not_empty_opt = Labels.make_label "not_empty_opt" in
+        let label_done_fixing = Labels.make_label "done_fixing" in
+        let label_create_opt_loop = Labels.make_label "create_opt_loop" in
+        (concat_lines
+           [
+             ";donte the effective numer of parameters m";
+             ";donte the noumber of simple parameters n";
+             "mov rcx, qword[rsp+ 8*2]; rcx is m";
+             Printf.sprintf "cmp rcx, %d" (List.length params);
+             Printf.sprintf "jne %s" label_not_empty_opt;
+             "; m = n";
+             "add rcx, 3;m+2 - offset of magic";
+             "shl rcx, 3";
+             "mov qword[rsp+rcx], SOB_NIL_ADDRESS; magic is NIL";
+             Printf.sprintf "jmp %s" label_done_fixing;
+             Printf.sprintf "%s:" label_not_empty_opt;
+             "add rcx, 2; rcx is m+2 - the offset of the ultimetly last argument";
+             "mov rdi, rcx";
+             "mov rbx, qword[rsp+8*rdi]";
+             "MAKE_PAIR(rdx, rbx, SOB_NIL_ADDRESS)";
+             "mov qword[rsp+8*rdi], rdx;Arg_m-1 contains '(Arg_n-1)";
+             "sub rcx, 2; rcx is m";
+             Printf.sprintf "sub rcx, %d; rcx is m-n" (List.length params);
+             "dec rcx; because we've already handled the top opt param";
+             "cmp rcx, 0";
+             Printf.sprintf "je %s" label_done_fixing;
+             ";rcx is the number of optional parameters left (i.e. (m-n)-1)";
+             Printf.sprintf "%s:" label_create_opt_loop;
+             "mov rdx, rcx; rdx is curr_m (i.e: (m-n) - i, i.e the current amount of not consumed optional args left)";
+             "dec rdx; rdx is now offset";
+             "add rdx, 3; offset of arg_0+(curr_m-1)";
+             Printf.sprintf "add rdx, %d; offset of last optional param not consumed" (List.length params);
+             "mov rbx, qword[rsp + 8*rdx]";
+             "mov rdi, qword[rsp + 8*(rdx +1)]";
+             "MAKE_PAIR(rsi, rbx, rdi)";
+             "mov qword[rsp + 8*(rdx +1)], rsi";
+             "mov rax, 0";
+             "mov rdi, rsp";
+             "add rdi, 8; destination";
+             "mov rsi, rsp;source";
+             Printf.sprintf "mov rbx, %d;n" (List.length params);
+             "add rbx, 3; n+3";
+             "add rbx, rcx;n+3+curr_m";
+             "dec rbx; because the last opttion param have been consumed";
+             "shl rbx, 3";
+             "call memmove";
+             "add rsp, 8";
+             "sub qword[rsp +2*8], 1; curr_m = curr_m-1";
+             Printf.sprintf "loop %s" label_create_opt_loop;
+             Printf.sprintf "%s:" label_done_fixing;
+           ]
+        )
+      in
+      let create_closure =
+        Printf.sprintf "MAKE_CLOSURE(rax, rdx, %s)" label_code
+      in
+      (concat_lines
+         [
+           create_env;
+           create_closure;
+           (Printf.sprintf "jmp %s" label_cont);
+           (Printf.sprintf "%s:" label_code);
+           fix_stack;
+           "push rbp";
+           "mov rbp, rsp";
+           (generate consts fvars body);
+           "leave";
+           "ret";
+           (Printf.sprintf "%s:" label_cont);
+         ]
+      )
       
       
     |no_match -> raise_not_imp "generate" no_match exp'_to_string
