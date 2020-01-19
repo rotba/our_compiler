@@ -375,6 +375,57 @@ module Code_Gen : CODE_GEN = struct
       in
       List.fold_right fold_args args ""
     in
+    let create_env params=
+      let label_is_not_empty = (Labels.make_label "is_not_empty") in
+      let label_is_empty = (Labels.make_label "is_empty") in
+      let label_env_loop = (Labels.make_label "env_loop") in
+      let label_params_loop = (Labels.make_label "params_loop") in
+      let label_no_more_params = (Labels.make_label "no_more_params") in
+      (concat_lines
+         [
+           "GET_ENV rbx";
+           "mov rcx, 0";
+           "cmp rbx, SOB_NIL_ADDRESS";
+           (Printf.sprintf "jne %s" label_is_not_empty);
+           "MALLOC rdx, 8";
+           "mov qword[rdx], SOB_NIL_ADDRESS";
+           (Printf.sprintf "jmp %s" label_is_empty);
+           (Printf.sprintf "%s:" label_is_not_empty);
+           "ENV_LENGTH rbx";
+           "mov rdi, rcx";
+           "inc rdi";
+           "shl rdi, 3";
+           "MALLOC rdx, rdi";
+           (Printf.sprintf "%s:" label_env_loop);
+           "shl rcx, 3";
+           "mov rsi, rbx;Env";
+           "add rsi, rcx;Env[i]";
+           "sub rsi, 8;Env[i-1]";
+           "mov r8, rdx;ExtEnv";
+           "add r8, rcx;ExtEnv[i]";
+           "mov r9, qword[rsi];r9 is the i'th rib";
+           "mov qword[r8], r9; ExtEnv[i] = Env[i-1]";
+           "shr rcx, 3";
+           (Printf.sprintf "loop %s" label_env_loop);
+           (Printf.sprintf "mov rcx, %d" (List.length params));
+           "shl rcx, 3";
+           "MALLOC rbx, rcx;rbx is the new rib";
+           "shr rcx, 3";
+           "cmp rcx, 0";
+           Printf.sprintf "je %s" label_no_more_params;
+           (Printf.sprintf "%s:" label_params_loop);
+           "mov rdi, rcx";
+           "dec rdi;rdi is the 0 based index of the current arg";
+           "GET_ARG rsi, rdi";
+           "mov qword[rbx + rdi], rsi";
+           (Printf.sprintf "loop %s" label_params_loop);
+           (Printf.sprintf "%s:" label_no_more_params);
+           (Printf.sprintf "%s:" label_is_empty);
+           "mov qword[rdx], rbx";
+           ";;RDX IS THE EXTENV!!!"
+         ]
+      )
+    in
     let verify_closure = "" in
     match e with
     |Const'(e) ->
@@ -511,57 +562,6 @@ module Code_Gen : CODE_GEN = struct
       code     
         
     |LambdaSimple'(params, body) ->
-      let create_env =
-        let label_is_not_empty = (Labels.make_label "is_not_empty") in
-        let label_is_empty = (Labels.make_label "is_empty") in
-        let label_env_loop = (Labels.make_label "env_loop") in
-        let label_params_loop = (Labels.make_label "params_loop") in
-        let label_no_more_params = (Labels.make_label "no_more_params") in
-        (concat_lines
-           [
-             "GET_ENV rbx";
-             "mov rcx, 0";
-             "cmp rbx, SOB_NIL_ADDRESS";
-             (Printf.sprintf "jne %s" label_is_not_empty);
-             "MALLOC rdx, 8";
-             "mov qword[rdx], SOB_NIL_ADDRESS";
-             (Printf.sprintf "jmp %s" label_is_empty);
-             (Printf.sprintf "%s:" label_is_not_empty);
-             "ENV_LENGTH rbx";
-             "mov rdi, rcx";
-             "inc rdi";
-             "shl rdi, 3";
-             "MALLOC rdx, rdi";
-             (Printf.sprintf "%s:" label_env_loop);
-             "shl rcx, 3";
-             "mov rsi, rbx;Env";
-             "add rsi, rcx;Env[i]";
-             "sub rsi, 8;Env[i-1]";
-             "mov r8, rdx;ExtEnv";
-             "add r8, rcx;ExtEnv[i]";
-             "mov r9, qword[rsi];r9 is the i'th rib";
-             "mov qword[r8], r9; ExtEnv[i] = Env[i-1]";
-             "shr rcx, 3";
-             (Printf.sprintf "loop %s" label_env_loop);
-             (Printf.sprintf "mov rcx, %d" (List.length params));
-             "shl rcx, 3";
-             "MALLOC rbx, rcx;rbx is the new rib";
-             "shr rcx, 3";
-             "cmp rcx, 0";
-             Printf.sprintf "je %s" label_no_more_params;
-             (Printf.sprintf "%s:" label_params_loop);
-             "mov rdi, rcx";
-             "dec rdi;rdi is the 0 based index of the current arg";
-             "GET_ARG rsi, rdi";
-             "mov qword[rbx + rdi], rsi";
-             (Printf.sprintf "loop %s" label_params_loop);
-             (Printf.sprintf "%s:" label_no_more_params);
-             (Printf.sprintf "%s:" label_is_empty);
-             "mov qword[rdx], rbx";
-             ";;RDX IS THE EXTENV!!!"
-           ]
-        )
-      in
       let label_code = Labels.make_label "Lcode" in
       let label_cont = Labels.make_label "Lcont" in
       let create_closure =
@@ -569,7 +569,28 @@ module Code_Gen : CODE_GEN = struct
       in
       (concat_lines
          [
-           create_env;
+           create_env params;
+           create_closure;
+           (Printf.sprintf "jmp %s" label_cont);
+           (Printf.sprintf "%s:" label_code);
+           "push rbp";
+           "mov rbp, rsp";
+           (generate consts fvars body);
+           "leave";
+           "ret";
+           (Printf.sprintf "%s:" label_cont);
+         ]
+      )
+
+    |LambdaOpt'(params,opt ,body) ->
+      let label_code = Labels.make_label "Lcode" in
+      let label_cont = Labels.make_label "Lcont" in
+      let create_closure =
+        Printf.sprintf "MAKE_CLOSURE(rax, rdx, %s)" label_code
+      in
+      (concat_lines
+         [
+           create_env params;
            create_closure;
            (Printf.sprintf "jmp %s" label_cont);
            (Printf.sprintf "%s:" label_code);
