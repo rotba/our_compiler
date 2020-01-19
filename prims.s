@@ -20,12 +20,13 @@ end_push_s:
 ;;; s0 ... sm-1 on the stack
 	cmp rdi, 0
 	je reverse_s_end
-	mov rdx, rdi
-	dec rdx 		;rdx is no index
-	shr rdx,1 		;rdx is m/2
-reverse_s_loop:
-	cmp rdx, 0
+	mov rcx, rdi
+	cmp rcx ,1
 	jbe reverse_s_end
+	shr rcx,1 		;rcx is m/2
+reverse_s_loop:
+	mov rdx, rcx
+	dec rdx			    ;rdx is the index (e.g 0 based)
 	mov rbx, qword[rsp + rdx*8] ;rbx is s_i
 	mov r8, rdi
 	dec r8			  ;r8 is the index of le last elemnt
@@ -33,8 +34,7 @@ reverse_s_loop:
 	mov r9, qword[rsp + r8*8] ; r9 is s_m-i
 	mov qword[rsp + rdx*8], r9 
 	mov qword[rsp + r8*8], rbx
-	dec rdx
-	jmp reverse_s_loop
+	loop reverse_s_loop
 reverse_s_end:
 	mov rcx, qword[rbp+8*3]
 	sub rcx, 2		;rdx is n
