@@ -375,7 +375,7 @@ module Code_Gen : CODE_GEN = struct
       in
       List.fold_right fold_args args ""
     in
-    let create_env params=
+    let create_env=
       let label_is_not_empty = (Labels.make_label "is_not_empty") in
       let label_is_empty = (Labels.make_label "is_empty") in
       let label_env_loop = (Labels.make_label "env_loop") in
@@ -407,7 +407,8 @@ module Code_Gen : CODE_GEN = struct
            "mov qword[r8], r9; ExtEnv[i] = Env[i-1]";
            "shr rcx, 3";
            (Printf.sprintf "loop %s" label_env_loop);
-           (Printf.sprintf "mov rcx, %d" (List.length params));
+           (* (Printf.sprintf "mov rcx, %d" (List.length params)); *)
+           "mov rcx, qword[rbp +8*3]";
            "shl rcx, 3";
            "MALLOC rbx, rcx;rbx is the new rib";
            "shr rcx, 3";
@@ -569,7 +570,7 @@ module Code_Gen : CODE_GEN = struct
       in
       (concat_lines
          [
-           create_env params;
+           create_env;
            create_closure;
            (Printf.sprintf "jmp %s" label_cont);
            (Printf.sprintf "%s:" label_code);
@@ -582,26 +583,26 @@ module Code_Gen : CODE_GEN = struct
          ]
       )
 
-    |LambdaOpt'(params,opt ,body) ->
-      let label_code = Labels.make_label "Lcode" in
-      let label_cont = Labels.make_label "Lcont" in
-      let create_closure =
-        Printf.sprintf "MAKE_CLOSURE(rax, rdx, %s)" label_code
-      in
-      (concat_lines
-         [
-           create_env params;
-           create_closure;
-           (Printf.sprintf "jmp %s" label_cont);
-           (Printf.sprintf "%s:" label_code);
-           "push rbp";
-           "mov rbp, rsp";
-           (generate consts fvars body);
-           "leave";
-           "ret";
-           (Printf.sprintf "%s:" label_cont);
-         ]
-      )
+    (* |LambdaOpt'(params,opt ,body) ->
+     *   let label_code = Labels.make_label "Lcode" in
+     *   let label_cont = Labels.make_label "Lcont" in
+     *   let create_closure =
+     *     Printf.sprintf "MAKE_CLOSURE(rax, rdx, %s)" label_code
+     *   in
+     *   (concat_lines
+     *      [
+     *        create_env params;
+     *        create_closure;
+     *        (Printf.sprintf "jmp %s" label_cont);
+     *        (Printf.sprintf "%s:" label_code);
+     *        "push rbp";
+     *        "mov rbp, rsp";
+     *        (generate consts fvars body);
+     *        "leave";
+     *        "ret";
+     *        (Printf.sprintf "%s:" label_cont);
+     *      ]
+     *   ) *)
       
       
     |no_match -> raise_not_imp "generate" no_match exp'_to_string
