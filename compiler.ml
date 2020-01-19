@@ -1,5 +1,41 @@
 #use "code-gen.ml";;
 
+let rec rename asts = 
+  let id = ref (-1) in
+    let get_id = fun () ->(
+      id := !id + 1; !id
+      ) in
+  let rec sexpr_handler id sexpr =  
+  match sexpr with
+  | Pair(a,b) -> Pair((sexpr_handler id a), (sexpr_handler id b))
+  | TaggedSexpr(a,b) -> TaggedSexpr((a^(string_of_int id)), (sexpr_handler id b))
+  | TagRef(a) -> TagRef(a^(string_of_int id))
+  | _ -> sexpr in
+
+  let rec ast_handler ast =
+    let id = (get_id()) in
+    let rec handle ast =
+      match ast with
+      | Const'(Sexpr(c)) ->  Const'(Sexpr(sexpr_handler id c))
+      | Const'(_) -> ast
+      | BoxSet'(a,b) -> BoxSet'(a,(handle b))
+      | If'(a,b,c) -> If'((handle a),(handle b), (handle c))
+      | Seq'(lst) -> Seq'(List.map handle lst)
+      | Set'(a,b) -> Set'((handle a),(handle b))
+      | Def'(a,b) -> Def'((handle a),(handle b))
+      | Or'(lst) -> Or'(List.map handle lst)
+      | LambdaSimple'(a,b) -> LambdaSimple'(a, (handle b))
+      | LambdaOpt'(a,s,b) -> LambdaOpt'(a, s, (handle b))
+      | Applic'(a,b) -> Applic'((handle a), ((List.map handle b)))
+      | ApplicTP'(a,b) -> ApplicTP'((handle a), ((List.map handle b)))
+      | a -> a
+      in
+    (handle ast) in
+
+    (List.map ast_handler asts);;
+let debug = false;;
+let print_debug s = (Printf.printf ";;; \n%s\n" s) ;;
+let () = if(debug) then (print_debug "got_here")
 let file_to_string f =
   let ic = open_in f in
   let s = really_input_string ic (in_channel_length ic) in
@@ -105,6 +141,7 @@ try
   (* let code =  (file_to_string "stdlib.scm") ^ (file_to_string infile) in *)
   let code =  (file_to_string infile) in
   let asts = string_to_asts code in
+  let asts = rename asts in
   let consts_tbl = Code_Gen.make_consts_tbl asts in
   let fvars_tbl = Code_Gen.make_fvars_tbl asts in
   let generate = Code_Gen.generate consts_tbl fvars_tbl in
