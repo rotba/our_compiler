@@ -1,1 +1,5 @@
-(if (equal? '(3) '(3)) 'PASSED! '(Excpected Result: 3,     Actual Result: 3,    testcase: TESTCASE_seq) )
+(if (equal? '(#
+ewline) '(#
+ewline)) 'PASSED! '(Excpected Result: #
+ewline,     Actual Result: #
+ewline,    testcase: TESTCASE_newline) )
