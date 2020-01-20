@@ -212,7 +212,7 @@ module Code_Gen : CODE_GEN = struct
      |Sexpr(Bool(true)) -> "MAKE_BOOL(1)"
      |Sexpr(Number(Int(vall))) -> Printf.sprintf "MAKE_LITERAL_INT(%s)" (string_of_int vall)
      |Sexpr(String(s)) -> Printf.sprintf "MAKE_LITERAL_STRING \"%s\", %d" s (String.length s)
-     |Sexpr(Char(c)) -> Printf.sprintf "MAKE_LITERAL_CHAR ('%c')" c
+     |Sexpr(Char(c)) -> Printf.sprintf "MAKE_LITERAL_CHAR (%d)" (Char.code c)
      |Sexpr(Symbol(s)) ->
        let sym_str_rel_idx = (find_rel_idx (Sexpr(String(s))) rest) in
        let sym_str_address = const_address sym_str_rel_idx in
