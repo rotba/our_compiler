@@ -6,7 +6,7 @@ apply:
 	push rbp
 	mov rbp, rsp
 	mov rbx, qword[rbp]
-	mov rsi, qword[rbx -8]	; rsi is s
+	mov rsi, qword[rbx -2*8]	; rsi is s
 	mov rdi, 0		;the length of s
 push_s_loop:
 	cmp rsi, SOB_NIL_ADDRESS
