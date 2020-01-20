@@ -436,19 +436,75 @@ module Code_Gen : CODE_GEN = struct
       let address = const_address address_in_consts in 
       let code = Printf.sprintf "mov rax, %s" address in
       code
-    | Set'(Var'(VarFree(v)),e) -> 
-      let code = generate consts fvars e in
+    |Box'(var) ->
+      (concat_lines
+         [
+           (generate consts fvars (Var'(var)));
+           "MALLOC rbx, 8";
+           "mov qword[rbx], rax";
+           "mov rax, rbx"
+         ]
+      )
+    | Var'(VarParam(_, minor)) -> 
+        Printf.sprintf "mov rax, qword [rbp+8*(4+%d)]" minor
+    | Set'(Var'(VarParam(_, minor)),e) ->
+        String.concat "\n" [
+          (generate consts fvars e);
+          (Printf.sprintf "mov qword [rbp+8*(4+%d)], rax" minor);
+          "mov rax, SOB_VOID_ADDRESS"
+        ]
+
+    | Var'(VarBound(_, major, minor)) -> 
+       String.concat "\n" [
+          "mov rax, qword[rbp+8*2]";
+          Printf.sprintf "mov rax, qword[rax+8*%d]" major;
+          Printf.sprintf"mov rax, qword[rax+8*%d]" minor
+        ]
+
+    | Set'(Var'(VarBound(_,major,minor)),e) -> 
+        String.concat "\n" [
+          (generate consts fvars e);
+          "mov rbx, qword[rbp+8*2]";
+          Printf.sprintf "mov rbx, qword[rbx+8*%d]" major;
+          Printf.sprintf"mov qword[rbx+8*%d], rax" minor;
+          "mov rax, SOB_VOID_ADDRESS"
+        ]
+    |Var'(VarFree(v)) -> 
       let address_in_vars = find_fvar_indx v fvars in
-      let code = code ^ (Printf.sprintf "mov qword[fvar_tbl+%d*8] \n rax mov rax \n sob_void" address_in_vars) in
-      code
+      let code =Printf.sprintf "mov rax, [fvar_tbl+%d*8]" address_in_vars in
+      code 
+    | Set'(Var'(VarFree(v)),e) |  Def'(Var'(VarFree(v)),e)-> 
+       let code = generate consts fvars e in
+       let address_in_vars = find_fvar_indx v fvars in
+       let code = code ^ (Printf.sprintf "\nmov qword[fvar_tbl+%d*8], rax \nmov rax, SOB_VOID_ADDRESS\n" address_in_vars) in
+       code
     |Seq'(lst) ->
       let exps = List.map (generate consts fvars) lst in 
       let code = String.concat "\n" exps in
       code
+
+    |BoxGet'(var) ->
+      (concat_lines
+         [
+           (generate consts fvars (Var'(var)));
+           "mov rax, qword[rax]"
+         ]
+      )
+    |BoxSet'(v,e) ->
+      (concat_lines
+         [
+           (generate consts fvars e);
+           "push rax";
+           (generate consts fvars (Var'(v)));
+           "pop qword[rax]";
+           "mov rax, SOB_VOID_ADDRESS"
+         ]
+      )
     |Or'(lst) ->
+      let label_exit = Labels.make_label "Lexit" in
       let exps = List.map (generate consts fvars) lst in 
-      let code = String.concat "\ncmp rax, SOB_FALSE_ADDRESS \n jne Lexit \n" exps in
-      code ^ "\nLexit:\n"
+      let code = String.concat (Printf.sprintf "\ncmp rax, SOB_FALSE_ADDRESS \n jne %s \n" label_exit) exps in
+      code ^ (Printf.sprintf "\n%s:\n" label_exit)
     | If'(a,b,c) -> 
       let i = (generate consts fvars a) in
       let t = (generate consts fvars b) in
@@ -537,36 +593,7 @@ module Code_Gen : CODE_GEN = struct
             "shl rbx, 3";
             "add rsp, rbx"
           ]
-       )
-
-    | Var'(VarParam(_, minor)) -> 
-        Printf.sprintf "mov rax, qword [rbp+8*(4+%d)]" minor
-    | Set'(Var'(VarParam(_, minor)),e) ->
-        String.concat "\n" [
-          (generate consts fvars e);
-          (Printf.sprintf "mov qword [rbp+8*(4+%d)], rax" minor);
-          "mov rax, SOB_VOID_ADDRESS"
-        ]
-
-    | Var'(VarBound(_, major, minor)) -> 
-       String.concat "\n" [
-          "mov rax, qword[rbp+8*2]";
-          Printf.sprintf "mov rax, qword[rax+8*%d]" major;
-          Printf.sprintf"mov rax, qword[rax+8*%d]" minor
-        ]
-
-    | Set'(Var'(VarBound(_,major,minor)),e) -> 
-        String.concat "\n" [
-          (generate consts fvars e);
-          "mov rbx, qword[rbp+8*2]";
-          Printf.sprintf "mov rbx, qword[rbx+8*%d]" major;
-          Printf.sprintf"mov qword[rbx+8*%d], rax" minor;
-          "mov rax, SOB_VOID_ADDRESS"
-        ]
-    |Var'(VarFree(v)) -> 
-      let address_in_vars = find_fvar_indx v fvars in
-      let code =Printf.sprintf "mov rax, [fvar_tbl+%d*8]" address_in_vars in
-      code     
+       )    
         
     |LambdaSimple'(params, body) ->
       let label_code = Labels.make_label "Lcode" in
@@ -638,7 +665,9 @@ module Code_Gen : CODE_GEN = struct
              "add rbx, rcx;n+3+curr_m";
              "dec rbx; because the last opttion param have been consumed";
              "shl rbx, 3";
+             "push rcx";
              "call memmove";
+             "pop rcx";
              "add rsp, 8";
              "sub qword[rsp +2*8], 1; curr_m = curr_m-1";
              Printf.sprintf "loop %s" label_create_opt_loop;
