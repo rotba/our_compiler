@@ -2,8 +2,8 @@
 
 exception X_not_yet_implemented of string;;
 exception X_bug_error_m of string;;
-let elements_on_stack = 4;;
-let elements_on_stack_no_rbp = 3;;
+let elements_on_stack = 5;;
+let elements_on_stack_no_rbp = 4;;
 let raise_not_imp func_name no_match to_string =
   let msg =func_name ^": " in
   let msg = msg^(to_string no_match) in
@@ -427,6 +427,7 @@ module Code_Gen : CODE_GEN = struct
          ]
       )
     in
+    let push_magic = "push 496351" in
     let verify_closure = "" in
     match e with
     |Const'(e) ->
@@ -475,6 +476,7 @@ module Code_Gen : CODE_GEN = struct
       in
       (concat_lines
          [
+           push_magic;
            push_args;
            push_n;
            proc;
@@ -483,6 +485,7 @@ module Code_Gen : CODE_GEN = struct
            call_code;
            "add rsp, 8*1";
            "pop rbx";
+           "inc rbx";
            "shl rbx, 3";
            "add rsp, rbx"
          ]
@@ -518,6 +521,7 @@ module Code_Gen : CODE_GEN = struct
        in
        (concat_lines
           [
+            push_magic;
             push_args;
             push_n;
             proc;
@@ -528,6 +532,7 @@ module Code_Gen : CODE_GEN = struct
             jmp_code;
             "add rsp, 8*1";
             "pop rbx";
+            "inc rbx";
             "shl rbx, 3";
             "add rsp, rbx"
           ]

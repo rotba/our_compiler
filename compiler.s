@@ -643,8 +643,8 @@ section .data
 
 
 	;;; ;;;;;WE ADDED;;;;;;;;
-	%define ELEMENTS_ON_STACK 4
-	%define ELEMENTS_ON_STACK_NO_RBP 3
+	%define ELEMENTS_ON_STACK 5
+	%define ELEMENTS_ON_STACK_NO_RBP 4
 	%macro MAKE_LITERAL 2
 		db %1
 		%2
