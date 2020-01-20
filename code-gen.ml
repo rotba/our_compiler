@@ -115,7 +115,7 @@ module Code_Gen : CODE_GEN = struct
       let ex_cdr = (sextend_constants cdr) in
       match car with
       (* | TaggedSexpr(n,e) -> ex_car@ex_cdr@[Sexpr(Pair(e,cdr))] *)
-      | _ -> [Sexpr(id)]@ex_car@ex_cdr
+      | _ -> [Sexpr(id)]@ex_cdr@ex_car
     
   ;;
   let rec extend_constants const=
