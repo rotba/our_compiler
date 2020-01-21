@@ -139,6 +139,7 @@ module Code_Gen : CODE_GEN = struct
     |(Sexpr(Number(Int(_))) |Sexpr(Number(Float(_))))->type_size + 8
     |Sexpr(String(s))->type_size + 8 + (String.length s)
     |Sexpr(Bool(_))->type_size + 1
+    |Sexpr(Char(_))->type_size + 1
     |Sexpr(Pair(_,_)) -> type_size + 2*8
     |Sexpr(Symbol(_)) -> type_size +8
     |Sexpr(TagRef(_)) -> 8

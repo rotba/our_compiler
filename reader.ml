@@ -47,7 +47,7 @@ type sexpr =
 
 let rec sexpr_to_string  =
   function
-  |Char(x) -> String.make 1  x
+  |Char(x) -> Printf.sprintf "Char(%c)" x
   |String(x) -> x
   |Nil-> "Nil"
   |Symbol(x)-> Printf.sprintf "Symbol(%s)" x
