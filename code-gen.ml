@@ -419,12 +419,12 @@ module Code_Gen : CODE_GEN = struct
            "mov rdi, rcx";
            "dec rdi;rdi is the 0 based index of the current arg";
            "GET_ARG rsi, rdi";
-           "mov qword[rbx + rdi], rsi";
+           "mov qword[rbx + rdi*8], rsi";
            (Printf.sprintf "loop %s" label_params_loop);
            (Printf.sprintf "%s:" label_no_more_params);
-           (Printf.sprintf "%s:" label_is_empty);
            "mov qword[rdx], rbx";
-           ";;RDX IS THE EXTENV!!!"
+           (Printf.sprintf "%s:" label_is_empty);
+           ";;RDX IS THE EXTENV!!!";
          ]
       )
     in
@@ -471,7 +471,7 @@ module Code_Gen : CODE_GEN = struct
         ]
     |Var'(VarFree(v)) -> 
       let address_in_vars = find_fvar_indx v fvars in
-      let code =Printf.sprintf "mov rax, [fvar_tbl+%d*8]" address_in_vars in
+      let code =Printf.sprintf "mov rax, qword[fvar_tbl+%d*8]" address_in_vars in
       code 
     | Set'(Var'(VarFree(v)),e) |  Def'(Var'(VarFree(v)),e)-> 
        let code = generate consts fvars e in

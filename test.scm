@@ -1,1 +1,1 @@
-(if (equal? '(3) '()) 'PASSED! '(Excpected Result: 3,     Actual Result: ,    testcase: TESTCASE_plus_1_2) )
+(if (equal? '(3) '(3)) 'PASSED! '(Excpected Result: 3,     Actual Result: 3,    testcase: TESTCASE_seq) )
