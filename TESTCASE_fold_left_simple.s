@@ -14,11 +14,10 @@ MAKE_BOOL(1)
 MAKE_BOOL(0)
 MAKE_NIL
 MAKE_VOID
-MAKE_LITERAL_INT(2)
-MAKE_LITERAL_INT(1)
-MAKE_LITERAL_STRING "whatever", 8
-MAKE_LITERAL_SYMBOl(const_tbl+24)
 MAKE_LITERAL_INT(0)
+MAKE_LITERAL_STRING "whatever", 8
+MAKE_LITERAL_SYMBOl(const_tbl+15)
+MAKE_LITERAL_INT(1)
 MAKE_LITERAL_CHAR (0)
 
 ;;; These macro definitions are required for the primitive
@@ -216,7 +215,7 @@ push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+41
+mov rax, const_tbl+32
 push rax
 push 1
 GET_ENV rbx
@@ -348,12 +347,14 @@ mov rax, 0
 mov rdi, rsp
 add rdi, 8; destination
 mov rsi, rsp;source
-mov rbx, 2;n
-add rbx, 3; n+3
-add rbx, rcx;n+3+curr_m
-dec rbx; because the last opttion param have been consumed
-shl rbx, 3
+mov rdx, 2;n
+add rdx, 3; n+3
+add rdx, rcx;n+3+curr_m
+dec rdx; because the last opttion param have been consumed
+shl rdx, 3
+push rcx
 call memmove
+pop rcx
 add rsp, 8
 sub qword[rsp +2*8], 1; curr_m = curr_m-1
 loop create_opt_loop_104
@@ -377,13 +378,13 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_346 
- mov rax, const_tbl+4 
- jmp Lexit_346 
- Lelse_346: 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_347
+mov rax, const_tbl+4
+jmp Lexit_348
+Lelse_347:
+push 496351
 
 mov rax, qword [rbp+8*(4+2)]
 push rax
@@ -400,10 +401,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_345 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_345
+push 496351
 
 push 496351
 
@@ -493,10 +494,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- jmp Lexit_345 
- Lelse_345: 
- push 496351
+add rsp, rbx
+jmp Lexit_346
+Lelse_345:
+push 496351
 
 push 496351
 
@@ -639,11 +640,9 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- Lexit_345:
- 
- Lexit_346:
-
+add rsp, rbx
+Lexit_346:
+Lexit_348:
 leave
 ret
 Lcont_101:
@@ -698,17 +697,17 @@ push 3
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_382
+jne is_not_empty_384
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_383
-is_not_empty_382:
+jmp is_empty_385
+is_not_empty_384:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_384:
+env_loop_386:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -718,47 +717,47 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_384
+loop env_loop_386
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_386
-params_loop_385:
+je no_more_params_388
+params_loop_387:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_385
-no_more_params_386:
-is_empty_383:
+loop params_loop_387
+no_more_params_388:
+is_empty_385:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_387)
-jmp Lcont_388
-Lcode_387:
+MAKE_CLOSURE(rax, rdx, Lcode_389)
+jmp Lcont_390
+Lcode_389:
 push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+41
+mov rax, const_tbl+32
 push rax
 push 1
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_399
+jne is_not_empty_401
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_400
-is_not_empty_399:
+jmp is_empty_402
+is_not_empty_401:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_401:
+env_loop_403:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -768,26 +767,26 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_401
+loop env_loop_403
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_403
-params_loop_402:
+je no_more_params_405
+params_loop_404:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_402
-no_more_params_403:
-is_empty_400:
+loop params_loop_404
+no_more_params_405:
+is_empty_402:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_404)
-jmp Lcont_405
-Lcode_404:
+MAKE_CLOSURE(rax, rdx, Lcode_406)
+jmp Lcont_407
+Lcode_406:
 push rbp
 mov rbp, rsp
 mov rax, qword [rbp+8*(4+0)]
@@ -799,17 +798,17 @@ mov rax, SOB_VOID_ADDRESS
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_441
+jne is_not_empty_443
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_442
-is_not_empty_441:
+jmp is_empty_444
+is_not_empty_443:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_443:
+env_loop_445:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -819,26 +818,26 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_443
+loop env_loop_445
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_445
-params_loop_444:
+je no_more_params_447
+params_loop_446:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_444
-no_more_params_445:
-is_empty_442:
+loop params_loop_446
+no_more_params_447:
+is_empty_444:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_446)
-jmp Lcont_447
-Lcode_446:
+MAKE_CLOSURE(rax, rdx, Lcode_448)
+jmp Lcont_449
+Lcode_448:
 push rbp
 mov rbp, rsp
 push 496351
@@ -858,13 +857,13 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_538 
- mov rax, qword [rbp+8*(4+1)] 
- jmp Lexit_538 
- Lelse_538: 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_540
+mov rax, qword [rbp+8*(4+1)]
+jmp Lexit_541
+Lelse_540:
+push 496351
 
 push 496351
 
@@ -939,12 +938,11 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- Lexit_538:
-
+add rsp, rbx
+Lexit_541:
 leave
 ret
-Lcont_447:
+Lcont_449:
 push rax
 mov rax, qword [rbp+8*(4+0)]
 pop qword[rax]
@@ -953,7 +951,7 @@ mov rax, qword [rbp+8*(4+0)]
 mov rax, qword[rax]
 leave
 ret
-Lcont_405:
+Lcont_407:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -968,7 +966,7 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_388:
+Lcont_390:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -989,17 +987,17 @@ push 496351
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_559
+jne is_not_empty_562
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_560
-is_not_empty_559:
+jmp is_empty_563
+is_not_empty_562:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_561:
+env_loop_564:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -1009,26 +1007,26 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_561
+loop env_loop_564
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_563
-params_loop_562:
+je no_more_params_566
+params_loop_565:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_562
-no_more_params_563:
-is_empty_560:
+loop params_loop_565
+no_more_params_566:
+is_empty_563:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_564)
-jmp Lcont_565
-Lcode_564:
+MAKE_CLOSURE(rax, rdx, Lcode_567)
+jmp Lcont_568
+Lcode_567:
 push rbp
 mov rbp, rsp
 push 496351
@@ -1042,17 +1040,17 @@ push rax
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_586
+jne is_not_empty_589
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_587
-is_not_empty_586:
+jmp is_empty_590
+is_not_empty_589:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_588:
+env_loop_591:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -1062,26 +1060,26 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_588
+loop env_loop_591
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_590
-params_loop_589:
+je no_more_params_593
+params_loop_592:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_589
-no_more_params_590:
-is_empty_587:
+loop params_loop_592
+no_more_params_593:
+is_empty_590:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_591)
-jmp Lcont_592
-Lcode_591:
+MAKE_CLOSURE(rax, rdx, Lcode_594)
+jmp Lcont_595
+Lcode_594:
 push rbp
 mov rbp, rsp
 push 496351
@@ -1106,7 +1104,7 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_592:
+Lcont_595:
 push rax
 push 3
 mov rax, [fvar_tbl+28*8]
@@ -1126,17 +1124,17 @@ push rax
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_623
+jne is_not_empty_626
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_624
-is_not_empty_623:
+jmp is_empty_627
+is_not_empty_626:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_625:
+env_loop_628:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -1146,26 +1144,26 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_625
+loop env_loop_628
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_627
-params_loop_626:
+je no_more_params_630
+params_loop_629:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_626
-no_more_params_627:
-is_empty_624:
+loop params_loop_629
+no_more_params_630:
+is_empty_627:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_628)
-jmp Lcont_629
-Lcode_628:
+MAKE_CLOSURE(rax, rdx, Lcode_631)
+jmp Lcont_632
+Lcode_631:
 push rbp
 mov rbp, rsp
 push 496351
@@ -1192,7 +1190,7 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_629:
+Lcont_632:
 push rax
 push 3
 mov rax, [fvar_tbl+28*8]
@@ -1210,23 +1208,23 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_565:
+Lcont_568:
 push rax
 push 1
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_655
+jne is_not_empty_658
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_656
-is_not_empty_655:
+jmp is_empty_659
+is_not_empty_658:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_657:
+env_loop_660:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -1236,32 +1234,32 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_657
+loop env_loop_660
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_659
-params_loop_658:
+je no_more_params_662
+params_loop_661:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_658
-no_more_params_659:
-is_empty_656:
+loop params_loop_661
+no_more_params_662:
+is_empty_659:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_660)
-jmp Lcont_661
-Lcode_660:
+MAKE_CLOSURE(rax, rdx, Lcode_663)
+jmp Lcont_664
+Lcode_663:
 push rbp
 mov rbp, rsp
 mov rax, qword [rbp+8*(4+0)]
 leave
 ret
-Lcont_661:
+Lcont_664:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -1293,17 +1291,17 @@ push 5
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_702
+jne is_not_empty_705
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_703
-is_not_empty_702:
+jmp is_empty_706
+is_not_empty_705:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_704:
+env_loop_707:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -1313,47 +1311,47 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_704
+loop env_loop_707
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_706
-params_loop_705:
+je no_more_params_709
+params_loop_708:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_705
-no_more_params_706:
-is_empty_703:
+loop params_loop_708
+no_more_params_709:
+is_empty_706:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_707)
-jmp Lcont_708
-Lcode_707:
+MAKE_CLOSURE(rax, rdx, Lcode_710)
+jmp Lcont_711
+Lcode_710:
 push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+41
+mov rax, const_tbl+32
 push rax
 push 1
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_719
+jne is_not_empty_722
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_720
-is_not_empty_719:
+jmp is_empty_723
+is_not_empty_722:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_721:
+env_loop_724:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -1363,26 +1361,26 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_721
+loop env_loop_724
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_723
-params_loop_722:
+je no_more_params_726
+params_loop_725:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_722
-no_more_params_723:
-is_empty_720:
+loop params_loop_725
+no_more_params_726:
+is_empty_723:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_724)
-jmp Lcont_725
-Lcode_724:
+MAKE_CLOSURE(rax, rdx, Lcode_727)
+jmp Lcont_728
+Lcode_727:
 push rbp
 mov rbp, rsp
 mov rax, qword [rbp+8*(4+0)]
@@ -1394,17 +1392,17 @@ mov rax, SOB_VOID_ADDRESS
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_761
+jne is_not_empty_764
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_762
-is_not_empty_761:
+jmp is_empty_765
+is_not_empty_764:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_763:
+env_loop_766:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -1414,37 +1412,37 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_763
+loop env_loop_766
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_765
-params_loop_764:
+je no_more_params_768
+params_loop_767:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_764
-no_more_params_765:
-is_empty_762:
+loop params_loop_767
+no_more_params_768:
+is_empty_765:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_766)
-jmp Lcont_767
-Lcode_766:
+MAKE_CLOSURE(rax, rdx, Lcode_769)
+jmp Lcont_770
+Lcode_769:
 ;donte the effective numer of parameters m
 ;donte the noumber of simple parameters n
 mov rcx, qword[rsp+ 8*2]; rcx is m
 cmp rcx, 1
-jne not_empty_opt_768
+jne not_empty_opt_771
 ; m = n
 add rcx, 3;m+2 - offset of magic
 shl rcx, 3
 mov qword[rsp+rcx], SOB_NIL_ADDRESS; magic is NIL
-jmp done_fixing_769
-not_empty_opt_768:
+jmp done_fixing_772
+not_empty_opt_771:
 add rcx, 2; rcx is m+2 - the offset of the ultimetly last argument
 mov rdi, rcx
 mov rbx, qword[rsp+8*rdi]
@@ -1454,9 +1452,9 @@ sub rcx, 2; rcx is m
 sub rcx, 1; rcx is m-n
 dec rcx; because we've already handled the top opt param
 cmp rcx, 0
-je done_fixing_769
+je done_fixing_772
 ;rcx is the number of optional parameters left (i.e. (m-n)-1)
-create_opt_loop_770:
+create_opt_loop_773:
 mov rdx, rcx; rdx is curr_m (i.e: (m-n) - i, i.e the current amount of not consumed optional args left)
 dec rdx; rdx is now offset
 add rdx, 3; offset of arg_0+(curr_m-1)
@@ -1469,16 +1467,18 @@ mov rax, 0
 mov rdi, rsp
 add rdi, 8; destination
 mov rsi, rsp;source
-mov rbx, 1;n
-add rbx, 3; n+3
-add rbx, rcx;n+3+curr_m
-dec rbx; because the last opttion param have been consumed
-shl rbx, 3
+mov rdx, 1;n
+add rdx, 3; n+3
+add rdx, rcx;n+3+curr_m
+dec rdx; because the last opttion param have been consumed
+shl rdx, 3
+push rcx
 call memmove
+pop rcx
 add rsp, 8
 sub qword[rsp +2*8], 1; curr_m = curr_m-1
-loop create_opt_loop_770
-done_fixing_769:
+loop create_opt_loop_773
+done_fixing_772:
 push rbp
 mov rbp, rsp
 push 496351
@@ -1498,13 +1498,13 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_836 
- mov rax, qword [rbp+8*(4+0)] 
- jmp Lexit_836 
- Lelse_836: 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_839
+mov rax, qword [rbp+8*(4+0)]
+jmp Lexit_840
+Lelse_839:
+push 496351
 
 push 496351
 
@@ -1547,12 +1547,11 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- Lexit_836:
-
+add rsp, rbx
+Lexit_840:
 leave
 ret
-Lcont_767:
+Lcont_770:
 push rax
 mov rax, qword [rbp+8*(4+0)]
 pop qword[rax]
@@ -1561,7 +1560,7 @@ mov rax, qword [rbp+8*(4+0)]
 mov rax, qword[rax]
 leave
 ret
-Lcont_725:
+Lcont_728:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -1576,7 +1575,7 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_708:
+Lcont_711:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -1604,17 +1603,17 @@ push 3
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_872
+jne is_not_empty_876
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_873
-is_not_empty_872:
+jmp is_empty_877
+is_not_empty_876:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_874:
+env_loop_878:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -1624,42 +1623,42 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_874
+loop env_loop_878
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_876
-params_loop_875:
+je no_more_params_880
+params_loop_879:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_875
-no_more_params_876:
-is_empty_873:
+loop params_loop_879
+no_more_params_880:
+is_empty_877:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_877)
-jmp Lcont_878
-Lcode_877:
+MAKE_CLOSURE(rax, rdx, Lcode_881)
+jmp Lcont_882
+Lcode_881:
 push rbp
 mov rbp, rsp
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_879
+jne is_not_empty_883
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_880
-is_not_empty_879:
+jmp is_empty_884
+is_not_empty_883:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_881:
+env_loop_885:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -1669,37 +1668,37 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_881
+loop env_loop_885
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_883
-params_loop_882:
+je no_more_params_887
+params_loop_886:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_882
-no_more_params_883:
-is_empty_880:
+loop params_loop_886
+no_more_params_887:
+is_empty_884:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_884)
-jmp Lcont_885
-Lcode_884:
+MAKE_CLOSURE(rax, rdx, Lcode_888)
+jmp Lcont_889
+Lcode_888:
 ;donte the effective numer of parameters m
 ;donte the noumber of simple parameters n
 mov rcx, qword[rsp+ 8*2]; rcx is m
 cmp rcx, 0
-jne not_empty_opt_886
+jne not_empty_opt_890
 ; m = n
 add rcx, 3;m+2 - offset of magic
 shl rcx, 3
 mov qword[rsp+rcx], SOB_NIL_ADDRESS; magic is NIL
-jmp done_fixing_887
-not_empty_opt_886:
+jmp done_fixing_891
+not_empty_opt_890:
 add rcx, 2; rcx is m+2 - the offset of the ultimetly last argument
 mov rdi, rcx
 mov rbx, qword[rsp+8*rdi]
@@ -1709,9 +1708,9 @@ sub rcx, 2; rcx is m
 sub rcx, 0; rcx is m-n
 dec rcx; because we've already handled the top opt param
 cmp rcx, 0
-je done_fixing_887
+je done_fixing_891
 ;rcx is the number of optional parameters left (i.e. (m-n)-1)
-create_opt_loop_888:
+create_opt_loop_892:
 mov rdx, rcx; rdx is curr_m (i.e: (m-n) - i, i.e the current amount of not consumed optional args left)
 dec rdx; rdx is now offset
 add rdx, 3; offset of arg_0+(curr_m-1)
@@ -1724,16 +1723,18 @@ mov rax, 0
 mov rdi, rsp
 add rdi, 8; destination
 mov rsi, rsp;source
-mov rbx, 0;n
-add rbx, 3; n+3
-add rbx, rcx;n+3+curr_m
-dec rbx; because the last opttion param have been consumed
-shl rbx, 3
+mov rdx, 0;n
+add rdx, 3; n+3
+add rdx, rcx;n+3+curr_m
+dec rdx; because the last opttion param have been consumed
+shl rdx, 3
+push rcx
 call memmove
+pop rcx
 add rsp, 8
 sub qword[rsp +2*8], 1; curr_m = curr_m-1
-loop create_opt_loop_888
-done_fixing_887:
+loop create_opt_loop_892
+done_fixing_891:
 push rbp
 mov rbp, rsp
 push 496351
@@ -1745,17 +1746,17 @@ push rax
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_904
+jne is_not_empty_908
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_905
-is_not_empty_904:
+jmp is_empty_909
+is_not_empty_908:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_906:
+env_loop_910:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -1765,26 +1766,26 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_906
+loop env_loop_910
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_908
-params_loop_907:
+je no_more_params_912
+params_loop_911:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_907
-no_more_params_908:
-is_empty_905:
+loop params_loop_911
+no_more_params_912:
+is_empty_909:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_909)
-jmp Lcont_910
-Lcode_909:
+MAKE_CLOSURE(rax, rdx, Lcode_913)
+jmp Lcont_914
+Lcode_913:
 push rbp
 mov rbp, rsp
 push 496351
@@ -1804,13 +1805,13 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_961 
- mov rax, qword [rbp+8*(4+0)] 
- jmp Lexit_961 
- Lelse_961: 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_965
+mov rax, qword [rbp+8*(4+0)]
+jmp Lexit_966
+Lelse_965:
+push 496351
 
 mov rax, qword [rbp+8*(4+0)]
 push rax
@@ -1835,12 +1836,11 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- Lexit_961:
-
+add rsp, rbx
+Lexit_966:
 leave
 ret
-Lcont_910:
+Lcont_914:
 push rax
 push 3
 mov rax, qword[rbp+8*2]
@@ -1860,10 +1860,10 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_885:
+Lcont_889:
 leave
 ret
-Lcont_878:
+Lcont_882:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -1882,17 +1882,17 @@ mov rax, SOB_VOID_ADDRESS
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_972
+jne is_not_empty_977
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_973
-is_not_empty_972:
+jmp is_empty_978
+is_not_empty_977:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_974:
+env_loop_979:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -1902,37 +1902,37 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_974
+loop env_loop_979
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_976
-params_loop_975:
+je no_more_params_981
+params_loop_980:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_975
-no_more_params_976:
-is_empty_973:
+loop params_loop_980
+no_more_params_981:
+is_empty_978:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_977)
-jmp Lcont_978
-Lcode_977:
+MAKE_CLOSURE(rax, rdx, Lcode_982)
+jmp Lcont_983
+Lcode_982:
 ;donte the effective numer of parameters m
 ;donte the noumber of simple parameters n
 mov rcx, qword[rsp+ 8*2]; rcx is m
 cmp rcx, 0
-jne not_empty_opt_979
+jne not_empty_opt_984
 ; m = n
 add rcx, 3;m+2 - offset of magic
 shl rcx, 3
 mov qword[rsp+rcx], SOB_NIL_ADDRESS; magic is NIL
-jmp done_fixing_980
-not_empty_opt_979:
+jmp done_fixing_985
+not_empty_opt_984:
 add rcx, 2; rcx is m+2 - the offset of the ultimetly last argument
 mov rdi, rcx
 mov rbx, qword[rsp+8*rdi]
@@ -1942,9 +1942,9 @@ sub rcx, 2; rcx is m
 sub rcx, 0; rcx is m-n
 dec rcx; because we've already handled the top opt param
 cmp rcx, 0
-je done_fixing_980
+je done_fixing_985
 ;rcx is the number of optional parameters left (i.e. (m-n)-1)
-create_opt_loop_981:
+create_opt_loop_986:
 mov rdx, rcx; rdx is curr_m (i.e: (m-n) - i, i.e the current amount of not consumed optional args left)
 dec rdx; rdx is now offset
 add rdx, 3; offset of arg_0+(curr_m-1)
@@ -1957,22 +1957,24 @@ mov rax, 0
 mov rdi, rsp
 add rdi, 8; destination
 mov rsi, rsp;source
-mov rbx, 0;n
-add rbx, 3; n+3
-add rbx, rcx;n+3+curr_m
-dec rbx; because the last opttion param have been consumed
-shl rbx, 3
+mov rdx, 0;n
+add rdx, 3; n+3
+add rdx, rcx;n+3+curr_m
+dec rdx; because the last opttion param have been consumed
+shl rdx, 3
+push rcx
 call memmove
+pop rcx
 add rsp, 8
 sub qword[rsp +2*8], 1; curr_m = curr_m-1
-loop create_opt_loop_981
-done_fixing_980:
+loop create_opt_loop_986
+done_fixing_985:
 push rbp
 mov rbp, rsp
 mov rax, qword [rbp+8*(4+0)]
 leave
 ret
-Lcont_978:
+Lcont_983:
 mov qword[fvar_tbl+32*8], rax 
 mov rax, SOB_VOID_ADDRESS
 
@@ -1990,17 +1992,17 @@ push 3
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1012
+jne is_not_empty_1017
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1013
-is_not_empty_1012:
+jmp is_empty_1018
+is_not_empty_1017:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1014:
+env_loop_1019:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -2010,47 +2012,47 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1014
+loop env_loop_1019
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1016
-params_loop_1015:
+je no_more_params_1021
+params_loop_1020:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1015
-no_more_params_1016:
-is_empty_1013:
+loop params_loop_1020
+no_more_params_1021:
+is_empty_1018:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1017)
-jmp Lcont_1018
-Lcode_1017:
+MAKE_CLOSURE(rax, rdx, Lcode_1022)
+jmp Lcont_1023
+Lcode_1022:
 push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+41
+mov rax, const_tbl+32
 push rax
 push 1
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1029
+jne is_not_empty_1034
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1030
-is_not_empty_1029:
+jmp is_empty_1035
+is_not_empty_1034:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1031:
+env_loop_1036:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -2060,42 +2062,42 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1031
+loop env_loop_1036
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1033
-params_loop_1032:
+je no_more_params_1038
+params_loop_1037:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1032
-no_more_params_1033:
-is_empty_1030:
+loop params_loop_1037
+no_more_params_1038:
+is_empty_1035:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1034)
-jmp Lcont_1035
-Lcode_1034:
+MAKE_CLOSURE(rax, rdx, Lcode_1039)
+jmp Lcont_1040
+Lcode_1039:
 push rbp
 mov rbp, rsp
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1046
+jne is_not_empty_1051
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1047
-is_not_empty_1046:
+jmp is_empty_1052
+is_not_empty_1051:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1048:
+env_loop_1053:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -2105,26 +2107,26 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1048
+loop env_loop_1053
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1050
-params_loop_1049:
+je no_more_params_1055
+params_loop_1054:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1049
-no_more_params_1050:
-is_empty_1047:
+loop params_loop_1054
+no_more_params_1055:
+is_empty_1052:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1051)
-jmp Lcont_1052
-Lcode_1051:
+MAKE_CLOSURE(rax, rdx, Lcode_1056)
+jmp Lcont_1057
+Lcode_1056:
 push rbp
 mov rbp, rsp
 push 496351
@@ -2146,7 +2148,7 @@ inc rbx
 shl rbx, 3
 add rsp, rbx
 cmp rax, SOB_FALSE_ADDRESS 
- jne Lexit_1058 
+ jne Lexit_1063 
 push 496351
 
 mov rax, qword [rbp+8*(4+0)]
@@ -2164,10 +2166,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_1124 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_1129
+push 496351
 
 push 496351
 
@@ -2201,23 +2203,22 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- jmp Lexit_1124 
- Lelse_1124: 
- mov rax, const_tbl+2 
- Lexit_1124:
-
-Lexit_1058:
+add rsp, rbx
+jmp Lexit_1130
+Lelse_1129:
+mov rax, const_tbl+2
+Lexit_1130:
+Lexit_1063:
 
 leave
 ret
-Lcont_1052:
+Lcont_1057:
 mov qword [rbp+8*(4+0)], rax
 mov rax, SOB_VOID_ADDRESS
 mov rax, qword [rbp+8*(4+0)]
 leave
 ret
-Lcont_1035:
+Lcont_1040:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -2232,7 +2233,7 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_1018:
+Lcont_1023:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -2258,17 +2259,17 @@ push 2
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1150
+jne is_not_empty_1156
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1151
-is_not_empty_1150:
+jmp is_empty_1157
+is_not_empty_1156:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1152:
+env_loop_1158:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -2278,42 +2279,42 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1152
+loop env_loop_1158
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1154
-params_loop_1153:
+je no_more_params_1160
+params_loop_1159:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1153
-no_more_params_1154:
-is_empty_1151:
+loop params_loop_1159
+no_more_params_1160:
+is_empty_1157:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1155)
-jmp Lcont_1156
-Lcode_1155:
+MAKE_CLOSURE(rax, rdx, Lcode_1161)
+jmp Lcont_1162
+Lcode_1161:
 push rbp
 mov rbp, rsp
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1157
+jne is_not_empty_1163
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1158
-is_not_empty_1157:
+jmp is_empty_1164
+is_not_empty_1163:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1159:
+env_loop_1165:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -2323,48 +2324,48 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1159
+loop env_loop_1165
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1161
-params_loop_1160:
+je no_more_params_1167
+params_loop_1166:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1160
-no_more_params_1161:
-is_empty_1158:
+loop params_loop_1166
+no_more_params_1167:
+is_empty_1164:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1162)
-jmp Lcont_1163
-Lcode_1162:
+MAKE_CLOSURE(rax, rdx, Lcode_1168)
+jmp Lcont_1169
+Lcode_1168:
 push rbp
 mov rbp, rsp
 push 496351
 
 mov rax, qword [rbp+8*(4+0)]
 push rax
-mov rax, const_tbl+50
+mov rax, const_tbl+6
 push rax
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1179
+jne is_not_empty_1185
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1180
-is_not_empty_1179:
+jmp is_empty_1186
+is_not_empty_1185:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1181:
+env_loop_1187:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -2374,31 +2375,31 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1181
+loop env_loop_1187
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1183
-params_loop_1182:
+je no_more_params_1189
+params_loop_1188:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1182
-no_more_params_1183:
-is_empty_1180:
+loop params_loop_1188
+no_more_params_1189:
+is_empty_1186:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1184)
-jmp Lcont_1185
-Lcode_1184:
+MAKE_CLOSURE(rax, rdx, Lcode_1190)
+jmp Lcont_1191
+Lcode_1190:
 push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+15
+mov rax, const_tbl+41
 push rax
 mov rax, qword [rbp+8*(4+0)]
 push rax
@@ -2420,7 +2421,7 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_1185:
+Lcont_1191:
 push rax
 push 3
 mov rax, qword[rbp+8*2]
@@ -2440,10 +2441,10 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_1163:
+Lcont_1169:
 leave
 ret
-Lcont_1156:
+Lcont_1162:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -2471,17 +2472,17 @@ push 3
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1236
+jne is_not_empty_1242
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1237
-is_not_empty_1236:
+jmp is_empty_1243
+is_not_empty_1242:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1238:
+env_loop_1244:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -2491,42 +2492,42 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1238
+loop env_loop_1244
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1240
-params_loop_1239:
+je no_more_params_1246
+params_loop_1245:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1239
-no_more_params_1240:
-is_empty_1237:
+loop params_loop_1245
+no_more_params_1246:
+is_empty_1243:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1241)
-jmp Lcont_1242
-Lcode_1241:
+MAKE_CLOSURE(rax, rdx, Lcode_1247)
+jmp Lcont_1248
+Lcode_1247:
 push rbp
 mov rbp, rsp
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1243
+jne is_not_empty_1249
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1244
-is_not_empty_1243:
+jmp is_empty_1250
+is_not_empty_1249:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1245:
+env_loop_1251:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -2536,37 +2537,37 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1245
+loop env_loop_1251
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1247
-params_loop_1246:
+je no_more_params_1253
+params_loop_1252:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1246
-no_more_params_1247:
-is_empty_1244:
+loop params_loop_1252
+no_more_params_1253:
+is_empty_1250:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1248)
-jmp Lcont_1249
-Lcode_1248:
+MAKE_CLOSURE(rax, rdx, Lcode_1254)
+jmp Lcont_1255
+Lcode_1254:
 ;donte the effective numer of parameters m
 ;donte the noumber of simple parameters n
 mov rcx, qword[rsp+ 8*2]; rcx is m
 cmp rcx, 1
-jne not_empty_opt_1250
+jne not_empty_opt_1256
 ; m = n
 add rcx, 3;m+2 - offset of magic
 shl rcx, 3
 mov qword[rsp+rcx], SOB_NIL_ADDRESS; magic is NIL
-jmp done_fixing_1251
-not_empty_opt_1250:
+jmp done_fixing_1257
+not_empty_opt_1256:
 add rcx, 2; rcx is m+2 - the offset of the ultimetly last argument
 mov rdi, rcx
 mov rbx, qword[rsp+8*rdi]
@@ -2576,9 +2577,9 @@ sub rcx, 2; rcx is m
 sub rcx, 1; rcx is m-n
 dec rcx; because we've already handled the top opt param
 cmp rcx, 0
-je done_fixing_1251
+je done_fixing_1257
 ;rcx is the number of optional parameters left (i.e. (m-n)-1)
-create_opt_loop_1252:
+create_opt_loop_1258:
 mov rdx, rcx; rdx is curr_m (i.e: (m-n) - i, i.e the current amount of not consumed optional args left)
 dec rdx; rdx is now offset
 add rdx, 3; offset of arg_0+(curr_m-1)
@@ -2591,16 +2592,18 @@ mov rax, 0
 mov rdi, rsp
 add rdi, 8; destination
 mov rsi, rsp;source
-mov rbx, 1;n
-add rbx, 3; n+3
-add rbx, rcx;n+3+curr_m
-dec rbx; because the last opttion param have been consumed
-shl rbx, 3
+mov rdx, 1;n
+add rdx, 3; n+3
+add rdx, rcx;n+3+curr_m
+dec rdx; because the last opttion param have been consumed
+shl rdx, 3
+push rcx
 call memmove
+pop rcx
 add rsp, 8
 sub qword[rsp +2*8], 1; curr_m = curr_m-1
-loop create_opt_loop_1252
-done_fixing_1251:
+loop create_opt_loop_1258
+done_fixing_1257:
 push rbp
 mov rbp, rsp
 push 496351
@@ -2620,12 +2623,12 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_1323 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_1329
+push 496351
 
-mov rax, const_tbl+59
+mov rax, const_tbl+50
 push rax
 mov rax, qword [rbp+8*(4+0)]
 push rax
@@ -2644,10 +2647,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- jmp Lexit_1323 
- Lelse_1323: 
- push 496351
+add rsp, rbx
+jmp Lexit_1330
+Lelse_1329:
+push 496351
 
 push 496351
 
@@ -2685,15 +2688,14 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- Lexit_1323:
-
+add rsp, rbx
+Lexit_1330:
 leave
 ret
-Lcont_1249:
+Lcont_1255:
 leave
 ret
-Lcont_1242:
+Lcont_1248:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -2712,17 +2714,17 @@ mov rax, SOB_VOID_ADDRESS
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1329
+jne is_not_empty_1336
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1330
-is_not_empty_1329:
+jmp is_empty_1337
+is_not_empty_1336:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1331:
+env_loop_1338:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -2732,40 +2734,39 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1331
+loop env_loop_1338
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1333
-params_loop_1332:
+je no_more_params_1340
+params_loop_1339:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1332
-no_more_params_1333:
-is_empty_1330:
+loop params_loop_1339
+no_more_params_1340:
+is_empty_1337:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1334)
-jmp Lcont_1335
-Lcode_1334:
+MAKE_CLOSURE(rax, rdx, Lcode_1341)
+jmp Lcont_1342
+Lcode_1341:
 push rbp
 mov rbp, rsp
-mov rax, qword [rbp+8*(4+0)] 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_1356 
- mov rax, const_tbl+2 
- jmp Lexit_1356 
- Lelse_1356: 
- mov rax, const_tbl+0 
- Lexit_1356:
-
+mov rax, qword [rbp+8*(4+0)]
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_1363
+mov rax, const_tbl+2
+jmp Lexit_1364
+Lelse_1363:
+mov rax, const_tbl+0
+Lexit_1364:
 leave
 ret
-Lcont_1335:
+Lcont_1342:
 mov qword[fvar_tbl+35*8], rax 
 mov rax, SOB_VOID_ADDRESS
 
@@ -2781,17 +2782,17 @@ push 2
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1377
+jne is_not_empty_1385
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1378
-is_not_empty_1377:
+jmp is_empty_1386
+is_not_empty_1385:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1379:
+env_loop_1387:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -2801,42 +2802,42 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1379
+loop env_loop_1387
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1381
-params_loop_1380:
+je no_more_params_1389
+params_loop_1388:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1380
-no_more_params_1381:
-is_empty_1378:
+loop params_loop_1388
+no_more_params_1389:
+is_empty_1386:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1382)
-jmp Lcont_1383
-Lcode_1382:
+MAKE_CLOSURE(rax, rdx, Lcode_1390)
+jmp Lcont_1391
+Lcode_1390:
 push rbp
 mov rbp, rsp
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1384
+jne is_not_empty_1392
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1385
-is_not_empty_1384:
+jmp is_empty_1393
+is_not_empty_1392:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1386:
+env_loop_1394:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -2846,26 +2847,26 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1386
+loop env_loop_1394
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1388
-params_loop_1387:
+je no_more_params_1396
+params_loop_1395:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1387
-no_more_params_1388:
-is_empty_1385:
+loop params_loop_1395
+no_more_params_1396:
+is_empty_1393:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1389)
-jmp Lcont_1390
-Lcode_1389:
+MAKE_CLOSURE(rax, rdx, Lcode_1397)
+jmp Lcont_1398
+Lcode_1397:
 push rbp
 mov rbp, rsp
 push 496351
@@ -2887,7 +2888,7 @@ inc rbx
 shl rbx, 3
 add rsp, rbx
 cmp rax, SOB_FALSE_ADDRESS 
- jne Lexit_1396 
+ jne Lexit_1404 
 push 496351
 
 mov rax, qword [rbp+8*(4+0)]
@@ -2908,14 +2909,14 @@ pop rbx
 inc rbx
 shl rbx, 3
 add rsp, rbx
-Lexit_1396:
+Lexit_1404:
 
 leave
 ret
-Lcont_1390:
+Lcont_1398:
 leave
 ret
-Lcont_1383:
+Lcont_1391:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -2941,17 +2942,17 @@ push 2
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1447
+jne is_not_empty_1455
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1448
-is_not_empty_1447:
+jmp is_empty_1456
+is_not_empty_1455:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1449:
+env_loop_1457:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -2961,42 +2962,42 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1449
+loop env_loop_1457
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1451
-params_loop_1450:
+je no_more_params_1459
+params_loop_1458:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1450
-no_more_params_1451:
-is_empty_1448:
+loop params_loop_1458
+no_more_params_1459:
+is_empty_1456:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1452)
-jmp Lcont_1453
-Lcode_1452:
+MAKE_CLOSURE(rax, rdx, Lcode_1460)
+jmp Lcont_1461
+Lcode_1460:
 push rbp
 mov rbp, rsp
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1454
+jne is_not_empty_1462
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1455
-is_not_empty_1454:
+jmp is_empty_1463
+is_not_empty_1462:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1456:
+env_loop_1464:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -3006,37 +3007,37 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1456
+loop env_loop_1464
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1458
-params_loop_1457:
+je no_more_params_1466
+params_loop_1465:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1457
-no_more_params_1458:
-is_empty_1455:
+loop params_loop_1465
+no_more_params_1466:
+is_empty_1463:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1459)
-jmp Lcont_1460
-Lcode_1459:
+MAKE_CLOSURE(rax, rdx, Lcode_1467)
+jmp Lcont_1468
+Lcode_1467:
 ;donte the effective numer of parameters m
 ;donte the noumber of simple parameters n
 mov rcx, qword[rsp+ 8*2]; rcx is m
 cmp rcx, 0
-jne not_empty_opt_1461
+jne not_empty_opt_1469
 ; m = n
 add rcx, 3;m+2 - offset of magic
 shl rcx, 3
 mov qword[rsp+rcx], SOB_NIL_ADDRESS; magic is NIL
-jmp done_fixing_1462
-not_empty_opt_1461:
+jmp done_fixing_1470
+not_empty_opt_1469:
 add rcx, 2; rcx is m+2 - the offset of the ultimetly last argument
 mov rdi, rcx
 mov rbx, qword[rsp+8*rdi]
@@ -3046,9 +3047,9 @@ sub rcx, 2; rcx is m
 sub rcx, 0; rcx is m-n
 dec rcx; because we've already handled the top opt param
 cmp rcx, 0
-je done_fixing_1462
+je done_fixing_1470
 ;rcx is the number of optional parameters left (i.e. (m-n)-1)
-create_opt_loop_1463:
+create_opt_loop_1471:
 mov rdx, rcx; rdx is curr_m (i.e: (m-n) - i, i.e the current amount of not consumed optional args left)
 dec rdx; rdx is now offset
 add rdx, 3; offset of arg_0+(curr_m-1)
@@ -3061,23 +3062,25 @@ mov rax, 0
 mov rdi, rsp
 add rdi, 8; destination
 mov rsi, rsp;source
-mov rbx, 0;n
-add rbx, 3; n+3
-add rbx, rcx;n+3+curr_m
-dec rbx; because the last opttion param have been consumed
-shl rbx, 3
+mov rdx, 0;n
+add rdx, 3; n+3
+add rdx, rcx;n+3+curr_m
+dec rdx; because the last opttion param have been consumed
+shl rdx, 3
+push rcx
 call memmove
+pop rcx
 add rsp, 8
 sub qword[rsp +2*8], 1; curr_m = curr_m-1
-loop create_opt_loop_1463
-done_fixing_1462:
+loop create_opt_loop_1471
+done_fixing_1470:
 push rbp
 mov rbp, rsp
 push 496351
 
 mov rax, qword [rbp+8*(4+0)]
 push rax
-mov rax, const_tbl+50
+mov rax, const_tbl+6
 push rax
 mov rax, qword[rbp+8*2]
 mov rax, qword[rax+8*0]
@@ -3101,10 +3104,10 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_1460:
+Lcont_1468:
 leave
 ret
-Lcont_1453:
+Lcont_1461:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -3130,17 +3133,17 @@ push 2
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1509
+jne is_not_empty_1517
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1510
-is_not_empty_1509:
+jmp is_empty_1518
+is_not_empty_1517:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1511:
+env_loop_1519:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -3150,42 +3153,42 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1511
+loop env_loop_1519
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1513
-params_loop_1512:
+je no_more_params_1521
+params_loop_1520:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1512
-no_more_params_1513:
-is_empty_1510:
+loop params_loop_1520
+no_more_params_1521:
+is_empty_1518:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1514)
-jmp Lcont_1515
-Lcode_1514:
+MAKE_CLOSURE(rax, rdx, Lcode_1522)
+jmp Lcont_1523
+Lcode_1522:
 push rbp
 mov rbp, rsp
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1516
+jne is_not_empty_1524
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1517
-is_not_empty_1516:
+jmp is_empty_1525
+is_not_empty_1524:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1518:
+env_loop_1526:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -3195,37 +3198,37 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1518
+loop env_loop_1526
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1520
-params_loop_1519:
+je no_more_params_1528
+params_loop_1527:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1519
-no_more_params_1520:
-is_empty_1517:
+loop params_loop_1527
+no_more_params_1528:
+is_empty_1525:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1521)
-jmp Lcont_1522
-Lcode_1521:
+MAKE_CLOSURE(rax, rdx, Lcode_1529)
+jmp Lcont_1530
+Lcode_1529:
 ;donte the effective numer of parameters m
 ;donte the noumber of simple parameters n
 mov rcx, qword[rsp+ 8*2]; rcx is m
 cmp rcx, 0
-jne not_empty_opt_1523
+jne not_empty_opt_1531
 ; m = n
 add rcx, 3;m+2 - offset of magic
 shl rcx, 3
 mov qword[rsp+rcx], SOB_NIL_ADDRESS; magic is NIL
-jmp done_fixing_1524
-not_empty_opt_1523:
+jmp done_fixing_1532
+not_empty_opt_1531:
 add rcx, 2; rcx is m+2 - the offset of the ultimetly last argument
 mov rdi, rcx
 mov rbx, qword[rsp+8*rdi]
@@ -3235,9 +3238,9 @@ sub rcx, 2; rcx is m
 sub rcx, 0; rcx is m-n
 dec rcx; because we've already handled the top opt param
 cmp rcx, 0
-je done_fixing_1524
+je done_fixing_1532
 ;rcx is the number of optional parameters left (i.e. (m-n)-1)
-create_opt_loop_1525:
+create_opt_loop_1533:
 mov rdx, rcx; rdx is curr_m (i.e: (m-n) - i, i.e the current amount of not consumed optional args left)
 dec rdx; rdx is now offset
 add rdx, 3; offset of arg_0+(curr_m-1)
@@ -3250,23 +3253,25 @@ mov rax, 0
 mov rdi, rsp
 add rdi, 8; destination
 mov rsi, rsp;source
-mov rbx, 0;n
-add rbx, 3; n+3
-add rbx, rcx;n+3+curr_m
-dec rbx; because the last opttion param have been consumed
-shl rbx, 3
+mov rdx, 0;n
+add rdx, 3; n+3
+add rdx, rcx;n+3+curr_m
+dec rdx; because the last opttion param have been consumed
+shl rdx, 3
+push rcx
 call memmove
+pop rcx
 add rsp, 8
 sub qword[rsp +2*8], 1; curr_m = curr_m-1
-loop create_opt_loop_1525
-done_fixing_1524:
+loop create_opt_loop_1533
+done_fixing_1532:
 push rbp
 mov rbp, rsp
 push 496351
 
 mov rax, qword [rbp+8*(4+0)]
 push rax
-mov rax, const_tbl+15
+mov rax, const_tbl+41
 push rax
 mov rax, qword[rbp+8*2]
 mov rax, qword[rax+8*0]
@@ -3290,10 +3295,10 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_1522:
+Lcont_1530:
 leave
 ret
-Lcont_1515:
+Lcont_1523:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -3323,17 +3328,17 @@ push 4
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1581
+jne is_not_empty_1589
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1582
-is_not_empty_1581:
+jmp is_empty_1590
+is_not_empty_1589:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1583:
+env_loop_1591:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -3343,42 +3348,42 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1583
+loop env_loop_1591
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1585
-params_loop_1584:
+je no_more_params_1593
+params_loop_1592:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1584
-no_more_params_1585:
-is_empty_1582:
+loop params_loop_1592
+no_more_params_1593:
+is_empty_1590:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1586)
-jmp Lcont_1587
-Lcode_1586:
+MAKE_CLOSURE(rax, rdx, Lcode_1594)
+jmp Lcont_1595
+Lcode_1594:
 push rbp
 mov rbp, rsp
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1588
+jne is_not_empty_1596
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1589
-is_not_empty_1588:
+jmp is_empty_1597
+is_not_empty_1596:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1590:
+env_loop_1598:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -3388,37 +3393,37 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1590
+loop env_loop_1598
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1592
-params_loop_1591:
+je no_more_params_1600
+params_loop_1599:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1591
-no_more_params_1592:
-is_empty_1589:
+loop params_loop_1599
+no_more_params_1600:
+is_empty_1597:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1593)
-jmp Lcont_1594
-Lcode_1593:
+MAKE_CLOSURE(rax, rdx, Lcode_1601)
+jmp Lcont_1602
+Lcode_1601:
 ;donte the effective numer of parameters m
 ;donte the noumber of simple parameters n
 mov rcx, qword[rsp+ 8*2]; rcx is m
 cmp rcx, 1
-jne not_empty_opt_1595
+jne not_empty_opt_1603
 ; m = n
 add rcx, 3;m+2 - offset of magic
 shl rcx, 3
 mov qword[rsp+rcx], SOB_NIL_ADDRESS; magic is NIL
-jmp done_fixing_1596
-not_empty_opt_1595:
+jmp done_fixing_1604
+not_empty_opt_1603:
 add rcx, 2; rcx is m+2 - the offset of the ultimetly last argument
 mov rdi, rcx
 mov rbx, qword[rsp+8*rdi]
@@ -3428,9 +3433,9 @@ sub rcx, 2; rcx is m
 sub rcx, 1; rcx is m-n
 dec rcx; because we've already handled the top opt param
 cmp rcx, 0
-je done_fixing_1596
+je done_fixing_1604
 ;rcx is the number of optional parameters left (i.e. (m-n)-1)
-create_opt_loop_1597:
+create_opt_loop_1605:
 mov rdx, rcx; rdx is curr_m (i.e: (m-n) - i, i.e the current amount of not consumed optional args left)
 dec rdx; rdx is now offset
 add rdx, 3; offset of arg_0+(curr_m-1)
@@ -3443,16 +3448,18 @@ mov rax, 0
 mov rdi, rsp
 add rdi, 8; destination
 mov rsi, rsp;source
-mov rbx, 1;n
-add rbx, 3; n+3
-add rbx, rcx;n+3+curr_m
-dec rbx; because the last opttion param have been consumed
-shl rbx, 3
+mov rdx, 1;n
+add rdx, 3; n+3
+add rdx, rcx;n+3+curr_m
+dec rdx; because the last opttion param have been consumed
+shl rdx, 3
+push rcx
 call memmove
+pop rcx
 add rsp, 8
 sub qword[rsp +2*8], 1; curr_m = curr_m-1
-loop create_opt_loop_1597
-done_fixing_1596:
+loop create_opt_loop_1605
+done_fixing_1604:
 push rbp
 mov rbp, rsp
 push 496351
@@ -3472,14 +3479,14 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_1673 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_1681
+push 496351
 
 mov rax, qword [rbp+8*(4+0)]
 push rax
-mov rax, const_tbl+50
+mov rax, const_tbl+6
 push rax
 push 2
 mov rax, qword[rbp+8*2]
@@ -3496,10 +3503,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- jmp Lexit_1673 
- Lelse_1673: 
- push 496351
+add rsp, rbx
+jmp Lexit_1682
+Lelse_1681:
+push 496351
 
 push 496351
 
@@ -3541,15 +3548,14 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- Lexit_1673:
-
+add rsp, rbx
+Lexit_1682:
 leave
 ret
-Lcont_1594:
+Lcont_1602:
 leave
 ret
-Lcont_1587:
+Lcont_1595:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -3579,17 +3585,17 @@ push 4
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1704
+jne is_not_empty_1713
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1705
-is_not_empty_1704:
+jmp is_empty_1714
+is_not_empty_1713:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1706:
+env_loop_1715:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -3599,42 +3605,42 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1706
+loop env_loop_1715
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1708
-params_loop_1707:
+je no_more_params_1717
+params_loop_1716:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1707
-no_more_params_1708:
-is_empty_1705:
+loop params_loop_1716
+no_more_params_1717:
+is_empty_1714:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1709)
-jmp Lcont_1710
-Lcode_1709:
+MAKE_CLOSURE(rax, rdx, Lcode_1718)
+jmp Lcont_1719
+Lcode_1718:
 push rbp
 mov rbp, rsp
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1711
+jne is_not_empty_1720
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1712
-is_not_empty_1711:
+jmp is_empty_1721
+is_not_empty_1720:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1713:
+env_loop_1722:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -3644,37 +3650,37 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1713
+loop env_loop_1722
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1715
-params_loop_1714:
+je no_more_params_1724
+params_loop_1723:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1714
-no_more_params_1715:
-is_empty_1712:
+loop params_loop_1723
+no_more_params_1724:
+is_empty_1721:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1716)
-jmp Lcont_1717
-Lcode_1716:
+MAKE_CLOSURE(rax, rdx, Lcode_1725)
+jmp Lcont_1726
+Lcode_1725:
 ;donte the effective numer of parameters m
 ;donte the noumber of simple parameters n
 mov rcx, qword[rsp+ 8*2]; rcx is m
 cmp rcx, 1
-jne not_empty_opt_1718
+jne not_empty_opt_1727
 ; m = n
 add rcx, 3;m+2 - offset of magic
 shl rcx, 3
 mov qword[rsp+rcx], SOB_NIL_ADDRESS; magic is NIL
-jmp done_fixing_1719
-not_empty_opt_1718:
+jmp done_fixing_1728
+not_empty_opt_1727:
 add rcx, 2; rcx is m+2 - the offset of the ultimetly last argument
 mov rdi, rcx
 mov rbx, qword[rsp+8*rdi]
@@ -3684,9 +3690,9 @@ sub rcx, 2; rcx is m
 sub rcx, 1; rcx is m-n
 dec rcx; because we've already handled the top opt param
 cmp rcx, 0
-je done_fixing_1719
+je done_fixing_1728
 ;rcx is the number of optional parameters left (i.e. (m-n)-1)
-create_opt_loop_1720:
+create_opt_loop_1729:
 mov rdx, rcx; rdx is curr_m (i.e: (m-n) - i, i.e the current amount of not consumed optional args left)
 dec rdx; rdx is now offset
 add rdx, 3; offset of arg_0+(curr_m-1)
@@ -3699,16 +3705,18 @@ mov rax, 0
 mov rdi, rsp
 add rdi, 8; destination
 mov rsi, rsp;source
-mov rbx, 1;n
-add rbx, 3; n+3
-add rbx, rcx;n+3+curr_m
-dec rbx; because the last opttion param have been consumed
-shl rbx, 3
+mov rdx, 1;n
+add rdx, 3; n+3
+add rdx, rcx;n+3+curr_m
+dec rdx; because the last opttion param have been consumed
+shl rdx, 3
+push rcx
 call memmove
+pop rcx
 add rsp, 8
 sub qword[rsp +2*8], 1; curr_m = curr_m-1
-loop create_opt_loop_1720
-done_fixing_1719:
+loop create_opt_loop_1729
+done_fixing_1728:
 push rbp
 mov rbp, rsp
 push 496351
@@ -3728,14 +3736,14 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_1796 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_1805
+push 496351
 
 mov rax, qword [rbp+8*(4+0)]
 push rax
-mov rax, const_tbl+15
+mov rax, const_tbl+41
 push rax
 push 2
 mov rax, qword[rbp+8*2]
@@ -3752,10 +3760,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- jmp Lexit_1796 
- Lelse_1796: 
- push 496351
+add rsp, rbx
+jmp Lexit_1806
+Lelse_1805:
+push 496351
 
 push 496351
 
@@ -3797,15 +3805,14 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- Lexit_1796:
-
+add rsp, rbx
+Lexit_1806:
 leave
 ret
-Lcont_1717:
+Lcont_1726:
 leave
 ret
-Lcont_1710:
+Lcont_1719:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -3837,17 +3844,17 @@ push 5
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1832
+jne is_not_empty_1842
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1833
-is_not_empty_1832:
+jmp is_empty_1843
+is_not_empty_1842:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1834:
+env_loop_1844:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -3857,47 +3864,47 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1834
+loop env_loop_1844
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1836
-params_loop_1835:
+je no_more_params_1846
+params_loop_1845:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1835
-no_more_params_1836:
-is_empty_1833:
+loop params_loop_1845
+no_more_params_1846:
+is_empty_1843:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1837)
-jmp Lcont_1838
-Lcode_1837:
+MAKE_CLOSURE(rax, rdx, Lcode_1847)
+jmp Lcont_1848
+Lcode_1847:
 push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+41
+mov rax, const_tbl+32
 push rax
 push 1
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1849
+jne is_not_empty_1859
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1850
-is_not_empty_1849:
+jmp is_empty_1860
+is_not_empty_1859:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1851:
+env_loop_1861:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -3907,26 +3914,26 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1851
+loop env_loop_1861
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1853
-params_loop_1852:
+je no_more_params_1863
+params_loop_1862:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1852
-no_more_params_1853:
-is_empty_1850:
+loop params_loop_1862
+no_more_params_1863:
+is_empty_1860:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1854)
-jmp Lcont_1855
-Lcode_1854:
+MAKE_CLOSURE(rax, rdx, Lcode_1864)
+jmp Lcont_1865
+Lcode_1864:
 push rbp
 mov rbp, rsp
 mov rax, qword [rbp+8*(4+0)]
@@ -3938,17 +3945,17 @@ mov rax, SOB_VOID_ADDRESS
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_1891
+jne is_not_empty_1901
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_1892
-is_not_empty_1891:
+jmp is_empty_1902
+is_not_empty_1901:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_1893:
+env_loop_1903:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -3958,37 +3965,37 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_1893
+loop env_loop_1903
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_1895
-params_loop_1894:
+je no_more_params_1905
+params_loop_1904:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_1894
-no_more_params_1895:
-is_empty_1892:
+loop params_loop_1904
+no_more_params_1905:
+is_empty_1902:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_1896)
-jmp Lcont_1897
-Lcode_1896:
+MAKE_CLOSURE(rax, rdx, Lcode_1906)
+jmp Lcont_1907
+Lcode_1906:
 ;donte the effective numer of parameters m
 ;donte the noumber of simple parameters n
 mov rcx, qword[rsp+ 8*2]; rcx is m
 cmp rcx, 1
-jne not_empty_opt_1898
+jne not_empty_opt_1908
 ; m = n
 add rcx, 3;m+2 - offset of magic
 shl rcx, 3
 mov qword[rsp+rcx], SOB_NIL_ADDRESS; magic is NIL
-jmp done_fixing_1899
-not_empty_opt_1898:
+jmp done_fixing_1909
+not_empty_opt_1908:
 add rcx, 2; rcx is m+2 - the offset of the ultimetly last argument
 mov rdi, rcx
 mov rbx, qword[rsp+8*rdi]
@@ -3998,9 +4005,9 @@ sub rcx, 2; rcx is m
 sub rcx, 1; rcx is m-n
 dec rcx; because we've already handled the top opt param
 cmp rcx, 0
-je done_fixing_1899
+je done_fixing_1909
 ;rcx is the number of optional parameters left (i.e. (m-n)-1)
-create_opt_loop_1900:
+create_opt_loop_1910:
 mov rdx, rcx; rdx is curr_m (i.e: (m-n) - i, i.e the current amount of not consumed optional args left)
 dec rdx; rdx is now offset
 add rdx, 3; offset of arg_0+(curr_m-1)
@@ -4013,16 +4020,18 @@ mov rax, 0
 mov rdi, rsp
 add rdi, 8; destination
 mov rsi, rsp;source
-mov rbx, 1;n
-add rbx, 3; n+3
-add rbx, rcx;n+3+curr_m
-dec rbx; because the last opttion param have been consumed
-shl rbx, 3
+mov rdx, 1;n
+add rdx, 3; n+3
+add rdx, rcx;n+3+curr_m
+dec rdx; because the last opttion param have been consumed
+shl rdx, 3
+push rcx
 call memmove
+pop rcx
 add rsp, 8
 sub qword[rsp +2*8], 1; curr_m = curr_m-1
-loop create_opt_loop_1900
-done_fixing_1899:
+loop create_opt_loop_1910
+done_fixing_1909:
 push rbp
 mov rbp, rsp
 push 496351
@@ -4042,13 +4051,13 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_2007 
- mov rax, const_tbl+0 
- jmp Lexit_2007 
- Lelse_2007: 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_2018
+mov rax, const_tbl+0
+jmp Lexit_2019
+Lelse_2018:
+push 496351
 
 push 496351
 
@@ -4084,10 +4093,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_2006 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_2016
+push 496351
 
 push 496351
 
@@ -4130,17 +4139,15 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- jmp Lexit_2006 
- Lelse_2006: 
- mov rax, const_tbl+2 
- Lexit_2006:
- 
- Lexit_2007:
-
+add rsp, rbx
+jmp Lexit_2017
+Lelse_2016:
+mov rax, const_tbl+2
+Lexit_2017:
+Lexit_2019:
 leave
 ret
-Lcont_1897:
+Lcont_1907:
 push rax
 mov rax, qword [rbp+8*(4+0)]
 pop qword[rax]
@@ -4149,7 +4156,7 @@ mov rax, qword [rbp+8*(4+0)]
 mov rax, qword[rax]
 leave
 ret
-Lcont_1855:
+Lcont_1865:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -4164,7 +4171,7 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_1838:
+Lcont_1848:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -4194,17 +4201,17 @@ push 4
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_2048
+jne is_not_empty_2060
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_2049
-is_not_empty_2048:
+jmp is_empty_2061
+is_not_empty_2060:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_2050:
+env_loop_2062:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -4214,47 +4221,47 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_2050
+loop env_loop_2062
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_2052
-params_loop_2051:
+je no_more_params_2064
+params_loop_2063:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_2051
-no_more_params_2052:
-is_empty_2049:
+loop params_loop_2063
+no_more_params_2064:
+is_empty_2061:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_2053)
-jmp Lcont_2054
-Lcode_2053:
+MAKE_CLOSURE(rax, rdx, Lcode_2065)
+jmp Lcont_2066
+Lcode_2065:
 push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+41
+mov rax, const_tbl+32
 push rax
 push 1
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_2065
+jne is_not_empty_2077
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_2066
-is_not_empty_2065:
+jmp is_empty_2078
+is_not_empty_2077:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_2067:
+env_loop_2079:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -4264,26 +4271,26 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_2067
+loop env_loop_2079
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_2069
-params_loop_2068:
+je no_more_params_2081
+params_loop_2080:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_2068
-no_more_params_2069:
-is_empty_2066:
+loop params_loop_2080
+no_more_params_2081:
+is_empty_2078:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_2070)
-jmp Lcont_2071
-Lcode_2070:
+MAKE_CLOSURE(rax, rdx, Lcode_2082)
+jmp Lcont_2083
+Lcode_2082:
 push rbp
 mov rbp, rsp
 mov rax, qword [rbp+8*(4+0)]
@@ -4295,17 +4302,17 @@ mov rax, SOB_VOID_ADDRESS
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_2107
+jne is_not_empty_2119
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_2108
-is_not_empty_2107:
+jmp is_empty_2120
+is_not_empty_2119:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_2109:
+env_loop_2121:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -4315,26 +4322,26 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_2109
+loop env_loop_2121
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_2111
-params_loop_2110:
+je no_more_params_2123
+params_loop_2122:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_2110
-no_more_params_2111:
-is_empty_2108:
+loop params_loop_2122
+no_more_params_2123:
+is_empty_2120:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_2112)
-jmp Lcont_2113
-Lcode_2112:
+MAKE_CLOSURE(rax, rdx, Lcode_2124)
+jmp Lcont_2125
+Lcode_2124:
 push rbp
 mov rbp, rsp
 push 496351
@@ -4354,13 +4361,13 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_2225 
- mov rax, const_tbl+0 
- jmp Lexit_2225 
- Lelse_2225: 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_2238
+mov rax, const_tbl+0
+jmp Lexit_2239
+Lelse_2238:
+push 496351
 
 push 496351
 
@@ -4396,10 +4403,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_2224 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_2236
+push 496351
 
 push 496351
 
@@ -4455,17 +4462,15 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- jmp Lexit_2224 
- Lelse_2224: 
- mov rax, const_tbl+2 
- Lexit_2224:
- 
- Lexit_2225:
-
+add rsp, rbx
+jmp Lexit_2237
+Lelse_2236:
+mov rax, const_tbl+2
+Lexit_2237:
+Lexit_2239:
 leave
 ret
-Lcont_2113:
+Lcont_2125:
 push rax
 mov rax, qword [rbp+8*(4+0)]
 pop qword[rax]
@@ -4473,17 +4478,17 @@ mov rax, SOB_VOID_ADDRESS
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_2226
+jne is_not_empty_2240
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_2227
-is_not_empty_2226:
+jmp is_empty_2241
+is_not_empty_2240:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_2228:
+env_loop_2242:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -4493,37 +4498,37 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_2228
+loop env_loop_2242
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_2230
-params_loop_2229:
+je no_more_params_2244
+params_loop_2243:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_2229
-no_more_params_2230:
-is_empty_2227:
+loop params_loop_2243
+no_more_params_2244:
+is_empty_2241:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_2231)
-jmp Lcont_2232
-Lcode_2231:
+MAKE_CLOSURE(rax, rdx, Lcode_2245)
+jmp Lcont_2246
+Lcode_2245:
 ;donte the effective numer of parameters m
 ;donte the noumber of simple parameters n
 mov rcx, qword[rsp+ 8*2]; rcx is m
 cmp rcx, 1
-jne not_empty_opt_2233
+jne not_empty_opt_2247
 ; m = n
 add rcx, 3;m+2 - offset of magic
 shl rcx, 3
 mov qword[rsp+rcx], SOB_NIL_ADDRESS; magic is NIL
-jmp done_fixing_2234
-not_empty_opt_2233:
+jmp done_fixing_2248
+not_empty_opt_2247:
 add rcx, 2; rcx is m+2 - the offset of the ultimetly last argument
 mov rdi, rcx
 mov rbx, qword[rsp+8*rdi]
@@ -4533,9 +4538,9 @@ sub rcx, 2; rcx is m
 sub rcx, 1; rcx is m-n
 dec rcx; because we've already handled the top opt param
 cmp rcx, 0
-je done_fixing_2234
+je done_fixing_2248
 ;rcx is the number of optional parameters left (i.e. (m-n)-1)
-create_opt_loop_2235:
+create_opt_loop_2249:
 mov rdx, rcx; rdx is curr_m (i.e: (m-n) - i, i.e the current amount of not consumed optional args left)
 dec rdx; rdx is now offset
 add rdx, 3; offset of arg_0+(curr_m-1)
@@ -4548,16 +4553,18 @@ mov rax, 0
 mov rdi, rsp
 add rdi, 8; destination
 mov rsi, rsp;source
-mov rbx, 1;n
-add rbx, 3; n+3
-add rbx, rcx;n+3+curr_m
-dec rbx; because the last opttion param have been consumed
-shl rbx, 3
+mov rdx, 1;n
+add rdx, 3; n+3
+add rdx, rcx;n+3+curr_m
+dec rdx; because the last opttion param have been consumed
+shl rdx, 3
+push rcx
 call memmove
+pop rcx
 add rsp, 8
 sub qword[rsp +2*8], 1; curr_m = curr_m-1
-loop create_opt_loop_2235
-done_fixing_2234:
+loop create_opt_loop_2249
+done_fixing_2248:
 push rbp
 mov rbp, rsp
 push 496351
@@ -4585,10 +4592,10 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_2232:
+Lcont_2246:
 leave
 ret
-Lcont_2071:
+Lcont_2083:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -4603,7 +4610,7 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_2054:
+Lcont_2066:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -4637,17 +4644,17 @@ push 6
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_2301
+jne is_not_empty_2315
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_2302
-is_not_empty_2301:
+jmp is_empty_2316
+is_not_empty_2315:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_2303:
+env_loop_2317:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -4657,47 +4664,47 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_2303
+loop env_loop_2317
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_2305
-params_loop_2304:
+je no_more_params_2319
+params_loop_2318:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_2304
-no_more_params_2305:
-is_empty_2302:
+loop params_loop_2318
+no_more_params_2319:
+is_empty_2316:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_2306)
-jmp Lcont_2307
-Lcode_2306:
+MAKE_CLOSURE(rax, rdx, Lcode_2320)
+jmp Lcont_2321
+Lcode_2320:
 push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+41
+mov rax, const_tbl+32
 push rax
 push 1
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_2318
+jne is_not_empty_2332
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_2319
-is_not_empty_2318:
+jmp is_empty_2333
+is_not_empty_2332:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_2320:
+env_loop_2334:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -4707,26 +4714,26 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_2320
+loop env_loop_2334
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_2322
-params_loop_2321:
+je no_more_params_2336
+params_loop_2335:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_2321
-no_more_params_2322:
-is_empty_2319:
+loop params_loop_2335
+no_more_params_2336:
+is_empty_2333:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_2323)
-jmp Lcont_2324
-Lcode_2323:
+MAKE_CLOSURE(rax, rdx, Lcode_2337)
+jmp Lcont_2338
+Lcode_2337:
 push rbp
 mov rbp, rsp
 mov rax, qword [rbp+8*(4+0)]
@@ -4738,17 +4745,17 @@ mov rax, SOB_VOID_ADDRESS
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_2360
+jne is_not_empty_2374
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_2361
-is_not_empty_2360:
+jmp is_empty_2375
+is_not_empty_2374:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_2362:
+env_loop_2376:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -4758,26 +4765,26 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_2362
+loop env_loop_2376
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_2364
-params_loop_2363:
+je no_more_params_2378
+params_loop_2377:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_2363
-no_more_params_2364:
-is_empty_2361:
+loop params_loop_2377
+no_more_params_2378:
+is_empty_2375:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_2365)
-jmp Lcont_2366
-Lcode_2365:
+MAKE_CLOSURE(rax, rdx, Lcode_2379)
+jmp Lcont_2380
+Lcode_2379:
 push rbp
 mov rbp, rsp
 push 496351
@@ -4797,13 +4804,13 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_2524 
- mov rax, const_tbl+0 
- jmp Lexit_2524 
- Lelse_2524: 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_2539
+mov rax, const_tbl+0
+jmp Lexit_2540
+Lelse_2539:
+push 496351
 
 push 496351
 
@@ -4843,7 +4850,7 @@ inc rbx
 shl rbx, 3
 add rsp, rbx
 cmp rax, SOB_FALSE_ADDRESS 
- jne Lexit_2407 
+ jne Lexit_2421 
 push 496351
 
 push 496351
@@ -4881,7 +4888,7 @@ pop rbx
 inc rbx
 shl rbx, 3
 add rsp, rbx
-Lexit_2407:
+Lexit_2421:
 
 push rax
 push 1
@@ -4897,10 +4904,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_2523 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_2537
+push 496351
 
 push 496351
 
@@ -4956,17 +4963,15 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- jmp Lexit_2523 
- Lelse_2523: 
- mov rax, const_tbl+2 
- Lexit_2523:
- 
- Lexit_2524:
-
+add rsp, rbx
+jmp Lexit_2538
+Lelse_2537:
+mov rax, const_tbl+2
+Lexit_2538:
+Lexit_2540:
 leave
 ret
-Lcont_2366:
+Lcont_2380:
 push rax
 mov rax, qword [rbp+8*(4+0)]
 pop qword[rax]
@@ -4974,17 +4979,17 @@ mov rax, SOB_VOID_ADDRESS
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_2525
+jne is_not_empty_2541
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_2526
-is_not_empty_2525:
+jmp is_empty_2542
+is_not_empty_2541:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_2527:
+env_loop_2543:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -4994,37 +4999,37 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_2527
+loop env_loop_2543
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_2529
-params_loop_2528:
+je no_more_params_2545
+params_loop_2544:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_2528
-no_more_params_2529:
-is_empty_2526:
+loop params_loop_2544
+no_more_params_2545:
+is_empty_2542:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_2530)
-jmp Lcont_2531
-Lcode_2530:
+MAKE_CLOSURE(rax, rdx, Lcode_2546)
+jmp Lcont_2547
+Lcode_2546:
 ;donte the effective numer of parameters m
 ;donte the noumber of simple parameters n
 mov rcx, qword[rsp+ 8*2]; rcx is m
 cmp rcx, 1
-jne not_empty_opt_2532
+jne not_empty_opt_2548
 ; m = n
 add rcx, 3;m+2 - offset of magic
 shl rcx, 3
 mov qword[rsp+rcx], SOB_NIL_ADDRESS; magic is NIL
-jmp done_fixing_2533
-not_empty_opt_2532:
+jmp done_fixing_2549
+not_empty_opt_2548:
 add rcx, 2; rcx is m+2 - the offset of the ultimetly last argument
 mov rdi, rcx
 mov rbx, qword[rsp+8*rdi]
@@ -5034,9 +5039,9 @@ sub rcx, 2; rcx is m
 sub rcx, 1; rcx is m-n
 dec rcx; because we've already handled the top opt param
 cmp rcx, 0
-je done_fixing_2533
+je done_fixing_2549
 ;rcx is the number of optional parameters left (i.e. (m-n)-1)
-create_opt_loop_2534:
+create_opt_loop_2550:
 mov rdx, rcx; rdx is curr_m (i.e: (m-n) - i, i.e the current amount of not consumed optional args left)
 dec rdx; rdx is now offset
 add rdx, 3; offset of arg_0+(curr_m-1)
@@ -5049,16 +5054,18 @@ mov rax, 0
 mov rdi, rsp
 add rdi, 8; destination
 mov rsi, rsp;source
-mov rbx, 1;n
-add rbx, 3; n+3
-add rbx, rcx;n+3+curr_m
-dec rbx; because the last opttion param have been consumed
-shl rbx, 3
+mov rdx, 1;n
+add rdx, 3; n+3
+add rdx, rcx;n+3+curr_m
+dec rdx; because the last opttion param have been consumed
+shl rdx, 3
+push rcx
 call memmove
+pop rcx
 add rsp, 8
 sub qword[rsp +2*8], 1; curr_m = curr_m-1
-loop create_opt_loop_2534
-done_fixing_2533:
+loop create_opt_loop_2550
+done_fixing_2549:
 push rbp
 mov rbp, rsp
 push 496351
@@ -5086,10 +5093,10 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_2531:
+Lcont_2547:
 leave
 ret
-Lcont_2324:
+Lcont_2338:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -5104,7 +5111,7 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_2307:
+Lcont_2321:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -5128,17 +5135,17 @@ push 1
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_2575
+jne is_not_empty_2591
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_2576
-is_not_empty_2575:
+jmp is_empty_2592
+is_not_empty_2591:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_2577:
+env_loop_2593:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -5148,42 +5155,42 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_2577
+loop env_loop_2593
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_2579
-params_loop_2578:
+je no_more_params_2595
+params_loop_2594:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_2578
-no_more_params_2579:
-is_empty_2576:
+loop params_loop_2594
+no_more_params_2595:
+is_empty_2592:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_2580)
-jmp Lcont_2581
-Lcode_2580:
+MAKE_CLOSURE(rax, rdx, Lcode_2596)
+jmp Lcont_2597
+Lcode_2596:
 push rbp
 mov rbp, rsp
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_2582
+jne is_not_empty_2598
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_2583
-is_not_empty_2582:
+jmp is_empty_2599
+is_not_empty_2598:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_2584:
+env_loop_2600:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -5193,31 +5200,31 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_2584
+loop env_loop_2600
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_2586
-params_loop_2585:
+je no_more_params_2602
+params_loop_2601:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_2585
-no_more_params_2586:
-is_empty_2583:
+loop params_loop_2601
+no_more_params_2602:
+is_empty_2599:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_2587)
-jmp Lcont_2588
-Lcode_2587:
+MAKE_CLOSURE(rax, rdx, Lcode_2603)
+jmp Lcont_2604
+Lcode_2603:
 push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+50
+mov rax, const_tbl+6
 push rax
 mov rax, qword [rbp+8*(4+0)]
 push rax
@@ -5239,10 +5246,10 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_2588:
+Lcont_2604:
 leave
 ret
-Lcont_2581:
+Lcont_2597:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -5272,17 +5279,17 @@ push 4
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_2639
+jne is_not_empty_2655
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_2640
-is_not_empty_2639:
+jmp is_empty_2656
+is_not_empty_2655:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_2641:
+env_loop_2657:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -5292,42 +5299,42 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_2641
+loop env_loop_2657
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_2643
-params_loop_2642:
+je no_more_params_2659
+params_loop_2658:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_2642
-no_more_params_2643:
-is_empty_2640:
+loop params_loop_2658
+no_more_params_2659:
+is_empty_2656:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_2644)
-jmp Lcont_2645
-Lcode_2644:
+MAKE_CLOSURE(rax, rdx, Lcode_2660)
+jmp Lcont_2661
+Lcode_2660:
 push rbp
 mov rbp, rsp
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_2646
+jne is_not_empty_2662
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_2647
-is_not_empty_2646:
+jmp is_empty_2663
+is_not_empty_2662:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_2648:
+env_loop_2664:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -5337,47 +5344,47 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_2648
+loop env_loop_2664
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_2650
-params_loop_2649:
+je no_more_params_2666
+params_loop_2665:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_2649
-no_more_params_2650:
-is_empty_2647:
+loop params_loop_2665
+no_more_params_2666:
+is_empty_2663:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_2651)
-jmp Lcont_2652
-Lcode_2651:
+MAKE_CLOSURE(rax, rdx, Lcode_2667)
+jmp Lcont_2668
+Lcode_2667:
 push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+41
+mov rax, const_tbl+32
 push rax
 push 1
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_2663
+jne is_not_empty_2679
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_2664
-is_not_empty_2663:
+jmp is_empty_2680
+is_not_empty_2679:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_2665:
+env_loop_2681:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -5387,26 +5394,26 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_2665
+loop env_loop_2681
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_2667
-params_loop_2666:
+je no_more_params_2683
+params_loop_2682:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_2666
-no_more_params_2667:
-is_empty_2664:
+loop params_loop_2682
+no_more_params_2683:
+is_empty_2680:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_2668)
-jmp Lcont_2669
-Lcode_2668:
+MAKE_CLOSURE(rax, rdx, Lcode_2684)
+jmp Lcont_2685
+Lcode_2684:
 push rbp
 mov rbp, rsp
 mov rax, qword [rbp+8*(4+0)]
@@ -5418,17 +5425,17 @@ mov rax, SOB_VOID_ADDRESS
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_2705
+jne is_not_empty_2721
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_2706
-is_not_empty_2705:
+jmp is_empty_2722
+is_not_empty_2721:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_2707:
+env_loop_2723:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -5438,31 +5445,31 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_2707
+loop env_loop_2723
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_2709
-params_loop_2708:
+je no_more_params_2725
+params_loop_2724:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_2708
-no_more_params_2709:
-is_empty_2706:
+loop params_loop_2724
+no_more_params_2725:
+is_empty_2722:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_2710)
-jmp Lcont_2711
-Lcode_2710:
+MAKE_CLOSURE(rax, rdx, Lcode_2726)
+jmp Lcont_2727
+Lcode_2726:
 push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+50
+mov rax, const_tbl+6
 push rax
 mov rax, qword [rbp+8*(4+0)]
 push rax
@@ -5479,13 +5486,13 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_2812 
- mov rax, qword [rbp+8*(4+1)] 
- jmp Lexit_2812 
- Lelse_2812: 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_2828
+mov rax, qword [rbp+8*(4+1)]
+jmp Lexit_2829
+Lelse_2828:
+push 496351
 
 push 496351
 
@@ -5529,7 +5536,7 @@ add rsp, rbx
 push rax
 push 496351
 
-mov rax, const_tbl+15
+mov rax, const_tbl+41
 push rax
 mov rax, qword [rbp+8*(4+0)]
 push rax
@@ -5564,12 +5571,11 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- Lexit_2812:
-
+add rsp, rbx
+Lexit_2829:
 leave
 ret
-Lcont_2711:
+Lcont_2727:
 push rax
 mov rax, qword [rbp+8*(4+0)]
 pop qword[rax]
@@ -5580,7 +5586,7 @@ mov rax, const_tbl+4
 push rax
 push 496351
 
-mov rax, const_tbl+15
+mov rax, const_tbl+41
 push rax
 push 496351
 
@@ -5635,7 +5641,7 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_2669:
+Lcont_2685:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -5650,10 +5656,10 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_2652:
+Lcont_2668:
 leave
 ret
-Lcont_2645:
+Lcont_2661:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -5694,56 +5700,6 @@ push rax
 mov rax, [fvar_tbl+22*8]
 push rax
 push 11
-GET_ENV rbx
-mov rcx, 0
-cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_2928
-MALLOC rdx, 8
-mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_2929
-is_not_empty_2928:
-ENV_LENGTH rbx
-mov rdi, rcx
-inc rdi
-shl rdi, 3
-MALLOC rdx, rdi
-env_loop_2930:
-shl rcx, 3
-mov rsi, rbx;Env
-add rsi, rcx;Env[i]
-sub rsi, 8;Env[i-1]
-mov r8, rdx;ExtEnv
-add r8, rcx;ExtEnv[i]
-mov r9, qword[rsi];r9 is the i'th rib
-mov qword[r8], r9; ExtEnv[i] = Env[i-1]
-shr rcx, 3
-loop env_loop_2930
-mov rcx, qword[rbp +8*3]
-shl rcx, 3
-MALLOC rbx, rcx;rbx is the new rib
-shr rcx, 3
-cmp rcx, 0
-je no_more_params_2932
-params_loop_2931:
-mov rdi, rcx
-dec rdi;rdi is the 0 based index of the current arg
-GET_ARG rsi, rdi
-mov qword[rbx + rdi], rsi
-loop params_loop_2931
-no_more_params_2932:
-is_empty_2929:
-mov qword[rdx], rbx
-;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_2933)
-jmp Lcont_2934
-Lcode_2933:
-push rbp
-mov rbp, rsp
-push 496351
-
-mov rax, const_tbl+41
-push rax
-push 1
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
@@ -5789,26 +5745,25 @@ jmp Lcont_2951
 Lcode_2950:
 push rbp
 mov rbp, rsp
-mov rax, qword [rbp+8*(4+0)]
-MALLOC rbx, 8
-mov qword[rbx], rax
-mov rax, rbx
-mov qword [rbp+8*(4+0)], rax
-mov rax, SOB_VOID_ADDRESS
+push 496351
+
+mov rax, const_tbl+32
+push rax
+push 1
 GET_ENV rbx
 mov rcx, 0
 cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_2987
+jne is_not_empty_2962
 MALLOC rdx, 8
 mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_2988
-is_not_empty_2987:
+jmp is_empty_2963
+is_not_empty_2962:
 ENV_LENGTH rbx
 mov rdi, rcx
 inc rdi
 shl rdi, 3
 MALLOC rdx, rdi
-env_loop_2989:
+env_loop_2964:
 shl rcx, 3
 mov rsi, rbx;Env
 add rsi, rcx;Env[i]
@@ -5818,26 +5773,77 @@ add r8, rcx;ExtEnv[i]
 mov r9, qword[rsi];r9 is the i'th rib
 mov qword[r8], r9; ExtEnv[i] = Env[i-1]
 shr rcx, 3
-loop env_loop_2989
+loop env_loop_2964
 mov rcx, qword[rbp +8*3]
 shl rcx, 3
 MALLOC rbx, rcx;rbx is the new rib
 shr rcx, 3
 cmp rcx, 0
-je no_more_params_2991
-params_loop_2990:
+je no_more_params_2966
+params_loop_2965:
 mov rdi, rcx
 dec rdi;rdi is the 0 based index of the current arg
 GET_ARG rsi, rdi
 mov qword[rbx + rdi], rsi
-loop params_loop_2990
-no_more_params_2991:
-is_empty_2988:
+loop params_loop_2965
+no_more_params_2966:
+is_empty_2963:
 mov qword[rdx], rbx
 ;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_2992)
-jmp Lcont_2993
-Lcode_2992:
+MAKE_CLOSURE(rax, rdx, Lcode_2967)
+jmp Lcont_2968
+Lcode_2967:
+push rbp
+mov rbp, rsp
+mov rax, qword [rbp+8*(4+0)]
+MALLOC rbx, 8
+mov qword[rbx], rax
+mov rax, rbx
+mov qword [rbp+8*(4+0)], rax
+mov rax, SOB_VOID_ADDRESS
+GET_ENV rbx
+mov rcx, 0
+cmp rbx, SOB_NIL_ADDRESS
+jne is_not_empty_3004
+MALLOC rdx, 8
+mov qword[rdx], SOB_NIL_ADDRESS
+jmp is_empty_3005
+is_not_empty_3004:
+ENV_LENGTH rbx
+mov rdi, rcx
+inc rdi
+shl rdi, 3
+MALLOC rdx, rdi
+env_loop_3006:
+shl rcx, 3
+mov rsi, rbx;Env
+add rsi, rcx;Env[i]
+sub rsi, 8;Env[i-1]
+mov r8, rdx;ExtEnv
+add r8, rcx;ExtEnv[i]
+mov r9, qword[rsi];r9 is the i'th rib
+mov qword[r8], r9; ExtEnv[i] = Env[i-1]
+shr rcx, 3
+loop env_loop_3006
+mov rcx, qword[rbp +8*3]
+shl rcx, 3
+MALLOC rbx, rcx;rbx is the new rib
+shr rcx, 3
+cmp rcx, 0
+je no_more_params_3008
+params_loop_3007:
+mov rdi, rcx
+dec rdi;rdi is the 0 based index of the current arg
+GET_ARG rsi, rdi
+mov qword[rbx + rdi], rsi
+loop params_loop_3007
+no_more_params_3008:
+is_empty_3005:
+mov qword[rdx], rbx
+;;RDX IS THE EXTENV!!!
+MAKE_CLOSURE(rax, rdx, Lcode_3009)
+jmp Lcont_3010
+Lcode_3009:
 push rbp
 mov rbp, rsp
 push 496351
@@ -5857,10 +5863,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_3071 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_3089
+push 496351
 
 mov rax, qword [rbp+8*(4+1)]
 push rax
@@ -5877,10 +5883,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_3065 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_3082
+push 496351
 
 mov rax, qword [rbp+8*(4+1)]
 push rax
@@ -5899,19 +5905,17 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- jmp Lexit_3065 
- Lelse_3065: 
- mov rax, const_tbl+2 
- Lexit_3065:
- 
- jmp Lexit_3071 
- Lelse_3071: 
- mov rax, const_tbl+2 
- Lexit_3071:
-
+add rsp, rbx
+jmp Lexit_3083
+Lelse_3082:
+mov rax, const_tbl+2
+Lexit_3083:
+jmp Lexit_3090
+Lelse_3089:
+mov rax, const_tbl+2
+Lexit_3090:
 cmp rax, SOB_FALSE_ADDRESS 
- jne Lexit_2999 
+ jne Lexit_3016 
 push 496351
 
 mov rax, qword [rbp+8*(4+0)]
@@ -5929,10 +5933,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_3143 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_3163
+push 496351
 
 mov rax, qword [rbp+8*(4+1)]
 push rax
@@ -5949,10 +5953,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_3137 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_3156
+push 496351
 
 mov rax, qword [rbp+8*(4+1)]
 push rax
@@ -5971,19 +5975,17 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- jmp Lexit_3137 
- Lelse_3137: 
- mov rax, const_tbl+2 
- Lexit_3137:
- 
- jmp Lexit_3143 
- Lelse_3143: 
- mov rax, const_tbl+2 
- Lexit_3143:
-
+add rsp, rbx
+jmp Lexit_3157
+Lelse_3156:
+mov rax, const_tbl+2
+Lexit_3157:
+jmp Lexit_3164
+Lelse_3163:
+mov rax, const_tbl+2
+Lexit_3164:
 cmp rax, SOB_FALSE_ADDRESS 
- jne Lexit_2999 
+ jne Lexit_3016 
 push 496351
 
 mov rax, qword [rbp+8*(4+0)]
@@ -6001,10 +6003,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_3296 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_3319
+push 496351
 
 mov rax, qword [rbp+8*(4+1)]
 push rax
@@ -6021,10 +6023,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_3290 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_3312
+push 496351
 
 push 496351
 
@@ -6078,10 +6080,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_3284 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_3305
+push 496351
 
 push 496351
 
@@ -6135,24 +6137,21 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- jmp Lexit_3284 
- Lelse_3284: 
- mov rax, const_tbl+2 
- Lexit_3284:
- 
- jmp Lexit_3290 
- Lelse_3290: 
- mov rax, const_tbl+2 
- Lexit_3290:
- 
- jmp Lexit_3296 
- Lelse_3296: 
- mov rax, const_tbl+2 
- Lexit_3296:
-
+add rsp, rbx
+jmp Lexit_3306
+Lelse_3305:
+mov rax, const_tbl+2
+Lexit_3306:
+jmp Lexit_3313
+Lelse_3312:
+mov rax, const_tbl+2
+Lexit_3313:
+jmp Lexit_3320
+Lelse_3319:
+mov rax, const_tbl+2
+Lexit_3320:
 cmp rax, SOB_FALSE_ADDRESS 
- jne Lexit_2999 
+ jne Lexit_3016 
 push 496351
 
 mov rax, qword [rbp+8*(4+0)]
@@ -6170,10 +6169,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_3388 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_3413
+push 496351
 
 mov rax, qword [rbp+8*(4+1)]
 push rax
@@ -6190,10 +6189,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_3382 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_3406
+push 496351
 
 push 496351
 
@@ -6246,19 +6245,17 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- jmp Lexit_3382 
- Lelse_3382: 
- mov rax, const_tbl+2 
- Lexit_3382:
- 
- jmp Lexit_3388 
- Lelse_3388: 
- mov rax, const_tbl+2 
- Lexit_3388:
-
+add rsp, rbx
+jmp Lexit_3407
+Lelse_3406:
+mov rax, const_tbl+2
+Lexit_3407:
+jmp Lexit_3414
+Lelse_3413:
+mov rax, const_tbl+2
+Lexit_3414:
 cmp rax, SOB_FALSE_ADDRESS 
- jne Lexit_2999 
+ jne Lexit_3016 
 push 496351
 
 mov rax, qword [rbp+8*(4+0)]
@@ -6276,10 +6273,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_3485 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_3512
+push 496351
 
 mov rax, qword [rbp+8*(4+1)]
 push rax
@@ -6296,10 +6293,10 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- cmp rax, SOB_FALSE_ADDRESS 
- je Lelse_3479 
- push 496351
+add rsp, rbx
+cmp rax, SOB_FALSE_ADDRESS
+je Lelse_3505
+push 496351
 
 push 496351
 
@@ -6353,19 +6350,17 @@ add rsp, 8*1
 pop rbx
 inc rbx
 shl rbx, 3
-add rsp, rbx 
- jmp Lexit_3479 
- Lelse_3479: 
- mov rax, const_tbl+2 
- Lexit_3479:
- 
- jmp Lexit_3485 
- Lelse_3485: 
- mov rax, const_tbl+2 
- Lexit_3485:
-
+add rsp, rbx
+jmp Lexit_3506
+Lelse_3505:
+mov rax, const_tbl+2
+Lexit_3506:
+jmp Lexit_3513
+Lelse_3512:
+mov rax, const_tbl+2
+Lexit_3513:
 cmp rax, SOB_FALSE_ADDRESS 
- jne Lexit_2999 
+ jne Lexit_3016 
 push 496351
 
 mov rax, qword [rbp+8*(4+1)]
@@ -6388,11 +6383,11 @@ pop rbx
 inc rbx
 shl rbx, 3
 add rsp, rbx
-Lexit_2999:
+Lexit_3016:
 
 leave
 ret
-Lcont_2993:
+Lcont_3010:
 push rax
 mov rax, qword [rbp+8*(4+0)]
 pop qword[rax]
@@ -6401,7 +6396,7 @@ mov rax, qword [rbp+8*(4+0)]
 mov rax, qword[rax]
 leave
 ret
-Lcont_2951:
+Lcont_2968:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -6416,7 +6411,7 @@ shl rbx, 3
 add rsp, rbx
 leave
 ret
-Lcont_2934:
+Lcont_2951:
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -6434,12 +6429,62 @@ mov rax, SOB_VOID_ADDRESS
 
 push 496351
 
+mov rax, const_tbl+4
+push rax
 mov rax, const_tbl+6
 push rax
-mov rax, const_tbl+15
+GET_ENV rbx
+mov rcx, 0
+cmp rbx, SOB_NIL_ADDRESS
+jne is_not_empty_3559
+MALLOC rdx, 8
+mov qword[rdx], SOB_NIL_ADDRESS
+jmp is_empty_3560
+is_not_empty_3559:
+ENV_LENGTH rbx
+mov rdi, rcx
+inc rdi
+shl rdi, 3
+MALLOC rdx, rdi
+env_loop_3561:
+shl rcx, 3
+mov rsi, rbx;Env
+add rsi, rcx;Env[i]
+sub rsi, 8;Env[i-1]
+mov r8, rdx;ExtEnv
+add r8, rcx;ExtEnv[i]
+mov r9, qword[rsi];r9 is the i'th rib
+mov qword[r8], r9; ExtEnv[i] = Env[i-1]
+shr rcx, 3
+loop env_loop_3561
+mov rcx, qword[rbp +8*3]
+shl rcx, 3
+MALLOC rbx, rcx;rbx is the new rib
+shr rcx, 3
+cmp rcx, 0
+je no_more_params_3563
+params_loop_3562:
+mov rdi, rcx
+dec rdi;rdi is the 0 based index of the current arg
+GET_ARG rsi, rdi
+mov qword[rbx + rdi], rsi
+loop params_loop_3562
+no_more_params_3563:
+is_empty_3560:
+mov qword[rdx], rbx
+;;RDX IS THE EXTENV!!!
+MAKE_CLOSURE(rax, rdx, Lcode_3564)
+jmp Lcont_3565
+Lcode_3564:
+push rbp
+mov rbp, rsp
+mov rax, qword [rbp+8*(4+0)]
+leave
+ret
+Lcont_3565:
 push rax
-push 2
-mov rax, [fvar_tbl+17*8]
+push 3
+mov rax, [fvar_tbl+28*8]
 
 CLOSURE_ENV rbx, rax
 push rbx

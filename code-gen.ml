@@ -505,12 +505,26 @@ module Code_Gen : CODE_GEN = struct
       let exps = List.map (generate consts fvars) lst in 
       let code = String.concat (Printf.sprintf "\ncmp rax, SOB_FALSE_ADDRESS \n jne %s \n" label_exit) exps in
       code ^ (Printf.sprintf "\n%s:\n" label_exit)
-    | If'(a,b,c) -> 
-      let i = (generate consts fvars a) in
-      let t = (generate consts fvars b) in
-      let e = (generate consts fvars c) in
-      let labels = Labels.make_labels ["Lelse";"Lexit"] in
-      Printf.sprintf "%s \n cmp rax, SOB_FALSE_ADDRESS \n je %s \n %s \n jmp %s \n %s: \n %s \n %s:\n" i (List.nth labels 0) t (List.nth labels 1) (List.nth labels 0) e (List.nth labels 1)
+    | If'(test,dit,dif) -> 
+      let test = (generate consts fvars test) in
+      let dit = (generate consts fvars dit) in
+      let dif = (generate consts fvars dif) in
+      let label_else = Labels.make_label "Lelse" in
+      let label_exit = Labels.make_label "Lexit" in
+      (* let labels = Labels.make_labels ["Lelse";"Lexit"] in *)
+      (concat_lines
+         [
+           test;
+           "cmp rax, SOB_FALSE_ADDRESS";
+           Printf.sprintf "je %s" label_else;
+           dit;
+           Printf.sprintf "jmp %s" label_exit;
+           Printf.sprintf "%s:" label_else;
+           dif;
+           Printf.sprintf "%s:" label_exit;
+         ]
+      )
+      (* Printf.sprintf "%s \n cmp rax, SOB_FALSE_ADDRESS \n je %s \n %s \n jmp %s \n %s: \n %s \n %s:\n" i (List.nth labels 0) t (List.nth labels 1) (List.nth labels 0) e (List.nth labels 1) *)
     | Applic'(e,l) ->
       let push_args = generate_push_args l in
       let push_n = Printf.sprintf "push %d" (List.length l) in
@@ -660,11 +674,11 @@ module Code_Gen : CODE_GEN = struct
              "mov rdi, rsp";
              "add rdi, 8; destination";
              "mov rsi, rsp;source";
-             Printf.sprintf "mov rbx, %d;n" (List.length params);
-             "add rbx, 3; n+3";
-             "add rbx, rcx;n+3+curr_m";
-             "dec rbx; because the last opttion param have been consumed";
-             "shl rbx, 3";
+             Printf.sprintf "mov rdx, %d;n" (List.length params);
+             "add rdx, 3; n+3";
+             "add rdx, rcx;n+3+curr_m";
+             "dec rdx; because the last opttion param have been consumed";
+             "shl rdx, 3";
              "push rcx";
              "call memmove";
              "pop rcx";
