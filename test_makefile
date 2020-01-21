@@ -18,6 +18,10 @@ BASEDIR := $(PWD)
 clean:
 	rm -f *.log *.cache *TESTCASE*
 
+cdclean:
+	cd $(MKDIR) ;\
+	rm -f *.log *.cache *TESTCASE*
+
 test_ours:
 	for test in $$(ls our_compiler/testcases/ours | grep -i ^TESTCASE_ | cut -f 1 -d '.');\
 	do\

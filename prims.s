@@ -101,6 +101,14 @@ car:
 	CAR rax, rsi
 	leave
 	ret
+
+cdr:
+	push rbp
+	mov rbp, rsp
+	GET_ARG rsi, 0
+	CDR rax, rsi
+	leave
+	ret
 is_boolean:
     push rbp
     mov rbp, rsp

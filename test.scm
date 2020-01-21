@@ -1,1 +1,1 @@
-(if (equal? '(0) '(0)) 'PASSED! '(Excpected Result: 0,     Actual Result: 0,    testcase: TESTCASE_fold_left_simple) )
+(if (equal? '(3) '(3)) 'PASSED! '(Excpected Result: 3,     Actual Result: 3,    testcase: TESTCASE_seq) )

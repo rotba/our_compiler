@@ -55,6 +55,7 @@ dq T_UNDEFINED
 dq T_UNDEFINED
 dq T_UNDEFINED
 dq T_UNDEFINED
+dq T_UNDEFINED
 
 global main
 extern memmove
@@ -133,8 +134,10 @@ main:
     mov [fvar_tbl+8*23], rax
     MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, car)
     mov [fvar_tbl+8*24], rax
-    MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, apply)
+    MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, cdr)
     mov [fvar_tbl+8*25], rax
+    MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, apply)
+    mov [fvar_tbl+8*26], rax
 
 user_code_fragment:
 ;;; The code you compiled will be catenated here.
@@ -232,7 +235,7 @@ ret
 Lcont_17:
 push rax
 push 2
-mov rax, [fvar_tbl+25*8]
+mov rax, [fvar_tbl+26*8]
 
 CLOSURE_ENV rbx, rax
 push rbx
@@ -351,6 +354,14 @@ car:
 	mov rbp, rsp
 	GET_ARG rsi, 0
 	CAR rax, rsi
+	leave
+	ret
+
+cdr:
+	push rbp
+	mov rbp, rsp
+	GET_ARG rsi, 0
+	CDR rax, rsi
 	leave
 	ret
 is_boolean:

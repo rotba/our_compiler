@@ -54,7 +54,7 @@ let primitive_names_to_labels =
    "symbol->string", "symbol_to_string"; 
    "char->integer", "char_to_integer"; "integer->char", "integer_to_char"; "eq?", "is_eq";
    "+", "bin_add"; "*", "bin_mul"; "-", "bin_sub"; "/", "bin_div"; "<", "bin_lt"; "=", "bin_equ";
-   "cons", "cons"; "car", "car";"apply","apply"
+   "cons", "cons"; "car", "car";"cdr","cdr";"apply","apply"
    ]
 ;;
 
@@ -139,7 +139,7 @@ exception X_missing_input_file;;
 
 try
   let infile = Sys.argv.(1) in
-  let code =  (file_to_string "stdlib.scm") ^ (file_to_string infile) in
+  let code =  (* (file_to_string "stdlib.scm") ^ *) (file_to_string infile) in
   let asts = string_to_asts code in
   let asts = rename asts in
   let consts_tbl = Code_Gen.make_consts_tbl asts in
