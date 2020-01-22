@@ -25,6 +25,6 @@ setup.log
 #test files
 *.log
 *.cache
-TESTCASE_*
+
 
 
