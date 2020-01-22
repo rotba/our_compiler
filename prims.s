@@ -102,6 +102,26 @@ car:
 	leave
 	ret
 
+set_car:
+	push rbp
+	mov rbp, rsp
+	GET_ARG rsi, 0
+	GET_ARG rdi, 1
+	mov qword[rsi+TYPE_SIZE], rdi
+	mov rax, SOB_VOID_ADDRESS
+	leave
+	ret
+
+set_cdr:
+	push rbp
+	mov rbp, rsp
+	GET_ARG rsi, 0
+	GET_ARG rdi, 1
+	mov qword[rsi+TYPE_SIZE+WORD_SIZE], rdi
+	mov rax, SOB_VOID_ADDRESS
+	leave
+	ret
+
 cdr:
 	push rbp
 	mov rbp, rsp

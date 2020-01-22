@@ -343,7 +343,7 @@ module Code_Gen : CODE_GEN = struct
     "symbol->string"; 
     "char->integer"; "integer->char"; "eq?";
     "+"; "*"; "-"; "/"; "<"; "=";
-    "cons";"car";"cdr";"apply"] asts) in
+    "cons";"car";"cdr";"set-car!";"set-cdr!";"apply"] asts) in
     let vars = remove_from_left vars in 
     let fold_fun acc b = (acc@[(b, (get_id()))]) in
     List.fold_left fold_fun [] vars 
