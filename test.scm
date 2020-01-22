@@ -1,3 +1,1 @@
-(if (equal? '((alpha . beta)
-(beta . beta)) '()) 'PASSED! '(Excpected Result: (alpha . beta)
-(beta . beta),     Actual Result: ,    testcase: TESTCASE_10) )
+(if (equal? '(-15) '()) 'PASSED! '(Excpected Result: -15,     Actual Result: ,    testcase: TESTCASE_12) )
