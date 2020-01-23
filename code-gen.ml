@@ -212,6 +212,7 @@ module Code_Gen : CODE_GEN = struct
      |Sexpr(Bool(false)) -> "MAKE_BOOL(0)"
      |Sexpr(Bool(true)) -> "MAKE_BOOL(1)"
      |Sexpr(Number(Int(vall))) -> Printf.sprintf "MAKE_LITERAL_INT(%s)" (string_of_int vall)
+     |Sexpr(Number(Float(vall))) -> Printf.sprintf "MAKE_LITERAL_FLOAT(%s)" (string_of_float vall)                          
      |Sexpr(String(s)) -> Printf.sprintf "MAKE_LITERAL_STRING \"%s\", %d" (String.escaped s) (String.length (String.escaped s))
      |Sexpr(Char(c)) -> Printf.sprintf "MAKE_LITERAL_CHAR (%d)" (Char.code c)
      |Sexpr(Symbol(s)) ->
