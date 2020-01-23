@@ -5,8 +5,9 @@ apply:
 ;;; TODO: add closure verification
 	push rbp
 	mov rbp, rsp
-	mov rbx, qword[rbp]
-	mov rsi, qword[rbx -2*8]	; rsi is s
+	mov rbx, qword[rbp+8*3]
+    add rbx, 3
+	mov rsi, qword[rbp + 8*rbx]	; rsi is s
 	mov rdi, 0		;the length of s
 push_s_loop:
 	cmp rsi, SOB_NIL_ADDRESS

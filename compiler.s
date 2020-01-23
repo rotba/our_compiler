@@ -721,6 +721,7 @@ section .data
 		mov rax, GET_PARAM_COUNT
 		add rax, ELEMENTS_ON_STACK
 		mov r15, rax
+		mov r14, qword [rbp]
 	%assign i 1
 	%rep %1
 		dec rax
@@ -732,7 +733,7 @@ section .data
 		pop rax
 		shl r15, 3
 		add rsp, r15
-		add rbp, r15
+		mov rbp, r14
 	%endmacro
 
 
