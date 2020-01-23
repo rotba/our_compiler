@@ -5,8 +5,9 @@ apply:
 ;;; TODO: add closure verification
 	push rbp
 	mov rbp, rsp
+	push 496351
 	mov rbx, qword[rbp+8*3]
-    add rbx, 3
+	add rbx, 3
 	mov rsi, qword[rbp + 8*rbx]	; rsi is s
 	mov rdi, 0		;the length of s
 push_s_loop:
@@ -18,7 +19,7 @@ push_s_loop:
 	CDR rsi, rsi
 	jmp push_s_loop
 end_push_s:
-;;; s0 ... sm-1 on the stack
+;;; magic s0 ... sm-1 on the stack
 	cmp rdi, 0
 	je reverse_s_end
 	mov rcx, rdi
@@ -45,11 +46,11 @@ reverse_s_end:
 push_xs_loop:
 	mov rdx, rcx
 	dec rdx			;rdx is index
-	add rdx, 5		;5  and not for because the first parameter is proc
+	add rdx, 5		;5  and not 4 because the first parameter is proc
 	push qword[rbp +8*rdx]
 	loop push_xs_loop
 no_params:	
-;;; s_m-1,..,s_0, x_n-1,..x_0 on the stack
+;;; magic s_m-1,..,s_0, x_n-1,..x_0 on the stack
 	add rdi, rsi		  ;m+n
 	push rdi
 	mov rbx, qword[rbp + 8*4] ; rbx is proc
@@ -58,21 +59,18 @@ no_params:
 	push rdx
 	mov r8, rbx		;save the closure
 	push qword[rbp+8]	;ret address
-	mov rdx, rsp 		;this is the start of the to be transferred memmory slice
+	mov rdx, rsp 		;this is the source of the memmory move
 	push r8
-	mov rbx, rdi		;cacl memmory length
-	add rbx, ELEMENTS_ON_STACK_NO_RBP ;;cacl memmory length
-	shl rbx, 3
+	mov rbx, GET_PARAM_COUNT		;calc memmory length
+	add rbx, ELEMENTS_ON_STACK ;;cacl memmory length
+	shl rbx, 3			  ;rbx is the number of bytes need to be moved
 	mov rbp, qword[rbp]	;current rbp is no longer needed and old rbp need to be accesibl
-	mov rsi, rbp
-	sub rsi, rbx		;destination of moving
-	mov rax, 0
-	;; push rbx		;size of memmory to be moved
-	;; push rdx		;start of memmory to be moved
-	;; push rsi		;destination
-	mov rdi, rsi
 	mov rsi, rdx
-	mov rdx, rbx
+	add rsi, rbx		;src is dest + param_c +elements_on_stack
+	mov rax, 0
+	mov rdi, rsi		;dest
+	mov rsi, rdx		;src
+	mov rdx, rbx		;len
 	call memmove
 	pop rbx			;proc
 	mov rsp, rax

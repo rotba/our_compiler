@@ -551,6 +551,7 @@ module Code_Gen : CODE_GEN = struct
            push_magic;
            push_args;
            push_n;
+           ";"^(exp'_to_string e);
            proc;
            verify_closure;
            push_env;
@@ -596,6 +597,7 @@ module Code_Gen : CODE_GEN = struct
             push_magic;
             push_args;
             push_n;
+            ";"^(exp'_to_string e);
             proc;
             verify_closure;
             push_env;

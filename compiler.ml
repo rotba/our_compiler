@@ -111,7 +111,7 @@ main:
     ;; AND IS A BUG) will cause a segfault.
     push 0
     push SOB_NIL_ADDRESS
-    push qword T_UNDEFINED
+    push -1
     push rsp
     mov rbp,rsp
 

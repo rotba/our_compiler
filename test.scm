@@ -1,1 +1,1 @@
-(if (equal? '(14) '()) 'PASSED! '(Excpected Result: 14,     Actual Result: ,    testcase: TESTCASE_apply_only_s) )
+(if (equal? '(1) '(1)) 'PASSED! '(Excpected Result: 1,     Actual Result: 1) )

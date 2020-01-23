@@ -14,15 +14,28 @@ MAKE_BOOL(1)
 MAKE_BOOL(0)
 MAKE_NIL
 MAKE_VOID
-MAKE_LITERAL_INT(2)
-MAKE_LITERAL_INT(3)
-MAKE_LITERAL_INT(4)
-MAKE_LITERAL_PAIR(const_tbl+24,const_tbl+4)
-MAKE_LITERAL_PAIR(const_tbl+15,const_tbl+33)
-MAKE_LITERAL_PAIR(const_tbl+6,const_tbl+50)
-MAKE_LITERAL_STRING "whatever", 8
-MAKE_LITERAL_SYMBOl(const_tbl+84)
+MAKE_LITERAL_STRING "ab", 2
+MAKE_LITERAL_STRING "quote", 5
+MAKE_LITERAL_SYMBOl(const_tbl+17)
 MAKE_LITERAL_INT(1)
+MAKE_LITERAL_INT(2)
+MAKE_LITERAL_PAIR(const_tbl+49,const_tbl+4)
+MAKE_LITERAL_PAIR(const_tbl+40,const_tbl+58)
+MAKE_LITERAL_PAIR(const_tbl+75,const_tbl+4)
+MAKE_LITERAL_PAIR(const_tbl+31,const_tbl+92)
+MAKE_LITERAL_STRING "c", 1
+MAKE_LITERAL_SYMBOl(const_tbl+126)
+MAKE_LITERAL_PAIR(const_tbl+136,const_tbl+4)
+MAKE_LITERAL_PAIR(const_tbl+31,const_tbl+145)
+MAKE_LITERAL_SYMBOl(const_tbl+6)
+MAKE_LITERAL_PAIR(const_tbl+179,const_tbl+4)
+MAKE_LITERAL_PAIR(const_tbl+31,const_tbl+188)
+MAKE_LITERAL_PAIR(const_tbl+205,const_tbl+4)
+MAKE_LITERAL_PAIR(const_tbl+162,const_tbl+222)
+MAKE_LITERAL_PAIR(const_tbl+109,const_tbl+239)
+MAKE_LITERAL_PAIR(const_tbl+6,const_tbl+256)
+MAKE_LITERAL_STRING "whatever", 8
+MAKE_LITERAL_SYMBOl(const_tbl+290)
 MAKE_LITERAL_INT(0)
 MAKE_LITERAL_CHAR (0)
 
@@ -230,7 +243,7 @@ push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+101
+mov rax, const_tbl+307
 push rax
 push 1
 ;(LambdaSimple'(  ( map-loop ) , [(Seq'( [(Set'( Var' ( VarParam ( map-loop , 0 )) , (Box'( VarParam ( map-loop , 0 ) ) ) , (Seq'( [(BoxSet'( VarParam ( map-loop , 0 ) , (LambdaOpt'(  ( f , l . ls ), , [(If'( Applic'( Var' ( VarBound ( null? , 1 , 1 )) , [Var' ( VarParam ( l , 1 ))] ) , Const' ( Nil),(If'( Applic'( Var' ( VarBound ( null? , 1 , 1 )) , [Var' ( VarParam ( ls , 2 ))] ) , ApplicTP'( Var' ( VarBound ( cons , 1 , 1 )) , [Applic'( Var' ( VarParam ( f , 0 )) , [Applic'( Var' ( VarBound ( car , 1 , 1 )) , [Var' ( VarParam ( l , 1 ))] )] ) , Applic'( (BoxGet'( VarBound ( map-loop , 0 , 0 ) ) , [Var' ( VarParam ( f , 0 )) , Applic'( Var' ( VarBound ( cdr , 1 , 1 )) , [Var' ( VarParam ( l , 1 ))] )] )] ),ApplicTP'( Var' ( VarBound ( cons , 1 , 1 )) , [Applic'( Var' ( VarBound ( apply , 1 , 1 )) , [Var' ( VarParam ( f , 0 )) , Applic'( Var' ( VarBound ( car , 1 , 1 )) , [Var' ( VarParam ( l , 1 ))] ) , Applic'( (BoxGet'( VarBound ( map-loop , 0 , 0 ) ) , [Var' ( VarBound ( car , 1 , 1 )) , Var' ( VarParam ( ls , 2 ))] )] ) , Applic'( Var' ( VarBound ( apply , 1 , 1 )) , [Var' ( VarFree ( map )) , Var' ( VarParam ( f , 0 )) , Applic'( Var' ( VarBound ( cdr , 1 , 1 )) , [Var' ( VarParam ( l , 1 ))] ) , Applic'( (BoxGet'( VarBound ( map-loop , 0 , 0 ) ) , [Var' ( VarBound ( cdr , 1 , 1 )) , Var' ( VarParam ( ls , 2 ))] )] )] ) ) )] ) ) , (BoxGet'( VarParam ( map-loop , 0 ) )] )] )] )
@@ -772,7 +785,7 @@ push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+101
+mov rax, const_tbl+307
 push rax
 push 1
 ;(LambdaSimple'(  ( fold-loop ) , [(Seq'( [(Set'( Var' ( VarParam ( fold-loop , 0 )) , (Box'( VarParam ( fold-loop , 0 ) ) ) , (Seq'( [(BoxSet'( VarParam ( fold-loop , 0 ) , (LambdaSimple'(  ( f , acc , l ) , [(If'( Applic'( Var' ( VarBound ( null? , 1 , 1 )) , [Var' ( VarParam ( l , 2 ))] ) , Var' ( VarParam ( acc , 1 )),ApplicTP'( (BoxGet'( VarBound ( fold-loop , 0 , 0 ) ) , [Var' ( VarParam ( f , 0 )) , Applic'( Var' ( VarParam ( f , 0 )) , [Var' ( VarParam ( acc , 1 )) , Applic'( Var' ( VarBound ( car , 1 , 1 )) , [Var' ( VarParam ( l , 2 ))] )] ) , Applic'( Var' ( VarBound ( cdr , 1 , 1 )) , [Var' ( VarParam ( l , 2 ))] )] ) )] ) ) , (BoxGet'( VarParam ( fold-loop , 0 ) )] )] )] )
@@ -1378,7 +1391,7 @@ push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+101
+mov rax, const_tbl+307
 push rax
 push 1
 ;(LambdaSimple'(  ( cons-loop ) , [(Seq'( [(Set'( Var' ( VarParam ( cons-loop , 0 )) , (Box'( VarParam ( cons-loop , 0 ) ) ) , (Seq'( [(BoxSet'( VarParam ( cons-loop , 0 ) , (LambdaOpt'(  ( x . l ), , [(If'( Applic'( Var' ( VarBound ( null? , 1 , 1 )) , [Var' ( VarParam ( l , 1 ))] ) , Var' ( VarParam ( x , 0 )),ApplicTP'( Var' ( VarBound ( cons , 1 , 1 )) , [Var' ( VarParam ( x , 0 )) , Applic'( Var' ( VarBound ( apply , 1 , 1 )) , [(BoxGet'( VarBound ( cons-loop , 0 , 0 ) ) , Var' ( VarParam ( l , 1 ))] )] ) )] ) ) , (BoxGet'( VarParam ( cons-loop , 0 ) )] )] )] )
@@ -2088,7 +2101,7 @@ push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+101
+mov rax, const_tbl+307
 push rax
 push 1
 ;(LambdaSimple'(  ( list?-loop ) , [(Seq'( [(Set'( Var' ( VarParam ( list?-loop , 0 )) , (LambdaSimple'(  ( x ) , [(Or'( Applic'( Var' ( VarBound ( null? , 1 , 1 )) , [Var' ( VarParam ( x , 0 ))] ) , (If'( Applic'( Var' ( VarBound ( pair? , 1 , 1 )) , [Var' ( VarParam ( x , 0 ))] ) , ApplicTP'( Var' ( VarFree ( list? )) , [Applic'( Var' ( VarBound ( cdr , 1 , 1 )) , [Var' ( VarParam ( x , 0 ))] )] ),Const' ( false) ) )] ) ) , Var' ( VarParam ( list?-loop , 0 ))] )] )
@@ -2408,7 +2421,7 @@ push 496351
 
 mov rax, qword [rbp+8*(4+0)]
 push rax
-mov rax, const_tbl+119
+mov rax, const_tbl+316
 push rax
 GET_ENV rbx
 mov rcx, 0
@@ -2457,7 +2470,7 @@ push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+110
+mov rax, const_tbl+40
 push rax
 mov rax, qword [rbp+8*(4+0)]
 push rax
@@ -2690,7 +2703,7 @@ cmp rax, SOB_FALSE_ADDRESS
 je Lelse_1329
 push 496351
 
-mov rax, const_tbl+128
+mov rax, const_tbl+325
 push rax
 mov rax, qword [rbp+8*(4+0)]
 push rax
@@ -3149,7 +3162,7 @@ push 496351
 
 mov rax, qword [rbp+8*(4+0)]
 push rax
-mov rax, const_tbl+119
+mov rax, const_tbl+316
 push rax
 mov rax, qword[rbp+8*2]
 mov rax, qword[rax+8*0]
@@ -3342,7 +3355,7 @@ push 496351
 
 mov rax, qword [rbp+8*(4+0)]
 push rax
-mov rax, const_tbl+110
+mov rax, const_tbl+40
 push rax
 mov rax, qword[rbp+8*2]
 mov rax, qword[rax+8*0]
@@ -3560,7 +3573,7 @@ push 496351
 
 mov rax, qword [rbp+8*(4+0)]
 push rax
-mov rax, const_tbl+119
+mov rax, const_tbl+316
 push rax
 push 2
 ;Var' ( VarBound ( - , 0 , 0 ))
@@ -3822,7 +3835,7 @@ push 496351
 
 mov rax, qword [rbp+8*(4+0)]
 push rax
-mov rax, const_tbl+110
+mov rax, const_tbl+40
 push rax
 push 2
 ;Var' ( VarBound ( / , 0 , 0 ))
@@ -3971,7 +3984,7 @@ push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+101
+mov rax, const_tbl+307
 push rax
 push 1
 ;(LambdaSimple'(  ( =-loop ) , [(Seq'( [(Set'( Var' ( VarParam ( =-loop , 0 )) , (Box'( VarParam ( =-loop , 0 ) ) ) , (Seq'( [(BoxSet'( VarParam ( =-loop , 0 ) , (LambdaOpt'(  ( x . y ), , [(If'( Applic'( Var' ( VarBound ( null? , 1 , 1 )) , [Var' ( VarParam ( y , 1 ))] ) , Const' ( true),(If'( Applic'( Var' ( VarBound ( = , 1 , 1 )) , [Var' ( VarParam ( x , 0 )) , Applic'( Var' ( VarBound ( car , 1 , 1 )) , [Var' ( VarParam ( y , 1 ))] )] ) , ApplicTP'( Var' ( VarBound ( apply , 1 , 1 )) , [(BoxGet'( VarBound ( =-loop , 0 , 0 ) ) , Var' ( VarParam ( x , 0 )) , Applic'( Var' ( VarBound ( cdr , 1 , 1 )) , [Var' ( VarParam ( y , 1 ))] )] ),Const' ( false) ) )] ) ) , (BoxGet'( VarParam ( =-loop , 0 ) )] )] )] )
@@ -4335,7 +4348,7 @@ push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+101
+mov rax, const_tbl+307
 push rax
 push 1
 ;(LambdaSimple'(  ( <-loop ) , [(Seq'( [(Set'( Var' ( VarParam ( <-loop , 0 )) , (Box'( VarParam ( <-loop , 0 ) ) ) , (Seq'( [(BoxSet'( VarParam ( <-loop , 0 ) , (LambdaSimple'(  ( element , lst ) , [(If'( Applic'( Var' ( VarBound ( null? , 1 , 1 )) , [Var' ( VarParam ( lst , 1 ))] ) , Const' ( true),(If'( Applic'( Var' ( VarBound ( < , 1 , 1 )) , [Var' ( VarParam ( element , 0 )) , Applic'( Var' ( VarBound ( car , 1 , 1 )) , [Var' ( VarParam ( lst , 1 ))] )] ) , ApplicTP'( (BoxGet'( VarBound ( <-loop , 0 , 0 ) ) , [Applic'( Var' ( VarBound ( car , 1 , 1 )) , [Var' ( VarParam ( lst , 1 ))] ) , Applic'( Var' ( VarBound ( cdr , 1 , 1 )) , [Var' ( VarParam ( lst , 1 ))] )] ),Const' ( false) ) )] ) ) , (LambdaOpt'(  ( x . y ), , [ApplicTP'( (BoxGet'( VarBound ( <-loop , 0 , 0 ) ) , [Var' ( VarParam ( x , 0 )) , Var' ( VarParam ( y , 1 ))] )] )] )] )] )
@@ -4787,7 +4800,7 @@ push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+101
+mov rax, const_tbl+307
 push rax
 push 1
 ;(LambdaSimple'(  ( >-loop ) , [(Seq'( [(Set'( Var' ( VarParam ( >-loop , 0 )) , (Box'( VarParam ( >-loop , 0 ) ) ) , (Seq'( [(BoxSet'( VarParam ( >-loop , 0 ) , (LambdaSimple'(  ( element , lst ) , [(If'( Applic'( Var' ( VarBound ( null? , 1 , 1 )) , [Var' ( VarParam ( lst , 1 ))] ) , Const' ( true),(If'( Applic'( Var' ( VarBound ( not , 1 , 1 )) , [(Or'( Applic'( Var' ( VarBound ( < , 1 , 1 )) , [Var' ( VarParam ( element , 0 )) , Applic'( Var' ( VarBound ( car , 1 , 1 )) , [Var' ( VarParam ( lst , 1 ))] )] ) , Applic'( Var' ( VarBound ( = , 1 , 1 )) , [Var' ( VarParam ( element , 0 )) , Applic'( Var' ( VarBound ( car , 1 , 1 )) , [Var' ( VarParam ( lst , 1 ))] )] ) )] ) , ApplicTP'( (BoxGet'( VarBound ( >-loop , 0 , 0 ) ) , [Applic'( Var' ( VarBound ( car , 1 , 1 )) , [Var' ( VarParam ( lst , 1 ))] ) , Applic'( Var' ( VarBound ( cdr , 1 , 1 )) , [Var' ( VarParam ( lst , 1 ))] )] ),Const' ( false) ) )] ) ) , (LambdaOpt'(  ( x . y ), , [ApplicTP'( (BoxGet'( VarBound ( >-loop , 0 , 0 ) ) , [Var' ( VarParam ( x , 0 )) , Var' ( VarParam ( y , 1 ))] )] )] )] )] )
@@ -5335,7 +5348,7 @@ push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+119
+mov rax, const_tbl+316
 push rax
 mov rax, qword [rbp+8*(4+0)]
 push rax
@@ -5481,7 +5494,7 @@ push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+101
+mov rax, const_tbl+307
 push rax
 push 1
 ;(LambdaSimple'(  ( s->l-loop ) , [(Seq'( [(Set'( Var' ( VarParam ( s->l-loop , 0 )) , (Box'( VarParam ( s->l-loop , 0 ) ) ) , (Seq'( [(BoxSet'( VarParam ( s->l-loop , 0 ) , (LambdaSimple'(  ( n , a ) , [(If'( Applic'( Var' ( VarBound ( < , 2 , 2 )) , [Var' ( VarParam ( n , 0 )) , Const' ( 0)] ) , Var' ( VarParam ( a , 1 )),ApplicTP'( (BoxGet'( VarBound ( s->l-loop , 0 , 0 ) ) , [Applic'( Var' ( VarBound ( - , 2 , 2 )) , [Var' ( VarParam ( n , 0 )) , Const' ( 1)] ) , Applic'( Var' ( VarFree ( cons )) , [Applic'( Var' ( VarBound ( string-ref , 2 , 2 )) , [Var' ( VarBound ( s , 1 , 1 )) , Var' ( VarParam ( n , 0 ))] ) , Var' ( VarParam ( a , 1 ))] )] ) )] ) ) , ApplicTP'( (BoxGet'( VarParam ( s->l-loop , 0 ) ) , [Applic'( Var' ( VarBound ( - , 1 , 1 )) , [Applic'( Var' ( VarBound ( string-length , 1 , 1 )) , [Var' ( VarBound ( s , 0 , 0 ))] ) , Const' ( 1)] ) , Const' ( Nil)] )] )] )] )
@@ -5583,7 +5596,7 @@ push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+119
+mov rax, const_tbl+316
 push rax
 mov rax, qword [rbp+8*(4+0)]
 push rax
@@ -5653,7 +5666,7 @@ add rsp, rbx
 push rax
 push 496351
 
-mov rax, const_tbl+110
+mov rax, const_tbl+40
 push rax
 mov rax, qword [rbp+8*(4+0)]
 push rax
@@ -5705,7 +5718,7 @@ mov rax, const_tbl+4
 push rax
 push 496351
 
-mov rax, const_tbl+110
+mov rax, const_tbl+40
 push rax
 push 496351
 
@@ -5870,7 +5883,7 @@ push rbp
 mov rbp, rsp
 push 496351
 
-mov rax, const_tbl+101
+mov rax, const_tbl+307
 push rax
 push 1
 ;(LambdaSimple'(  ( equal?-loop ) , [(Seq'( [(Set'( Var' ( VarParam ( equal?-loop , 0 )) , (Box'( VarParam ( equal?-loop , 0 ) ) ) , (Seq'( [(BoxSet'( VarParam ( equal?-loop , 0 ) , (LambdaSimple'(  ( x , y ) , [(Or'( (If'( Applic'( Var' ( VarBound ( integer? , 1 , 1 )) , [Var' ( VarParam ( x , 0 ))] ) , (If'( Applic'( Var' ( VarBound ( integer? , 1 , 1 )) , [Var' ( VarParam ( y , 1 ))] ) , Applic'( Var' ( VarBound ( = , 1 , 1 )) , [Var' ( VarParam ( x , 0 )) , Var' ( VarParam ( y , 1 ))] ),Const' ( false) ),Const' ( false) ) , (If'( Applic'( Var' ( VarBound ( float? , 1 , 1 )) , [Var' ( VarParam ( x , 0 ))] ) , (If'( Applic'( Var' ( VarBound ( float? , 1 , 1 )) , [Var' ( VarParam ( y , 1 ))] ) , Applic'( Var' ( VarBound ( = , 1 , 1 )) , [Var' ( VarParam ( x , 0 )) , Var' ( VarParam ( y , 1 ))] ),Const' ( false) ),Const' ( false) ) , (If'( Applic'( Var' ( VarBound ( pair? , 1 , 1 )) , [Var' ( VarParam ( x , 0 ))] ) , (If'( Applic'( Var' ( VarBound ( pair? , 1 , 1 )) , [Var' ( VarParam ( y , 1 ))] ) , (If'( Applic'( (BoxGet'( VarBound ( equal?-loop , 0 , 0 ) ) , [Applic'( Var' ( VarBound ( car , 1 , 1 )) , [Var' ( VarParam ( x , 0 ))] ) , Applic'( Var' ( VarBound ( car , 1 , 1 )) , [Var' ( VarParam ( y , 1 ))] )] ) , Applic'( (BoxGet'( VarBound ( equal?-loop , 0 , 0 ) ) , [Applic'( Var' ( VarBound ( cdr , 1 , 1 )) , [Var' ( VarParam ( x , 0 ))] ) , Applic'( Var' ( VarBound ( cdr , 1 , 1 )) , [Var' ( VarParam ( y , 1 ))] )] ),Const' ( false) ),Const' ( false) ),Const' ( false) ) , (If'( Applic'( Var' ( VarBound ( char? , 1 , 1 )) , [Var' ( VarParam ( x , 0 ))] ) , (If'( Applic'( Var' ( VarBound ( char? , 1 , 1 )) , [Var' ( VarParam ( y , 1 ))] ) , Applic'( Var' ( VarBound ( = , 1 , 1 )) , [Applic'( Var' ( VarBound ( char->integer , 1 , 1 )) , [Var' ( VarParam ( x , 0 ))] ) , Applic'( Var' ( VarBound ( char->integer , 1 , 1 )) , [Var' ( VarParam ( y , 1 ))] )] ),Const' ( false) ),Const' ( false) ) , (If'( Applic'( Var' ( VarBound ( string? , 1 , 1 )) , [Var' ( VarParam ( x , 0 ))] ) , (If'( Applic'( Var' ( VarBound ( string? , 1 , 1 )) , [Var' ( VarParam ( y , 1 ))] ) , Applic'( (BoxGet'( VarBound ( equal?-loop , 0 , 0 ) ) , [Applic'( Var' ( VarBound ( string->list , 1 , 1 )) , [Var' ( VarParam ( x , 0 ))] ) , Applic'( Var' ( VarBound ( string->list , 1 , 1 )) , [Var' ( VarParam ( y , 1 ))] )] ),Const' ( false) ),Const' ( false) ) , ApplicTP'( Var' ( VarBound ( eq? , 1 , 1 )) , [Var' ( VarParam ( x , 0 )) , Var' ( VarParam ( y , 1 ))] ) )] ) ) , (BoxGet'( VarParam ( equal?-loop , 0 ) )] )] )] )
@@ -6576,111 +6589,7 @@ mov rax, SOB_VOID_ADDRESS
 
 	call write_sob_if_not_void
 
-push 496351
-
-mov rax, const_tbl+67
-push rax
-GET_ENV rbx
-mov rcx, 0
-cmp rbx, SOB_NIL_ADDRESS
-jne is_not_empty_3554
-MALLOC rdx, 8
-mov qword[rdx], SOB_NIL_ADDRESS
-jmp is_empty_3555
-is_not_empty_3554:
-ENV_LENGTH rbx
-mov rdi, rcx
-inc rdi
-shl rdi, 3
-MALLOC rdx, rdi
-env_loop_3556:
-shl rcx, 3
-mov rsi, rbx;Env
-add rsi, rcx;Env[i]
-sub rsi, 8;Env[i-1]
-mov r8, rdx;ExtEnv
-add r8, rcx;ExtEnv[i]
-mov r9, qword[rsi];r9 is the i'th rib
-mov qword[r8], r9; ExtEnv[i] = Env[i-1]
-shr rcx, 3
-loop env_loop_3556
-mov rcx, qword[rbp +8*3]
-shl rcx, 3
-MALLOC rbx, rcx;rbx is the new rib
-shr rcx, 3
-cmp rcx, 0
-je no_more_params_3558
-params_loop_3557:
-mov rdi, rcx
-dec rdi;rdi is the 0 based index of the current arg
-GET_ARG rsi, rdi
-mov qword[rbx + rdi*8], rsi
-loop params_loop_3557
-no_more_params_3558:
-mov qword[rdx], rbx
-is_empty_3555:
-;;RDX IS THE EXTENV!!!
-MAKE_CLOSURE(rax, rdx, Lcode_3559)
-jmp Lcont_3560
-Lcode_3559:
-push rbp
-mov rbp, rsp
-push 496351
-
-push 496351
-
-mov rax, qword [rbp+8*(4+2)]
-push rax
-mov rax, qword [rbp+8*(4+1)]
-push rax
-push 2
-;Var' ( VarFree ( * ))
-mov rax, qword[fvar_tbl+18*8]
-
-CLOSURE_ENV rbx, rax
-push rbx
-CLOSURE_CODE rbx, rax
-call rbx
-add rsp, 8*1
-pop rbx
-inc rbx
-shl rbx, 3
-add rsp, rbx
-push rax
-mov rax, qword [rbp+8*(4+0)]
-push rax
-push 2
-;Var' ( VarFree ( + ))
-mov rax, qword[fvar_tbl+17*8]
-
-CLOSURE_ENV rbx, rax
-push rbx
-push qword[rbp +8*1]
-SHIFT_FRAME 6
-CLOSURE_CODE rbx, rax
-jmp rbx
-add rsp, 8*1
-pop rbx
-inc rbx
-shl rbx, 3
-add rsp, rbx
-leave
-ret
-Lcont_3560:
-push rax
-push 2
-;Var' ( VarFree ( apply ))
-mov rax, qword[fvar_tbl+28*8]
-
-CLOSURE_ENV rbx, rax
-push rbx
-CLOSURE_CODE rbx, rax
-call rbx
-add rsp, 8*1
-pop rbx
-inc rbx
-shl rbx, 3
-add rsp, rbx
+mov rax, const_tbl+273
 	call write_sob_if_not_void
 
 	mov rax, 0

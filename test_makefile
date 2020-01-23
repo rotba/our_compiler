@@ -33,7 +33,8 @@ test_ours:
 		export ACTUAL;\
 		EXCPECTED=`scheme -q < testcases/ours/$$test.scm`;\
 		export EXCPECTED;\
-		echo "(if (equal? '($$EXCPECTED) '($$ACTUAL)) 'PASSED! '(Excpected Result: $$EXCPECTED,     Actual Result: $$ACTUAL,    testcase: $$test) )" > test.scm;\
+		echo "testcase: $$test";\
+		echo "(if (equal? '($$EXCPECTED) '($$ACTUAL)) 'PASSED! '(Excpected Result: $$EXCPECTED,     Actual Result: $$ACTUAL) )" > test.scm;\
 		scheme -q < test.scm;\
 	done;\
 	#make -f makefile clean;
