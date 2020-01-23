@@ -643,7 +643,7 @@ module Code_Gen : CODE_GEN = struct
         (concat_lines
            [
              ";donte the effective numer of parameters m";
-             ";donte the noumber of simple parameters n";
+             ";donte the number of simple parameters n";
              "mov rcx, qword[rsp+ 8*2]; rcx is m";
              Printf.sprintf "cmp rcx, %d" (List.length params);
              Printf.sprintf "jne %s" label_not_empty_opt;
@@ -685,8 +685,8 @@ module Code_Gen : CODE_GEN = struct
              "push rcx";
              "call memmove";
              "pop rcx";
-             "add rsp, 8";
-             "sub qword[rsp +2*8], 1; curr_m = curr_m-1";
+             "mov rsp, rax";
+             "sub qword[rsp +2*8], 1";
              Printf.sprintf "loop %s" label_create_opt_loop;
              Printf.sprintf "%s:" label_done_fixing;
            ]

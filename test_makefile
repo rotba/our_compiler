@@ -29,11 +29,11 @@ test_ours:
 		ocaml compiler.ml $(BASEDIR)/our_compiler/testcases/ours/$$test.scm > $$test.s ;\
 		nasm -g -f elf64 -o $$test.o $$test.s ;\
 		gcc -g -static -m64 -o $$test $$test.o ;\
+		echo "testcase: $$test";\
 		ACTUAL=`./$$test`;\
 		export ACTUAL;\
 		EXCPECTED=`scheme -q < testcases/ours/$$test.scm`;\
 		export EXCPECTED;\
-		echo "testcase: $$test";\
 		echo "(if (equal? '($$EXCPECTED) '($$ACTUAL)) 'PASSED! '(Excpected Result: $$EXCPECTED,     Actual Result: $$ACTUAL) )" > test.scm;\
 		scheme -q < test.scm;\
 	done;\
@@ -46,6 +46,7 @@ test_ly:
 		ocaml compiler.ml $(BASEDIR)/our_compiler/testcases/last_year/$$test.scm > $$test.s ;\
 		nasm -g -f elf64 -o $$test.o $$test.s ;\
 		gcc -g -static -m64 -o $$test $$test.o ;\
+		echo "testcase: $$test";\
 		ACTUAL=`./$$test`;\
 		export ACTUAL;\
 		EXCPECTED=`scheme -q < testcases/last_year/$$test.scm`;\

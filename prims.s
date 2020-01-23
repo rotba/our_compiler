@@ -53,6 +53,9 @@ no_params:
 ;;; magic s_m-1,..,s_0, x_n-1,..x_0 on the stack
 	add rdi, rsi		  ;m+n
 	push rdi
+	mov r14, rdi
+	add r14, ELEMENTS_ON_STACK_NO_RBP
+	shl r14, 3
 	mov rbx, qword[rbp + 8*4] ; rbx is proc
 ;;; verify that proc is (i.e rbx) a closue
 	CLOSURE_ENV rdx, rbx
@@ -70,7 +73,7 @@ no_params:
 	mov rax, 0
 	mov rdi, rsi		;dest
 	mov rsi, rdx		;src
-	mov rdx, rbx		;len
+	mov rdx, r14		;len
 	call memmove
 	pop rbx			;proc
 	mov rsp, rax
