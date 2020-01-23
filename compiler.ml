@@ -1,42 +1,5 @@
-
 #use "code-gen.ml";;
 
-let rec rename asts = 
-  let id = ref (-1) in
-    let get_id = fun () ->(
-      id := !id + 1; !id
-      ) in
-  let rec sexpr_handler id sexpr =  
-  match sexpr with
-  | Pair(a,b) -> Pair((sexpr_handler id a), (sexpr_handler id b))
-  | TaggedSexpr(a,b) -> TaggedSexpr((a^(string_of_int id)), (sexpr_handler id b))
-  | TagRef(a) -> TagRef(a^(string_of_int id))
-  | _ -> sexpr in
-
-  let rec ast_handler ast =
-    let id = (get_id()) in
-    let rec handle ast =
-      match ast with
-      | Const'(Sexpr(c)) ->  Const'(Sexpr(sexpr_handler id c))
-      | Const'(_) -> ast
-      | BoxSet'(a,b) -> BoxSet'(a,(handle b))
-      | If'(a,b,c) -> If'((handle a),(handle b), (handle c))
-      | Seq'(lst) -> Seq'(List.map handle lst)
-      | Set'(a,b) -> Set'((handle a),(handle b))
-      | Def'(a,b) -> Def'((handle a),(handle b))
-      | Or'(lst) -> Or'(List.map handle lst)
-      | LambdaSimple'(a,b) -> LambdaSimple'(a, (handle b))
-      | LambdaOpt'(a,s,b) -> LambdaOpt'(a, s, (handle b))
-      | Applic'(a,b) -> Applic'((handle a), ((List.map handle b)))
-      | ApplicTP'(a,b) -> ApplicTP'((handle a), ((List.map handle b)))
-      | a -> a
-      in
-    (handle ast) in
-
-    (List.map ast_handler asts);;
-let debug = false;;
-let print_debug s = (Printf.printf ";;; \n%s\n" s) ;;
-let () = if(debug) then (print_debug "got_here")
 let file_to_string f =
   let ic = open_in f in
   let s = really_input_string ic (in_channel_length ic) in
@@ -54,17 +17,15 @@ let primitive_names_to_labels =
    "string-ref", "string_ref"; "string-set!", "string_set"; "make-string", "make_string";
    "symbol->string", "symbol_to_string"; 
    "char->integer", "char_to_integer"; "integer->char", "integer_to_char"; "eq?", "is_eq";
-   "+", "bin_add"; "*", "bin_mul"; "-", "bin_sub"; "/", "bin_div"; "<", "bin_lt"; "=", "bin_equ";
-   "cons", "cons"; "car", "car";"cdr","cdr";"apply","apply"; "set-car!","set_car"; "set-cdr!", "set_cdr"
-   ]
-;;
+   "+", "bin_add"; "*", "bin_mul"; "-", "bin_sub"; "/", "bin_div"; "<", "bin_lt"; "=", "bin_equ"
+(* you can add yours here *)];;
 
 let make_prologue consts_tbl fvars_tbl =
   let make_primitive_closure (prim, label) =
     (* Adapt the addressing here to your fvar addressing scheme:
        This imlementation assumes fvars are offset from the base label fvar_tbl *)
 "    MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, " ^ label  ^ ")
-    mov [fvar_tbl+8*" ^  (string_of_int (List.assoc prim fvars_tbl)) ^ "], rax" in
+    mov [fvar_tbl+" ^  (string_of_int (List.assoc prim fvars_tbl)) ^ "], rax" in
   let constant_bytes (c, (a, s)) = s in
 "
 ;;; All the macros and the scheme-object printing procedure
@@ -94,7 +55,6 @@ fvar_tbl:
   (String.concat "\n" (List.map (fun _ -> "dq T_UNDEFINED") fvars_tbl)) ^ "
 
 global main
-extern memmove
 section .text
 main:
     push rbp
@@ -110,8 +70,8 @@ main:
     ;; from the top level (which SHOULD NOT HAPPEN
     ;; AND IS A BUG) will cause a segfault.
     push 0
-    push SOB_NIL_ADDRESS
-    push -1
+    push qword SOB_NIL_ADDRESS
+    push qword T_UNDEFINED
     push rsp
     mov rbp,rsp
 
@@ -141,9 +101,7 @@ exception X_missing_input_file;;
 try
   let infile = Sys.argv.(1) in
   let code =  (file_to_string "stdlib.scm") ^ (file_to_string infile) in
-  (* let code =  (file_to_string infile) in *)
   let asts = string_to_asts code in
-  let asts = rename asts in
   let consts_tbl = Code_Gen.make_consts_tbl asts in
   let fvars_tbl = Code_Gen.make_fvars_tbl asts in
   let generate = Code_Gen.generate consts_tbl fvars_tbl in

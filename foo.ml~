@@ -1,4 +1,0 @@
-(* The functions we wish to test *)
-let unity x = "123";;
-let funix ()= 0;;
-let fgeneric () = failwith "Not implemented";;
