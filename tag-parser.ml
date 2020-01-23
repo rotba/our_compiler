@@ -58,7 +58,7 @@ let rec expr_eq e1 e2 =
   | _ -> false;;
 	
                        
-exception X_syntax_error;;
+exception X_syntax_error of string;;
 
 let handle_tagged first sec =
   let rec sec_handler = function
@@ -104,7 +104,7 @@ let rec tag_parse_expression sexpr =
   | TagRef(x) -> (Const (Sexpr(TagRef x)))
   | TaggedSexpr(first, sec) ->(handle_tagged first sec)
   | Pair(Symbol("quote"), Pair(sec,Nil)) ->Const(Sexpr(sec))
-  | Symbol(s) ->if (List.exists (fun(e)-> e=s) reserved_word_list) then raise X_syntax_error else (Var(s))
+  | Symbol(s) ->if (List.exists (fun(e)-> e=s) reserved_word_list) then raise (X_syntax_error "tag_parse_expression") else (Var(s))
   | Pair(Symbol "if", Pair(a, Pair(b, Pair(c, _)))) -> If ((tag_parse_expression (a)), (tag_parse_expression (b)), (tag_parse_expression (c)))
   | Pair(Symbol "if", Pair(a, Pair(b, _))) -> If ((tag_parse_expression (a)), (tag_parse_expression (b)), Const(Void))
   | Pair(Symbol("lambda"), cdr) ->(handle_lambda cdr)
@@ -117,7 +117,7 @@ let rec tag_parse_expression sexpr =
   | Pair(Symbol "and", a) -> handle_and a
   (*################################################################################# *)
   | Pair(a, b) -> Applic ((tag_parse_expression a), (parse_applic_body b))              
-  |_ -> raise X_syntax_error
+  |_ -> raise (X_syntax_error "tag_parse_expression")
 
   and handle_define sexpr = 
   let rec build_and = function
@@ -129,7 +129,7 @@ let rec tag_parse_expression sexpr =
                 Pair(b,
                   c)) ,
         Nil)))
-    | _ -> raise X_syntax_error in 
+    | _ -> raise (X_syntax_error "handle_define") in 
 
     tag_parse_expression (build_and sexpr)
 
@@ -217,7 +217,7 @@ and handle_begin = function
   |Nil -> Const(Void)
   |Pair(car, Nil) -> (tag_parse_expression  car)
   |Pair(car, cdr) ->(Seq(parse_applic_body (Pair(car, cdr))))
-  | _->raise X_syntax_error
+  | _->raise (X_syntax_error "parse_applic_body")
 
 
   
@@ -230,7 +230,7 @@ and handle_lambda cdr =
   let rec handle_body = function
     |Pair(car, Nil) -> (tag_parse_expression  car)
     |Pair(car, cdr) ->(Seq(parse_applic_body (Pair(car, cdr))))
-    | _->raise X_syntax_error  in
+    | _->raise (X_syntax_error "handle_body")  in
 
   let rec get_opt_list = function
     |Pair(Symbol(vn),Symbol(vs))->([vn], vs)
@@ -238,7 +238,7 @@ and handle_lambda cdr =
       let (acc, vs) = (get_opt_list cdr) in
       (vn_m_1::acc,vs)
     |Symbol(vs) -> ([],vs)
-    |_ -> raise X_syntax_error in
+    |_ -> raise (X_syntax_error "get_opt_list") in
        
   match cdr with
   |Pair(params, body)->
@@ -247,7 +247,7 @@ and handle_lambda cdr =
     else
       let (params, opt) = (get_opt_list params) in
       LambdaOpt(params, opt, (handle_body body))
-  |_ -> raise X_syntax_error
+  |_ -> raise (X_syntax_error "get_opt_list")
  
 and handle_or cdr =
 
@@ -260,7 +260,7 @@ match cdr with
 | Nil -> tag_parse_expression (Bool(false))
 | Pair(car, Nil) -> tag_parse_expression (car)
 | Pair(car, cdr) -> Or(build_or((Pair(car, cdr))) )
-| _ -> raise X_syntax_error
+| _ -> raise (X_syntax_error "build_or")
      
 and expand_qq =
   let quote_wrap s = Pair(Symbol("quote"), Pair(Symbol(s),Nil)) in
@@ -269,7 +269,7 @@ and expand_qq =
   let append_wrap a b = Pair(Symbol("append"), Pair(a,Pair(b, Nil))) in
   function
   |Pair(Symbol("unquote"), Pair(cdr,Nil)) -> cdr
-  |Pair(Symbol("unquote-splicing"), Pair(cdr,Nil)) -> raise X_syntax_error
+  |Pair(Symbol("unquote-splicing"), Pair(cdr,Nil)) -> raise (X_syntax_error "expand_qq 1")
   |Symbol(s) -> quote_wrap(s)
   |Nil -> quote_wrap_nil
   |Pair(Pair(Symbol("unquote-splicing"), Pair(a,Nil)),b) ->
@@ -282,20 +282,21 @@ and expand_qq =
     let a = expand_qq(a) in
     let b = expand_qq(b) in
     (cons_wrap a b)
-  | _ -> raise X_syntax_error
+  | a -> a 
+  (* raise (X_syntax_error (Printf.sprintf "expand_qq 2: %s" (sexpr_to_string a))) *)
 
 and expand_let =
   let rec get_bindings =
     let get_binding = function
       |Pair(var,Pair(vaal, Nil)) -> (var, vaal)
-      | _ -> raise X_syntax_error in
+      | _ -> raise (X_syntax_error "expand_let 1") in
     function
     |Nil -> (Nil,Nil)
     |Pair(car,cdr) ->(
       let (var, vaal) = (get_binding car) in
       let (vars, vals) = (get_bindings cdr) in
       (Pair(var,vars), Pair(vaal,vals)))
-    | _ -> raise X_syntax_error in
+    | _ -> raise (X_syntax_error "expand_let 2") in
   let lambda_wrap vars body =
     Pair(
         Symbol("lambda"),
@@ -309,7 +310,7 @@ and expand_let =
     let lambda = (lambda_wrap vars cdr) in
     let applic = (applic_wrap lambda vals) in
     applic
-  |_ -> raise X_syntax_error
+  |_ -> raise (X_syntax_error "expand_let 3")
 
 and expand_let_star =
   let let_star_wrap ribs body =
@@ -330,8 +331,8 @@ and expand_let_star =
     |Pair(rib_1, cdr) ->
       let rest = (let_star_wrap cdr body) in
       let_wrap rib_1 rest
-    |_ -> raise X_syntax_error)
-  | _ -> raise X_syntax_error
+    |_ -> raise (X_syntax_error "expand_let_star 1"))
+  | _ -> raise (X_syntax_error "expand_let_star 2")
 and expand_letrec =
   let rec whatevers_wrap =
     let gen_whatever var = Pair(var, Pair(Pair(Symbol("quote"), Pair(Symbol("whatever"),Nil)), Nil)) in
@@ -341,7 +342,7 @@ and expand_letrec =
       let whatever = gen_whatever var in
       let rest = whatevers_wrap cdr in
       Pair(whatever, rest)
-    |_ -> raise X_syntax_error
+    |_ -> raise (X_syntax_error "expand_letrec")
   in
   (* let empty_let_wrap body=Pair(Symbol("let"),Pair(Nil,body)) *)
   let gen_body ribs body =
@@ -351,7 +352,7 @@ and expand_letrec =
       let set_bang = Pair(Symbol("set!"),car) in
       let rest = set_bangs_wrap cdr in
       Pair(set_bang, rest)
-    |_ -> raise X_syntax_error in
+    |_ -> raise (X_syntax_error "set_bangs_wrap") in
     set_bangs_wrap ribs
   in
   let let_wrap ribs body =
@@ -365,7 +366,7 @@ and expand_letrec =
     let whatevers = whatevers_wrap ribs in
     let body = gen_body ribs body in
     let_wrap whatevers body
-  |_ -> raise X_syntax_error
+  |_ -> raise (X_syntax_error "gen_body")
 
 and handle_qq sexp=
   let expanded = expand_qq sexp in

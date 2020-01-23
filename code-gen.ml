@@ -101,8 +101,8 @@ module Code_Gen : CODE_GEN = struct
 
   (* let rec print_const_table_entry =  function
   | (c,(i,s)) -> (Printf.printf "( %s, ( %d, %s )\n" (exp_to_string (Const(c))) i s)  
-  | _ -> ();; *)
-  
+  | _ -> ();;
+   *)
 
   
   
