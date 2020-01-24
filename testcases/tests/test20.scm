@@ -1,0 +1,1 @@
+(define func (lambda () 5)) (func)

@@ -1,0 +1,1 @@
+(define weber (lambda () ((lambda () "COOK!")))) (define dira (lambda (fun) (fun))) (dira weber)

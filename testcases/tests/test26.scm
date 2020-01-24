@@ -1,0 +1,1 @@
+(define func (lambda (x) x)) (func #\$)

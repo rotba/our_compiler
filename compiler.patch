@@ -1,11 +1,10 @@
 diff --git a/code-gen.ml b/code-gen.ml
-new file mode 100644
-index 0000000..6e2cf96
---- /dev/null
+index e1afb6e5..98856320 100644
+--- a/code-gen.ml
 +++ b/code-gen.ml
-@@ -0,0 +1,719 @@
-+#use "semantic-analyser.ml";;
-+
+@@ -1,8 +1,73 @@
+ #use "semantic-analyser.ml";;
+ 
 +exception X_not_yet_implemented of string;;
 +exception X_bug_error_m of string;;
 +let elements_on_stack = 5;;
@@ -36,9 +35,9 @@ index 0000000..6e2cf96
 +        bases;;
 +end;;
 +
-+(* This module is here for you convenience only!
-+   You are not required to use it.
-+   you are allowed to change it. *)
+ (* This module is here for you convenience only!
+    You are not required to use it.
+    you are allowed to change it. *)
 +module Labels : sig
 +  val make_label : string -> string
 +  val make_labels : string list -> string list
@@ -74,33 +73,16 @@ index 0000000..6e2cf96
 +    List.map (fun base -> Printf.sprintf "%s_%d" base n)
 +	     bases;;
 +end;;
-+module type CODE_GEN = sig
-+  (* This signature assumes the structure of the constants table is
-+     a list of key-value pairs:
-+     - The keys are constant values (Sexpr(x) or Void)
-+     - The values are pairs of:
-+       * the offset from the base const_table address in bytes; and
-+       * a string containing the byte representation (or a sequence of nasm macros)
-+         of the constant value
-+     For example: [(Sexpr(Nil), (1, "SOB_NIL"))]
-+   *)
-+  val make_consts_tbl : expr' list -> (constant * (int * string)) list
-+
-+  (* This signature assumes the structure of the fvars table is
-+     a list of key-value pairs:
-+     - The keys are the fvar names as strings
-+     - The values are the offsets from the base fvars_table address in bytes
-+     For example: [("boolean?", 0)]
-+   *)  
-+  val make_fvars_tbl : expr' list -> (string * int) list
-+
-+  (* This signature represents the idea of outputing assembly code as a string
-+     for a single AST', given the full constants and fvars tables. 
-+   *)
-+  val generate : (constant * (int * string)) list -> (string * int) list -> expr' -> string
-+end;;
-+
-+module Code_Gen : CODE_GEN = struct
+ module type CODE_GEN = sig
+   (* This signature assumes the structure of the constants table is
+      a list of key-value pairs:
+@@ -30,8 +95,631 @@ module type CODE_GEN = sig
+ end;;
+ 
+ module Code_Gen : CODE_GEN = struct
+-  let make_consts_tbl asts = raise X_not_yet_implemented;;
+-  let make_fvars_tbl asts = raise X_not_yet_implemented;;
+-  let generate consts fvars e = raise X_not_yet_implemented;;
 +  let type_size =1;;
 +  let consts_table_address = "const_tbl";;
 +  let const_address idx = consts_table_address^"+"^(string_of_int idx);;
@@ -218,7 +200,9 @@ index 0000000..6e2cf96
 +     |Sexpr(Bool(false)) -> "MAKE_BOOL(0)"
 +     |Sexpr(Bool(true)) -> "MAKE_BOOL(1)"
 +     |Sexpr(Number(Int(vall))) -> Printf.sprintf "MAKE_LITERAL_INT(%s)" (string_of_int vall)
-+     |Sexpr(String(s)) -> Printf.sprintf "MAKE_LITERAL_STRING \"%s\", %d" (String.escaped s) (String.length (String.escaped s))
++     |Sexpr(Number(Float(vall))) -> Printf.sprintf "MAKE_LITERAL_FLOAT(%s)" (string_of_float vall)                          
++     |Sexpr(String(s)) -> Printf.sprintf "MAKE_LITERAL_STRING {%s}, %d"  (String.concat "," (List.map (fun (x) -> string_of_int (Char.code x)) (string_to_list s))) (String.length s)
++     (* |Sexpr(String(s)) -> Printf.sprintf "MAKE_LITERAL_STRING \"%s\", %d"  (String.escaped s) (String.length (String.escaped s)) *)
 +     |Sexpr(Char(c)) -> Printf.sprintf "MAKE_LITERAL_CHAR (%d)" (Char.code c)
 +     |Sexpr(Symbol(s)) ->
 +       let sym_str_rel_idx = (find_rel_idx (Sexpr(String(s))) rest) in
@@ -417,6 +401,7 @@ index 0000000..6e2cf96
 +           (Printf.sprintf "loop %s" label_env_loop);
 +           (* (Printf.sprintf "mov rcx, %d" (List.length params)); *)
 +           "mov rcx, qword[rbp +8*3]";
++           "inc rcx";
 +           "shl rcx, 3";
 +           "MALLOC rbx, rcx;rbx is the new rib";
 +           "shr rcx, 3";
@@ -646,8 +631,10 @@ index 0000000..6e2cf96
 +        let label_not_empty_opt = Labels.make_label "not_empty_opt" in
 +        let label_done_fixing = Labels.make_label "done_fixing" in
 +        let label_create_opt_loop = Labels.make_label "create_opt_loop" in
++        let label_opt = Labels.make_label "opt" in
 +        (concat_lines
 +           [
++             Printf.sprintf "%s:" label_opt;
 +             ";donte the effective numer of parameters m";
 +             ";donte the number of simple parameters n";
 +             "mov rcx, qword[rsp+ 8*2]; rcx is m";
@@ -657,6 +644,7 @@ index 0000000..6e2cf96
 +             "add rcx, 3;m+2 - offset of magic";
 +             "shl rcx, 3";
 +             "mov qword[rsp+rcx], SOB_NIL_ADDRESS; magic is NIL";
++             (* "inc qword[rsp+ 8*2]; inc number of params"; *)
 +             Printf.sprintf "jmp %s" label_done_fixing;
 +             Printf.sprintf "%s:" label_not_empty_opt;
 +             "add rcx, 2; rcx is m+2 - the offset of the ultimetly last argument";
@@ -721,17 +709,16 @@ index 0000000..6e2cf96
 +    |no_match -> raise_not_imp "generate" no_match exp'_to_string
 +  ;;
 +  
-+end;;
-+
+ end;;
+ 
 diff --git a/compiler.ml b/compiler.ml
-new file mode 100644
-index 0000000..05dfd2c
---- /dev/null
+index 291b188e..05dfd2c7 100644
+--- a/compiler.ml
 +++ b/compiler.ml
-@@ -0,0 +1,163 @@
+@@ -1,5 +1,42 @@
 +
-+#use "code-gen.ml";;
-+
+ #use "code-gen.ml";;
+ 
 +let rec rename asts = 
 +  let id = ref (-1) in
 +    let get_id = fun () ->(
@@ -768,778 +755,67 @@ index 0000000..05dfd2c
 +let debug = false;;
 +let print_debug s = (Printf.printf ";;; \n%s\n" s) ;;
 +let () = if(debug) then (print_debug "got_here")
-+let file_to_string f =
-+  let ic = open_in f in
-+  let s = really_input_string ic (in_channel_length ic) in
-+  close_in ic;
-+  s;;
-+
-+let string_to_asts s = List.map Semantics.run_semantics
-+                         (Tag_Parser.tag_parse_expressions
-+                            (Reader.read_sexprs s));;
-+
-+let primitive_names_to_labels = 
-+  ["boolean?", "is_boolean"; "float?", "is_float"; "integer?", "is_integer"; "pair?", "is_pair";
-+   "null?", "is_null"; "char?", "is_char"; "string?", "is_string";
-+   "procedure?", "is_procedure"; "symbol?", "is_symbol"; "string-length", "string_length";
-+   "string-ref", "string_ref"; "string-set!", "string_set"; "make-string", "make_string";
-+   "symbol->string", "symbol_to_string"; 
-+   "char->integer", "char_to_integer"; "integer->char", "integer_to_char"; "eq?", "is_eq";
+ let file_to_string f =
+   let ic = open_in f in
+   let s = really_input_string ic (in_channel_length ic) in
+@@ -17,15 +54,17 @@ let primitive_names_to_labels =
+    "string-ref", "string_ref"; "string-set!", "string_set"; "make-string", "make_string";
+    "symbol->string", "symbol_to_string"; 
+    "char->integer", "char_to_integer"; "integer->char", "integer_to_char"; "eq?", "is_eq";
+-   "+", "bin_add"; "*", "bin_mul"; "-", "bin_sub"; "/", "bin_div"; "<", "bin_lt"; "=", "bin_equ"
+-(* you can add yours here *)];;
 +   "+", "bin_add"; "*", "bin_mul"; "-", "bin_sub"; "/", "bin_div"; "<", "bin_lt"; "=", "bin_equ";
 +   "cons", "cons"; "car", "car";"cdr","cdr";"apply","apply"; "set-car!","set_car"; "set-cdr!", "set_cdr"
 +   ]
 +;;
-+
-+let make_prologue consts_tbl fvars_tbl =
-+  let make_primitive_closure (prim, label) =
-+    (* Adapt the addressing here to your fvar addressing scheme:
-+       This imlementation assumes fvars are offset from the base label fvar_tbl *)
-+"    MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, " ^ label  ^ ")
+ 
+ let make_prologue consts_tbl fvars_tbl =
+   let make_primitive_closure (prim, label) =
+     (* Adapt the addressing here to your fvar addressing scheme:
+        This imlementation assumes fvars are offset from the base label fvar_tbl *)
+ "    MAKE_CLOSURE(rax, SOB_NIL_ADDRESS, " ^ label  ^ ")
+-    mov [fvar_tbl+" ^  (string_of_int (List.assoc prim fvars_tbl)) ^ "], rax" in
 +    mov [fvar_tbl+8*" ^  (string_of_int (List.assoc prim fvars_tbl)) ^ "], rax" in
-+  let constant_bytes (c, (a, s)) = s in
-+"
-+;;; All the macros and the scheme-object printing procedure
-+;;; are defined in compiler.s
-+%include \"compiler.s\"
-+
-+section .bss
-+;;; This pointer is used to manage allocations on our heap.
-+malloc_pointer:
-+    resq 1
-+
-+section .data
-+const_tbl:
-+" ^ (String.concat "\n" (List.map constant_bytes consts_tbl)) ^ "
-+
-+;;; These macro definitions are required for the primitive
-+;;; definitions in the epilogue to work properly
-+%define SOB_VOID_ADDRESS const_tbl+" ^ (string_of_int (fst (List.assoc Void consts_tbl))) ^ "
-+%define SOB_NIL_ADDRESS const_tbl+" ^ (string_of_int (fst (List.assoc (Sexpr Nil) consts_tbl))) ^ "
-+%define SOB_FALSE_ADDRESS const_tbl+" ^ (string_of_int (fst (List.assoc (Sexpr (Bool false)) consts_tbl))) ^ "
-+%define SOB_TRUE_ADDRESS const_tbl+" ^ (string_of_int  (fst (List.assoc (Sexpr (Bool true)) consts_tbl))) ^ "
-+
-+fvar_tbl:
-+" ^
-+  (* This line should be adapted to your fvar-addressing scheme. 
-+     I.e., if you use direct labeling, you should output them here. *)
-+  (String.concat "\n" (List.map (fun _ -> "dq T_UNDEFINED") fvars_tbl)) ^ "
-+
-+global main
+   let constant_bytes (c, (a, s)) = s in
+ "
+ ;;; All the macros and the scheme-object printing procedure
+@@ -55,6 +94,7 @@ fvar_tbl:
+   (String.concat "\n" (List.map (fun _ -> "dq T_UNDEFINED") fvars_tbl)) ^ "
+ 
+ global main
 +extern memmove
-+section .text
-+main:
-+    push rbp
-+
-+    ;; set up the heap
-+    mov rdi, GB(4)
-+    call malloc
-+    mov [malloc_pointer], rax
-+
-+    ;; Set up the dummy activation frame
-+    ;; The dummy return address is T_UNDEFINED
-+    ;; (which a is a macro for 0) so that returning
-+    ;; from the top level (which SHOULD NOT HAPPEN
-+    ;; AND IS A BUG) will cause a segfault.
-+    push 0
+ section .text
+ main:
+     push rbp
+@@ -70,8 +110,8 @@ main:
+     ;; from the top level (which SHOULD NOT HAPPEN
+     ;; AND IS A BUG) will cause a segfault.
+     push 0
+-    push qword SOB_NIL_ADDRESS
+-    push qword T_UNDEFINED
 +    push SOB_NIL_ADDRESS
 +    push -1
-+    push rsp
-+    mov rbp,rsp
-+
-+    ;; Set up the primitive stdlib fvars:
-+    ;; Since the primtive procedures are defined in assembly,
-+    ;; they are not generated by scheme (define ...) expressions.
-+    ;; This is where we emulate the missing (define ...) expressions
-+    ;; for all the primitive procedures.
-+" ^ (String.concat "\n" (List.map make_primitive_closure primitive_names_to_labels)) ^ "
-+
-+user_code_fragment:
-+;;; The code you compiled will be catenated here.
-+;;; It will be executed immediately after the closures for 
-+;;; the primitive procedures are set up.
-+
-+";;
-+
-+(* You may populate this variable with a string containing the epilogue.
-+   You may load it from a file, you may write it here inline, 
-+   you may just add things to prims.s (which gets catenated with the epilogue variable).
-+   Whatever floats your boat. You just have to make sure all the required
-+   primitive procedures are implemented and included in the output assembly. *)
-+let epilogue = "";;
-+
-+exception X_missing_input_file;;
-+
-+try
-+  let infile = Sys.argv.(1) in
-+  let code =  (file_to_string "stdlib.scm") ^ (file_to_string infile) in
+     push rsp
+     mov rbp,rsp
+ 
+@@ -101,7 +141,9 @@ exception X_missing_input_file;;
+ try
+   let infile = Sys.argv.(1) in
+   let code =  (file_to_string "stdlib.scm") ^ (file_to_string infile) in
 +  (* let code =  (file_to_string infile) in *)
-+  let asts = string_to_asts code in
+   let asts = string_to_asts code in
 +  let asts = rename asts in
-+  let consts_tbl = Code_Gen.make_consts_tbl asts in
-+  let fvars_tbl = Code_Gen.make_fvars_tbl asts in
-+  let generate = Code_Gen.generate consts_tbl fvars_tbl in
-+  let code_fragment = String.concat "\n\n"
-+                        (List.map
-+                           (fun ast -> (generate ast) ^ "\n\tcall write_sob_if_not_void")
-+                           asts) in
-+  (* clean_exit contains instructions to clean the dummy stack
-+     and return exit code 0 ("all's well") from procedure main. *)
-+  let clean_exit = "\n\n\tmov rax, 0\n\tadd rsp, 4*8\n\tpop rbp\n\tret\n\n" in
-+  let provided_primitives = file_to_string "prims.s" in
-+                   
-+  print_string ((make_prologue consts_tbl fvars_tbl)  ^
-+                  code_fragment ^ clean_exit ^
-+                    provided_primitives ^ "\n" ^ epilogue)
-+
-+with Invalid_argument(x) -> raise X_missing_input_file;;
+   let consts_tbl = Code_Gen.make_consts_tbl asts in
+   let fvars_tbl = Code_Gen.make_fvars_tbl asts in
+   let generate = Code_Gen.generate consts_tbl fvars_tbl in
 diff --git a/compiler.s b/compiler.s
-new file mode 100644
-index 0000000..d6498fd
---- /dev/null
+index ee63dfbc..1d6826ae 100644
+--- a/compiler.s
 +++ b/compiler.s
-@@ -0,0 +1,740 @@
-+%define T_UNDEFINED 0
-+%define T_VOID 1
-+%define T_NIL 2
-+%define T_INTEGER 3
-+%define T_FLOAT 4
-+%define T_BOOL 5
-+%define T_CHAR 6
-+%define T_STRING 7
-+%define T_SYMBOL 8
-+%define T_CLOSURE 9
-+%define T_PAIR 10
-+	
-+%define CHAR_NUL 0
-+%define CHAR_TAB 9
-+%define CHAR_NEWLINE 10
-+%define CHAR_PAGE 12
-+%define CHAR_RETURN 13
-+%define CHAR_SPACE 32
-+%define CHAR_DOUBLEQUOTE 34
-+%define CHAR_BACKSLASH 92
-+	
-+%define TYPE_SIZE 1
-+%define WORD_SIZE 8
-+	
-+%define KB(n) n*1024
-+%define MB(n) 1024*KB(n)
-+%define GB(n) 1024*MB(n)
-+
-+
-+%macro SKIP_TYPE_TAG 2
-+	mov %1, qword [%2+TYPE_SIZE]	
-+%endmacro	
-+
-+%define INT_VAL SKIP_TYPE_TAG
-+
-+%macro CHAR_VAL 2
-+	movzx %1, byte [%2+TYPE_SIZE]
-+%endmacro
-+
-+%define FLOAT_VAL SKIP_TYPE_TAG
-+
-+%define STRING_LENGTH SKIP_TYPE_TAG
-+
-+%define SYMBOL_VAL SKIP_TYPE_TAG
-+
-+%macro STRING_ELEMENTS 2
-+	lea %1, [%2+TYPE_SIZE+WORD_SIZE]
-+%endmacro
-+
-+%define CAR SKIP_TYPE_TAG
-+
-+%macro CDR 2
-+	mov %1, qword [%2+TYPE_SIZE+WORD_SIZE]
-+%endmacro
-+
-+%define CLOSURE_ENV CAR
-+
-+%define CLOSURE_CODE CDR
-+
-+%define PVAR(n) qword [rbp+(4+n)*WORD_SIZE]
-+	
-+%define SOB_UNDEFINED T_UNDEFINED
-+%define SOB_NIL T_NIL
-+%define SOB_VOID T_VOID
-+%define SOB_FALSE word T_BOOL
-+%define SOB_TRUE word (1 << TYPE_SIZE | T_BOOL)
-+
-+; returns %2 allocated bytes in register %1
-+; Supports using with %1 = %2
-+%macro MALLOC 2
-+	add qword [malloc_pointer], %2
-+	push %2
-+	mov %1, qword [malloc_pointer]
-+	sub %1, [rsp]
-+	add rsp, 8
-+%endmacro
-+	
-+; Creates a short SOB with the
-+; value %2
-+; Returns the result in register %1
-+%macro MAKE_CHAR_VALUE 2
-+	MALLOC %1, 1+TYPE_SIZE
-+	mov byte [%1], T_CHAR
-+	mov byte [%1+TYPE_SIZE], %2
-+%endmacro
-+
-+; Creates a long SOB with the
-+; value %2 and type %3.
-+; Returns the result in register %1
-+%macro MAKE_LONG_VALUE 3
-+	MALLOC %1, TYPE_SIZE+WORD_SIZE
-+	mov byte [%1], %3
-+	mov qword [%1+TYPE_SIZE], %2
-+%endmacro
-+
-+%define MAKE_INT(r,val) MAKE_LONG_VALUE r, val, T_INTEGER
-+%define MAKE_FLOAT(r,val) MAKE_LONG_VALUE r, val, T_FLOAT
-+%define MAKE_CHAR(r,val) MAKE_CHAR_VALUE r, val
-+
-+; Create a string of length %2
-+; from char %3.
-+; Stores result in register %1
-+%macro MAKE_STRING 3
-+	lea %1, [%2+WORD_SIZE+TYPE_SIZE]
-+	MALLOC %1, %1
-+	mov byte [%1], T_STRING
-+	mov qword [%1+TYPE_SIZE], %2
-+	push rcx
-+	add %1,WORD_SIZE+TYPE_SIZE
-+	mov rcx, %2
-+	cmp rcx, 0
-+%%str_loop:
-+	jz %%str_loop_end
-+	dec rcx
-+	mov byte [%1+rcx], %3
-+	jmp %%str_loop
-+%%str_loop_end:
-+	pop rcx
-+	sub %1, WORD_SIZE+TYPE_SIZE
-+%endmacro
-+
-+;;; Creates a SOB with tag %2 
-+;;; from two pointers %3 and %4
-+;;; Stores result in register %1
-+%macro MAKE_TWO_WORDS 4 
-+        MALLOC %1, TYPE_SIZE+WORD_SIZE*2
-+        mov byte [%1], %2
-+        mov qword [%1+TYPE_SIZE], %3
-+        mov qword [%1+TYPE_SIZE+WORD_SIZE], %4
-+%endmacro
-+
-+%macro MAKE_WORDS_LIT 3
-+	db %1
-+        dq %2
-+        dq %3
-+%endmacro
-+
-+%define MAKE_PAIR(r, car, cdr) \
-+        MAKE_TWO_WORDS r, T_PAIR, car, cdr
-+
-+%define MAKE_LITERAL_PAIR(car, cdr) \
-+        MAKE_WORDS_LIT T_PAIR, car, cdr
-+
-+%define MAKE_CLOSURE(r, env, body) \
-+        MAKE_TWO_WORDS r, T_CLOSURE, env, body
-+
-+	
-+extern printf, malloc
-+global write_sob, write_sob_if_not_void
-+
-+	
-+write_sob_undefined:
-+	push rbp
-+	mov rbp, rsp
-+
-+	mov rax, 0
-+	mov rdi, .undefined
-+	call printf
-+
-+	leave
-+	ret
-+
-+section .data
-+.undefined:
-+	db "#<undefined>", 0
-+
-+write_sob_integer:
-+	push rbp
-+	mov rbp, rsp
-+
-+	INT_VAL rsi, rsi
-+	mov rdi, .int_format_string
-+	mov rax, 0
-+	call printf
-+
-+	leave
-+	ret
-+
-+section .data
-+.int_format_string:
-+	db "%ld", 0
-+
-+write_sob_float:
-+	push rbp
-+	mov rbp, rsp
-+
-+	FLOAT_VAL rsi, rsi
-+	movq xmm0, rsi
-+	mov rdi, .float_format_string
-+	mov rax, 1
-+
-+	mov rsi, rsp
-+	and rsp, -16
-+	call printf
-+	mov rsp, rsi
-+
-+	leave
-+	ret
-+	
-+section .data
-+.float_format_string:
-+	db "%f", 0		
-+
-+write_sob_char:
-+	push rbp
-+	mov rbp, rsp
-+
-+	CHAR_VAL rsi, rsi
-+
-+	cmp rsi, CHAR_NUL
-+	je .Lnul
-+
-+	cmp rsi, CHAR_TAB
-+	je .Ltab
-+
-+	cmp rsi, CHAR_NEWLINE
-+	je .Lnewline
-+
-+	cmp rsi, CHAR_PAGE
-+	je .Lpage
-+
-+	cmp rsi, CHAR_RETURN
-+	je .Lreturn
-+
-+	cmp rsi, CHAR_SPACE
-+	je .Lspace
-+	jg .Lregular
-+
-+	mov rdi, .special
-+	jmp .done	
-+
-+.Lnul:
-+	mov rdi, .nul
-+	jmp .done
-+
-+.Ltab:
-+	mov rdi, .tab
-+	jmp .done
-+
-+.Lnewline:
-+	mov rdi, .newline
-+	jmp .done
-+
-+.Lpage:
-+	mov rdi, .page
-+	jmp .done
-+
-+.Lreturn:
-+	mov rdi, .return
-+	jmp .done
-+
-+.Lspace:
-+	mov rdi, .space
-+	jmp .done
-+
-+.Lregular:
-+	mov rdi, .regular
-+	jmp .done
-+
-+.done:
-+	mov rax, 0
-+	call printf
-+
-+	leave
-+	ret
-+
-+section .data
-+.space:
-+	db "#\space", 0
-+.newline:
-+	db "#\newline", 0
-+.return:
-+	db "#\return", 0
-+.tab:
-+	db "#\tab", 0
-+.page:
-+	db "#\page", 0
-+.nul:
-+	db "#\nul", 0
-+.special:
-+	db "#\x%02x", 0
-+.regular:
-+	db "#\%c", 0
-+
-+write_sob_void:
-+	push rbp
-+	mov rbp, rsp
-+
-+	mov rax, 0
-+	mov rdi, .void
-+	call printf
-+
-+	leave
-+	ret
-+
-+section .data
-+.void:
-+	db "#<void>", 0
-+	
-+write_sob_bool:
-+	push rbp
-+	mov rbp, rsp
-+
-+	cmp word [rsi], SOB_FALSE
-+	je .sobFalse
-+	
-+	mov rdi, .true
-+	jmp .continue
-+
-+.sobFalse:
-+	mov rdi, .false
-+
-+.continue:
-+	mov rax, 0
-+	call printf	
-+
-+	leave
-+	ret
-+
-+section .data			
-+.false:
-+	db "#f", 0
-+.true:
-+	db "#t", 0
-+
-+write_sob_nil:
-+	push rbp
-+	mov rbp, rsp
-+
-+	mov rax, 0
-+	mov rdi, .nil
-+	call printf
-+
-+	leave
-+	ret
-+
-+section .data
-+.nil:
-+	db "()", 0
-+
-+write_sob_string:
-+	push rbp
-+	mov rbp, rsp
-+
-+	push rsi
-+
-+	mov rax, 0
-+	mov rdi, .double_quote
-+	call printf
-+	
-+	pop rsi
-+
-+	STRING_LENGTH rcx, rsi
-+	STRING_ELEMENTS rax, rsi
-+
-+.loop:
-+	cmp rcx, 0
-+	je .done
-+	mov bl, byte [rax]
-+	and rbx, 0xff
-+
-+	cmp rbx, CHAR_TAB
-+	je .ch_tab
-+	cmp rbx, CHAR_NEWLINE
-+	je .ch_newline
-+	cmp rbx, CHAR_PAGE
-+	je .ch_page
-+	cmp rbx, CHAR_RETURN
-+	je .ch_return
-+	cmp rbx, CHAR_DOUBLEQUOTE
-+	je .ch_doublequote
-+	cmp rbx, CHAR_BACKSLASH
-+	je .ch_backslash
-+	cmp rbx, CHAR_SPACE
-+	jl .ch_hex
-+	
-+	mov rdi, .fs_simple_char
-+	mov rsi, rbx
-+	jmp .printf
-+	
-+.ch_hex:
-+	mov rdi, .fs_hex_char
-+	mov rsi, rbx
-+	jmp .printf
-+	
-+.ch_tab:
-+	mov rdi, .fs_tab
-+	mov rsi, rbx
-+	jmp .printf
-+	
-+.ch_page:
-+	mov rdi, .fs_page
-+	mov rsi, rbx
-+	jmp .printf
-+	
-+.ch_return:
-+	mov rdi, .fs_return
-+	mov rsi, rbx
-+	jmp .printf
-+
-+.ch_newline:
-+	mov rdi, .fs_newline
-+	mov rsi, rbx
-+	jmp .printf
-+
-+.ch_doublequote:
-+	mov rdi, .fs_doublequote
-+	mov rsi, rbx
-+	jmp .printf
-+
-+.ch_backslash:
-+	mov rdi, .fs_backslash
-+	mov rsi, rbx
-+
-+.printf:
-+	push rax
-+	push rcx
-+	mov rax, 0
-+	call printf
-+	pop rcx
-+	pop rax
-+
-+	dec rcx
-+	inc rax
-+	jmp .loop
-+
-+.done:
-+	mov rax, 0
-+	mov rdi, .double_quote
-+	call printf
-+
-+	leave
-+	ret
-+section .data
-+.double_quote:
-+	db CHAR_DOUBLEQUOTE, 0
-+.fs_simple_char:
-+	db "%c", 0
-+.fs_hex_char:
-+	db "\x%02x;", 0	
-+.fs_tab:
-+	db "\t", 0
-+.fs_page:
-+	db "\f", 0
-+.fs_return:
-+	db "\r", 0
-+.fs_newline:
-+	db "\n", 0
-+.fs_doublequote:
-+	db CHAR_BACKSLASH, CHAR_DOUBLEQUOTE, 0
-+.fs_backslash:
-+	db CHAR_BACKSLASH, CHAR_BACKSLASH, 0
-+
-+write_sob_pair:
-+	push rbp
-+	mov rbp, rsp
-+
-+	push rsi
-+	
-+	mov rax, 0
-+	mov rdi, .open_paren
-+	call printf
-+
-+	mov rsi, [rsp]
-+
-+	CAR rsi, rsi
-+	call write_sob
-+
-+	mov rsi, [rsp]
-+	CDR rsi, rsi
-+	call write_sob_pair_on_cdr
-+	
-+	add rsp, 1*8
-+	
-+	mov rdi, .close_paren
-+	mov rax, 0
-+	call printf
-+
-+	leave
-+	ret
-+
-+section .data
-+.open_paren:
-+	db "(", 0
-+.close_paren:
-+	db ")", 0
-+
-+write_sob_pair_on_cdr:
-+	push rbp
-+	mov rbp, rsp
-+
-+	mov bl, byte [rsi]
-+	cmp bl, T_NIL
-+	je .done
-+	
-+	cmp bl, T_PAIR
-+	je .cdrIsPair
-+	
-+	push rsi
-+	
-+	mov rax, 0
-+	mov rdi, .dot
-+	call printf
-+	
-+	pop rsi
-+
-+	call write_sob
-+	jmp .done
-+
-+.cdrIsPair:
-+	CDR rbx, rsi
-+	push rbx
-+	CAR rsi, rsi
-+	push rsi
-+	
-+	mov rax, 0
-+	mov rdi, .space
-+	call printf
-+	
-+	pop rsi
-+	call write_sob
-+
-+	pop rsi
-+	call write_sob_pair_on_cdr
-+
-+	add rsp, 1*8
-+
-+.done:
-+	leave
-+	ret
-+
-+section .data
-+.space:
-+	db " ", 0
-+.dot:
-+	db " . ", 0
-+
-+write_sob_symbol:
-+	push rbp
-+	mov rbp, rsp
-+
-+	SYMBOL_VAL rsi, rsi
-+	
-+	STRING_LENGTH rcx, rsi
-+	STRING_ELEMENTS rax, rsi
-+
-+	mov rdx, rcx
-+
-+.loop:
-+	cmp rcx, 0
-+	je .done
-+	mov bl, byte [rax]
-+	and rbx, 0xff
-+
-+	cmp rcx, rdx
-+	jne .ch_simple
-+	cmp rbx, '+'
-+	je .ch_hex
-+	cmp rbx, '-'
-+	je .ch_hex
-+	cmp rbx, 'A'
-+	jl .ch_hex
-+
-+.ch_simple:
-+	mov rdi, .fs_simple_char
-+	mov rsi, rbx
-+	jmp .printf
-+	
-+.ch_hex:
-+	mov rdi, .fs_hex_char
-+	mov rsi, rbx
-+
-+.printf:
-+	push rax
-+	push rcx
-+	mov rax, 0
-+	call printf
-+	pop rcx
-+	pop rax
-+
-+	dec rcx
-+	inc rax
-+	jmp .loop
-+
-+.done:
-+	leave
-+	ret
-+	
-+section .data
-+.fs_simple_char:
-+	db "%c", 0
-+.fs_hex_char:
-+	db "\x%02x;", 0	
-+
-+write_sob_closure:
-+	push rbp
-+	mov rbp, rsp
-+
-+	CLOSURE_CODE rdx, rsi
-+	CLOSURE_ENV rsi, rsi
-+
-+	mov rdi, .closure
-+	mov rax, 0
-+	call printf
-+
-+	leave
-+	ret
-+section .data
-+.closure:
-+	db "#<closure [env:%p, code:%p]>", 0
-+
-+section .text
-+write_sob:
-+	mov rbx, 0
-+	mov bl, byte [rsi]	
-+	jmp qword [.jmp_table + rbx * 8]
-+
-+section .data
-+.jmp_table:
-+	dq write_sob_undefined, write_sob_void, write_sob_nil
-+	dq write_sob_integer, write_sob_float, write_sob_bool
-+	dq write_sob_char, write_sob_string, write_sob_symbol
-+	dq write_sob_closure, write_sob_pair
-+
-+section .text
-+write_sob_if_not_void:
-+	mov rsi, rax
-+	mov bl, byte [rsi]
-+	cmp bl, SOB_VOID
-+	je .continue
-+
-+	call write_sob
-+	
-+	mov rax, 0
-+	mov rdi, .newline
-+	call printf
-+	
-+.continue:
-+	ret
-+section .data
-+.newline:
-+	db CHAR_NEWLINE, 0
+@@ -640,3 +640,102 @@ write_sob_if_not_void:
+ section .data
+ .newline:
+ 	db CHAR_NEWLINE, 0
 +
 +
 +	;;; ;;;;;WE ADDED;;;;;;;;
@@ -1555,7 +831,8 @@ index 0000000..d6498fd
 +	%define MAKE_VOID db T_VOID
 +	%define MAKE_BOOL(val) MAKE_LITERAL T_BOOL, db val
 +	%define MAKE_LITERAL_CHAR(val) MAKE_LITERAL T_CHAR, db val
-+	%define MAKE_LITERAL_INT(val) MAKE_LITERAL T_INTEGER, dq val	
++	%define MAKE_LITERAL_INT(val) MAKE_LITERAL T_INTEGER, dq val
++	%define MAKE_LITERAL_FLOAT(val) MAKE_LITERAL T_FLOAT, dq val
 +	%define MAKE_LITERAL_SYMBOl(val) MAKE_LITERAL T_SYMBOL, dq val
 +	%define MAKE_LITERAL_PAIR(car, cdr) \
 +		MAKE_WORDS_LIT T_PAIR, car, cdr
@@ -1639,7 +916,7 @@ index 0000000..d6498fd
 +
 +	;;; ;;;;;;;;;;;
 diff --git a/pc.ml b/pc.ml
-index 6a25660..1e389e1 100644
+index 6a256601..1e389e1b 100644
 --- a/pc.ml
 +++ b/pc.ml
 @@ -6,6 +6,8 @@
@@ -1652,11 +929,10 @@ index 6a25660..1e389e1 100644
    match s with
    | [] -> false
 diff --git a/prims.s b/prims.s
-new file mode 100644
-index 0000000..5db70ec
---- /dev/null
+index 159b4eb5..5db70ecf 100644
+--- a/prims.s
 +++ b/prims.s
-@@ -0,0 +1,952 @@
+@@ -1,3 +1,136 @@
 +apply:
 +;;; (apply proc x0 ... xn-1 s)
 +;;; s id s_0 .. s_m-1
@@ -1790,827 +1066,11 @@ index 0000000..5db70ec
 +	CDR rax, rsi
 +	leave
 +	ret
-+is_boolean:
-+    push rbp
-+    mov rbp, rsp
-+
-+    mov rsi, PVAR(0)
-+    mov sil, byte [rsi]
-+
-+    cmp sil, T_BOOL
-+    jne .wrong_type
-+    mov rax, SOB_TRUE_ADDRESS
-+    jmp .return
-+
-+.wrong_type:
-+    mov rax, SOB_FALSE_ADDRESS
-+.return:
-+    leave
-+    ret
-+
-+is_float:
-+    push rbp
-+    mov rbp, rsp
-+
-+    mov rsi, PVAR(0)
-+    mov sil, byte [rsi]
-+
-+    cmp sil, T_FLOAT
-+    jne .wrong_type
-+    mov rax, SOB_TRUE_ADDRESS
-+    jmp .return
-+
-+.wrong_type:
-+    mov rax, SOB_FALSE_ADDRESS
-+.return:
-+    leave
-+    ret
-+
-+is_integer:
-+    push rbp
-+    mov rbp, rsp
-+
-+    mov rsi, PVAR(0)
-+    mov sil, byte [rsi]
-+
-+    cmp sil, T_INTEGER
-+    jne .wrong_type
-+    mov rax, SOB_TRUE_ADDRESS
-+    jmp .return
-+
-+.wrong_type:
-+    mov rax, SOB_FALSE_ADDRESS
-+.return:
-+    leave
-+    ret
-+
-+is_pair:
-+    push rbp
-+    mov rbp, rsp
-+
-+    mov rsi, PVAR(0)
-+    mov sil, byte [rsi]
-+
-+    cmp sil, T_PAIR
-+    jne .wrong_type
-+    mov rax, SOB_TRUE_ADDRESS
-+    jmp .return
-+
-+.wrong_type:
-+    mov rax, SOB_FALSE_ADDRESS
-+.return:
-+    leave
-+    ret
-+
-+is_null:
-+    push rbp
-+    mov rbp, rsp
-+
-+    mov rsi, PVAR(0)
-+    mov sil, byte [rsi]
-+
-+    cmp sil, T_NIL
-+    jne .wrong_type
-+    mov rax, SOB_TRUE_ADDRESS
-+    jmp .return
-+
-+.wrong_type:
-+    mov rax, SOB_FALSE_ADDRESS
-+.return:
-+    leave
-+    ret
-+
-+is_char:
-+    push rbp
-+    mov rbp, rsp
-+
-+    mov rsi, PVAR(0)
-+    mov sil, byte [rsi]
-+
-+    cmp sil, T_CHAR
-+    jne .wrong_type
-+    mov rax, SOB_TRUE_ADDRESS
-+    jmp .return
-+
-+.wrong_type:
-+    mov rax, SOB_FALSE_ADDRESS
-+.return:
-+    leave
-+    ret
-+
-+is_string:
-+    push rbp
-+    mov rbp, rsp
-+
-+    mov rsi, PVAR(0)
-+    mov sil, byte [rsi]
-+
-+    cmp sil, T_STRING
-+    jne .wrong_type
-+    mov rax, SOB_TRUE_ADDRESS
-+    jmp .return
-+
-+.wrong_type:
-+    mov rax, SOB_FALSE_ADDRESS
-+.return:
-+    leave
-+    ret
-+
-+is_procedure:
-+    push rbp
-+    mov rbp, rsp
-+
-+    mov rsi, PVAR(0)
-+    mov sil, byte [rsi]
-+
-+    cmp sil, T_CLOSURE
-+    jne .wrong_type
-+    mov rax, SOB_TRUE_ADDRESS
-+    jmp .return
-+
-+.wrong_type:
-+    mov rax, SOB_FALSE_ADDRESS
-+.return:
-+    leave
-+    ret
-+
-+is_symbol:
-+    push rbp
-+    mov rbp, rsp
-+
-+    mov rsi, PVAR(0)
-+    mov sil, byte [rsi]
-+
-+    cmp sil, T_SYMBOL
-+    jne .wrong_type
-+    mov rax, SOB_TRUE_ADDRESS
-+    jmp .return
-+
-+.wrong_type:
-+    mov rax, SOB_FALSE_ADDRESS
-+.return:
-+    leave
-+    ret
-+
-+string_length:
-+    push rbp
-+    mov rbp, rsp
-+
-+    mov rsi, PVAR(0)
-+    STRING_LENGTH rsi, rsi
-+    MAKE_INT(rax, rsi)
-+
-+    leave
-+    ret
-+
-+string_ref:
-+    push rbp
-+    mov rbp, rsp
-+
-+    mov rsi, PVAR(0) 
-+    STRING_ELEMENTS rsi, rsi
-+    mov rdi, PVAR(1)
-+    INT_VAL rdi, rdi
-+    shl rdi, 0
-+    add rsi, rdi
-+
-+    mov sil, byte [rsi]
-+    MAKE_CHAR(rax, sil)
-+
-+    leave
-+    ret
-+
-+string_set:
-+    push rbp
-+    mov rbp, rsp
-+
-+    mov rsi, PVAR(0) 
-+    STRING_ELEMENTS rsi, rsi
-+    mov rdi, PVAR(1)
-+    INT_VAL rdi, rdi
-+    shl rdi, 0
-+    add rsi, rdi
-+
-+    mov rax, PVAR(2)
-+    CHAR_VAL rax, rax
-+    mov byte [rsi], al
-+    mov rax, SOB_VOID_ADDRESS
-+
-+    leave
-+    ret
-+
-+make_string:
-+    push rbp
-+    mov rbp, rsp
-+
-+    
-+    mov rsi, PVAR(0)
-+    INT_VAL rsi, rsi
-+    mov rdi, PVAR(1)
-+    CHAR_VAL rdi, rdi
-+    and rdi, 255
-+
-+    MAKE_STRING rax, rsi, dil
-+
-+    leave
-+    ret
-+
-+symbol_to_string:
-+    push rbp
-+    mov rbp, rsp
-+
-+    
-+    mov rsi, PVAR(0)
-+    SYMBOL_VAL rsi, rsi
-+    
-+    STRING_LENGTH rcx, rsi
-+    STRING_ELEMENTS rdi, rsi
-+
-+    push rcx
-+    push rdi
-+
-+    mov dil, byte [rdi]
-+    MAKE_CHAR(rax, dil)
-+    push rax
-+    MAKE_INT(rax, rcx)
-+    push rax
-+    push 2
-+    push SOB_NIL_ADDRESS
-+    call make_string
-+    add rsp, 4*8
-+
-+    STRING_ELEMENTS rsi, rax
-+
-+    pop rdi
-+    pop rcx
-+
-+    cmp rcx, 0
-+    je .end
-+	
-+.loop:
-+    lea r8, [rdi+rcx]
-+    lea r9, [rsi+rcx]
-+
-+    mov bl, byte [r8]
-+    mov byte [r9], bl
-+    
-+    loop .loop
-+.end:
-+
-+    leave
-+    ret
-+
-+char_to_integer:
-+    push rbp
-+    mov rbp, rsp
-+
-+    
-+    mov rsi, PVAR(0)
-+    CHAR_VAL rsi, rsi
-+    and rsi, 255
-+    MAKE_INT(rax, rsi)
-+
-+    leave
-+    ret
-+
-+integer_to_char:
-+    push rbp
-+    mov rbp, rsp
-+
-+    
-+    mov rsi, PVAR(0)
-+    INT_VAL rsi, rsi
-+    and rsi, 255
-+    MAKE_CHAR(rax, sil)
-+
-+    leave
-+    ret
-+
-+is_eq:
-+    push rbp
-+    mov rbp, rsp
-+
-+    
-+    mov rsi, PVAR(0)
-+    mov rdi, PVAR(1)
-+    cmp rsi, rdi
-+    je .true
-+    mov rax, SOB_FALSE_ADDRESS
-+    jmp .return
-+
-+.true:
-+    mov rax, SOB_TRUE_ADDRESS
-+
-+.return:
-+    leave
-+    ret
-+
-+bin_add:
-+    push rbp
-+    mov rbp, rsp
-+
-+    mov r8, 0
-+
-+    mov rsi, PVAR(0)
-+    push rsi
-+    push 1
-+    push SOB_NIL_ADDRESS
-+    call is_float
-+    add rsp, 3*WORD_SIZE 
-+
-+
-+    cmp rax, SOB_TRUE_ADDRESS
-+    je .test_next
-+    or r8, 1
-+
-+.test_next:
-+
-+    mov rsi, PVAR(1)
-+    push rsi
-+    push 1
-+    push SOB_NIL_ADDRESS
-+    call is_float
-+    add rsp, 3*WORD_SIZE 
-+
-+
-+    cmp rax, SOB_TRUE_ADDRESS
-+    je .load_numbers
-+    or r8, 2
-+
-+.load_numbers:
-+    push r8
-+
-+    shr r8, 1
-+    jc .first_arg_int
-+    mov rsi, PVAR(0)
-+    FLOAT_VAL rsi, rsi 
-+    movq xmm0, rsi
-+    jmp .load_next_float
-+
-+.first_arg_int:
-+    mov rsi, PVAR(0)
-+    INT_VAL rsi, rsi
-+    cvtsi2sd xmm0, rsi
-+
-+.load_next_float:
-+    shr r8, 1
-+    jc .second_arg_int
-+    mov rsi, PVAR(1)
-+    FLOAT_VAL rsi, rsi
-+    movq xmm1, rsi
-+    jmp .perform_float_op
-+
-+.second_arg_int:
-+    mov rsi, PVAR(1)
-+    INT_VAL rsi, rsi
-+    cvtsi2sd xmm1, rsi
-+
-+.perform_float_op:
-+    addsd xmm0, xmm1
-+
-+    pop r8
-+    cmp r8, 3
-+    jne .return_float
-+
-+    cvttsd2si rsi, xmm0
-+    MAKE_INT(rax, rsi)
-+    jmp .return
-+
-+.return_float:
-+    movq rsi, xmm0
-+    MAKE_FLOAT(rax, rsi)
-+
-+.return:
-+
-+    leave
-+    ret
-+
-+bin_mul:
-+    push rbp
-+    mov rbp, rsp
-+
-+    mov r8, 0
-+
-+    mov rsi, PVAR(0)
-+    push rsi
-+    push 1
-+    push SOB_NIL_ADDRESS
-+    call is_float
-+    add rsp, 3*WORD_SIZE 
-+
-+
-+    cmp rax, SOB_TRUE_ADDRESS
-+    je .test_next
-+    or r8, 1
-+
-+.test_next:
-+
-+    mov rsi, PVAR(1)
-+    push rsi
-+    push 1
-+    push SOB_NIL_ADDRESS
-+    call is_float
-+    add rsp, 3*WORD_SIZE 
-+
-+
-+    cmp rax, SOB_TRUE_ADDRESS
-+    je .load_numbers
-+    or r8, 2
-+
-+.load_numbers:
-+    push r8
-+
-+    shr r8, 1
-+    jc .first_arg_int
-+    mov rsi, PVAR(0)
-+    FLOAT_VAL rsi, rsi 
-+    movq xmm0, rsi
-+    jmp .load_next_float
-+
-+.first_arg_int:
-+    mov rsi, PVAR(0)
-+    INT_VAL rsi, rsi
-+    cvtsi2sd xmm0, rsi
-+
-+.load_next_float:
-+    shr r8, 1
-+    jc .second_arg_int
-+    mov rsi, PVAR(1)
-+    FLOAT_VAL rsi, rsi
-+    movq xmm1, rsi
-+    jmp .perform_float_op
-+
-+.second_arg_int:
-+    mov rsi, PVAR(1)
-+    INT_VAL rsi, rsi
-+    cvtsi2sd xmm1, rsi
-+
-+.perform_float_op:
-+    mulsd xmm0, xmm1
-+
-+    pop r8
-+    cmp r8, 3
-+    jne .return_float
-+
-+    cvttsd2si rsi, xmm0
-+    MAKE_INT(rax, rsi)
-+    jmp .return
-+
-+.return_float:
-+    movq rsi, xmm0
-+    MAKE_FLOAT(rax, rsi)
-+
-+.return:
-+
-+    leave
-+    ret
-+
-+bin_sub:
-+    push rbp
-+    mov rbp, rsp
-+
-+    mov r8, 0
-+
-+    mov rsi, PVAR(0)
-+    push rsi
-+    push 1
-+    push SOB_NIL_ADDRESS
-+    call is_float
-+    add rsp, 3*WORD_SIZE 
-+
-+
-+    cmp rax, SOB_TRUE_ADDRESS
-+    je .test_next
-+    or r8, 1
-+
-+.test_next:
-+
-+    mov rsi, PVAR(1)
-+    push rsi
-+    push 1
-+    push SOB_NIL_ADDRESS
-+    call is_float
-+    add rsp, 3*WORD_SIZE 
-+
-+
-+    cmp rax, SOB_TRUE_ADDRESS
-+    je .load_numbers
-+    or r8, 2
-+
-+.load_numbers:
-+    push r8
-+
-+    shr r8, 1
-+    jc .first_arg_int
-+    mov rsi, PVAR(0)
-+    FLOAT_VAL rsi, rsi 
-+    movq xmm0, rsi
-+    jmp .load_next_float
-+
-+.first_arg_int:
-+    mov rsi, PVAR(0)
-+    INT_VAL rsi, rsi
-+    cvtsi2sd xmm0, rsi
-+
-+.load_next_float:
-+    shr r8, 1
-+    jc .second_arg_int
-+    mov rsi, PVAR(1)
-+    FLOAT_VAL rsi, rsi
-+    movq xmm1, rsi
-+    jmp .perform_float_op
-+
-+.second_arg_int:
-+    mov rsi, PVAR(1)
-+    INT_VAL rsi, rsi
-+    cvtsi2sd xmm1, rsi
-+
-+.perform_float_op:
-+    subsd xmm0, xmm1
-+
-+    pop r8
-+    cmp r8, 3
-+    jne .return_float
-+
-+    cvttsd2si rsi, xmm0
-+    MAKE_INT(rax, rsi)
-+    jmp .return
-+
-+.return_float:
-+    movq rsi, xmm0
-+    MAKE_FLOAT(rax, rsi)
-+
-+.return:
-+
-+    leave
-+    ret
-+
-+bin_div:
-+    push rbp
-+    mov rbp, rsp
-+
-+    mov r8, 0
-+
-+    mov rsi, PVAR(0)
-+    push rsi
-+    push 1
-+    push SOB_NIL_ADDRESS
-+    call is_float
-+    add rsp, 3*WORD_SIZE 
-+
-+
-+    cmp rax, SOB_TRUE_ADDRESS
-+    je .test_next
-+    or r8, 1
-+
-+.test_next:
-+
-+    mov rsi, PVAR(1)
-+    push rsi
-+    push 1
-+    push SOB_NIL_ADDRESS
-+    call is_float
-+    add rsp, 3*WORD_SIZE 
-+
-+
-+    cmp rax, SOB_TRUE_ADDRESS
-+    je .load_numbers
-+    or r8, 2
-+
-+.load_numbers:
-+    push r8
-+
-+    shr r8, 1
-+    jc .first_arg_int
-+    mov rsi, PVAR(0)
-+    FLOAT_VAL rsi, rsi 
-+    movq xmm0, rsi
-+    jmp .load_next_float
-+
-+.first_arg_int:
-+    mov rsi, PVAR(0)
-+    INT_VAL rsi, rsi
-+    cvtsi2sd xmm0, rsi
-+
-+.load_next_float:
-+    shr r8, 1
-+    jc .second_arg_int
-+    mov rsi, PVAR(1)
-+    FLOAT_VAL rsi, rsi
-+    movq xmm1, rsi
-+    jmp .perform_float_op
-+
-+.second_arg_int:
-+    mov rsi, PVAR(1)
-+    INT_VAL rsi, rsi
-+    cvtsi2sd xmm1, rsi
-+
-+.perform_float_op:
-+    divsd xmm0, xmm1
-+
-+    pop r8
-+    cmp r8, 3
-+    jne .return_float
-+
-+    cvttsd2si rsi, xmm0
-+    MAKE_INT(rax, rsi)
-+    jmp .return
-+
-+.return_float:
-+    movq rsi, xmm0
-+    MAKE_FLOAT(rax, rsi)
-+
-+.return:
-+
-+    leave
-+    ret
-+
-+bin_lt:
-+    push rbp
-+    mov rbp, rsp
-+
-+    mov r8, 0
-+
-+    mov rsi, PVAR(0)
-+    push rsi
-+    push 1
-+    push SOB_NIL_ADDRESS
-+    call is_float
-+    add rsp, 3*WORD_SIZE 
-+
-+
-+    cmp rax, SOB_TRUE_ADDRESS
-+    je .test_next
-+    or r8, 1
-+
-+.test_next:
-+
-+    mov rsi, PVAR(1)
-+    push rsi
-+    push 1
-+    push SOB_NIL_ADDRESS
-+    call is_float
-+    add rsp, 3*WORD_SIZE 
-+
-+
-+    cmp rax, SOB_TRUE_ADDRESS
-+    je .load_numbers
-+    or r8, 2
-+
-+.load_numbers:
-+    push r8
-+
-+    shr r8, 1
-+    jc .first_arg_int
-+    mov rsi, PVAR(0)
-+    FLOAT_VAL rsi, rsi 
-+    movq xmm0, rsi
-+    jmp .load_next_float
-+
-+.first_arg_int:
-+    mov rsi, PVAR(0)
-+    INT_VAL rsi, rsi
-+    cvtsi2sd xmm0, rsi
-+
-+.load_next_float:
-+    shr r8, 1
-+    jc .second_arg_int
-+    mov rsi, PVAR(1)
-+    FLOAT_VAL rsi, rsi
-+    movq xmm1, rsi
-+    jmp .perform_float_op
-+
-+.second_arg_int:
-+    mov rsi, PVAR(1)
-+    INT_VAL rsi, rsi
-+    cvtsi2sd xmm1, rsi
-+
-+.perform_float_op:
-+    cmpltsd xmm0, xmm1
-+
-+    pop r8
-+    cmp r8, 3
-+    jne .return_float
-+
-+    cvttsd2si rsi, xmm0
-+    MAKE_INT(rax, rsi)
-+    jmp .return
-+
-+.return_float:
-+    movq rsi, xmm0
-+    MAKE_FLOAT(rax, rsi)
-+
-+.return:
-+
-+    INT_VAL rsi, rax
-+    cmp rsi, 0
-+    je .return_false
-+    mov rax, SOB_TRUE_ADDRESS
-+    jmp .final_return
-+
-+.return_false:
-+    mov rax, SOB_FALSE_ADDRESS
-+
-+.final_return:
-+
-+
-+    leave
-+    ret
-+
-+bin_equ:
-+    push rbp
-+    mov rbp, rsp
-+
-+    mov r8, 0
-+
-+    mov rsi, PVAR(0)
-+    push rsi
-+    push 1
-+    push SOB_NIL_ADDRESS
-+    call is_float
-+    add rsp, 3*WORD_SIZE 
-+
-+
-+    cmp rax, SOB_TRUE_ADDRESS
-+    je .test_next
-+    or r8, 1
-+
-+.test_next:
-+
-+    mov rsi, PVAR(1)
-+    push rsi
-+    push 1
-+    push SOB_NIL_ADDRESS
-+    call is_float
-+    add rsp, 3*WORD_SIZE 
-+
-+
-+    cmp rax, SOB_TRUE_ADDRESS
-+    je .load_numbers
-+    or r8, 2
-+
-+.load_numbers:
-+    push r8
-+
-+    shr r8, 1
-+    jc .first_arg_int
-+    mov rsi, PVAR(0)
-+    FLOAT_VAL rsi, rsi 
-+    movq xmm0, rsi
-+    jmp .load_next_float
-+
-+.first_arg_int:
-+    mov rsi, PVAR(0)
-+    INT_VAL rsi, rsi
-+    cvtsi2sd xmm0, rsi
-+
-+.load_next_float:
-+    shr r8, 1
-+    jc .second_arg_int
-+    mov rsi, PVAR(1)
-+    FLOAT_VAL rsi, rsi
-+    movq xmm1, rsi
-+    jmp .perform_float_op
-+
-+.second_arg_int:
-+    mov rsi, PVAR(1)
-+    INT_VAL rsi, rsi
-+    cvtsi2sd xmm1, rsi
-+
-+.perform_float_op:
-+    cmpeqsd xmm0, xmm1
-+
-+    pop r8
-+    cmp r8, 3
-+    jne .return_float
-+
-+    cvttsd2si rsi, xmm0
-+    MAKE_INT(rax, rsi)
-+    jmp .return
-+
-+.return_float:
-+    movq rsi, xmm0
-+    MAKE_FLOAT(rax, rsi)
-+
-+.return:
-+
-+    INT_VAL rsi, rax
-+    cmp rsi, 0
-+    je .return_false
-+    mov rax, SOB_TRUE_ADDRESS
-+    jmp .final_return
-+
-+.return_false:
-+    mov rax, SOB_FALSE_ADDRESS
-+
-+.final_return:
-+
-+
-+    leave
-+    ret
-+
+ is_boolean:
+     push rbp
+     mov rbp, rsp
 diff --git a/reader.ml b/reader.ml
-index c4fd6b2..95e0620 100644
+index c4fd6b2d..95e0620c 100644
 --- a/reader.ml
 +++ b/reader.ml
 @@ -1,8 +1,34 @@
@@ -3085,8 +1545,24 @@ index c4fd6b2..95e0620 100644
 +  
    
  end;; (* struct Reader *)
+diff --git a/readme.txt b/readme.txt
+index e69de29b..8a205af0 100644
+--- a/readme.txt
++++ b/readme.txt
+@@ -0,0 +1,10 @@
++Alon braverman 204590509
++Rotem Barak 308339597
++
++I (We) assert that the work we submitted is 100% our own. We have not received any
++part from any other student in the class, nor have we give parts of it for use to others.
++Nor have we used code from other sources: Courses taught previously at this university,
++courses taught at other universities, various bits of code found on the internet, etc.
++We realize that should our code be found to contain code from other sources, that a
++formal case shall be opened against us with va’adat mishma’at, in pursuit of disciplinary
++action.
+\ No newline at end of file
 diff --git a/semantic-analyser.ml b/semantic-analyser.ml
-index 2f5ff59..851af99 100644
+index 2f5ff59b..851af99c 100644
 --- a/semantic-analyser.ml
 +++ b/semantic-analyser.ml
 @@ -1,5 +1,8 @@
@@ -3642,25 +2118,16 @@ index 2f5ff59..851af99 100644
  let run_semantics expr =
    box_set
 diff --git a/stdlib.scm b/stdlib.scm
-new file mode 100644
-index 0000000..238ca99
---- /dev/null
+index 8bce64b1..2d27539a 100644
+--- a/stdlib.scm
 +++ b/stdlib.scm
-@@ -0,0 +1,193 @@
-+(define map
-+  (let ((null? null?)
-+	(car car) (cdr cdr)
-+	(cons cons) (apply apply))
-+    (letrec ((map-loop (lambda (f l . ls)
-+		     (if (null? l)
-+			 '() ; simplifying assumption: if l is empty, then ls is also empty
-+			 (if (null? ls)
-+			     (cons (f (car l)) (map-loop f (cdr l)))
-+			     (cons (apply f (car l) (map-loop car ls))
-+				   (apply map f (cdr l) (map-loop cdr ls))))))))
-+      map-loop)))
-+
-+(define fold-left
+@@ -12,19 +12,46 @@
+       map-loop)))
+ 
+ (define fold-left
+-  #;(Add your implementation here
+-     Note: The file won't compile like this, beacuase your tag-parser requires define to have a second expression.
+-     This is on purpose, so you don't compile the library without completing this implementation by mistake.))
 +  (let ((null? null?)
 +	(car car) (cdr cdr)
 +	)
@@ -3673,22 +2140,29 @@ index 0000000..238ca99
 +	)
 +   )
 +)
-+
-+(define fold-right
-+	(let (
-+			(fold-right-imp 
-+				(lambda (f l acc) 
-+					(fold-left (lambda (acc x) (f x acc)) acc (fold-left (lambda (acc x) (cons x acc)) '() l)  )
-+					
-+				)
-+			)
-+		)
-+		fold-right-imp
-+	) 
+ 
+ (define fold-right
+-  #;(Add your implementation here
+-     Note: The file won't compile like this, beacuase your tag-parser requires define to have a second expression.
+-     This is on purpose, so you don't compile the library without completing this implementation by mistake.))
++	(let ((null? null?)
++	(car car) (cdr cdr)
++	)
++    (letrec ((fold-loop (lambda (f acc l)
++		     (if (null? l)
++			 acc
++			 (f (car l) (fold-loop f acc (cdr l)))
++			 ))))
++      fold-loop
++	)
++   )
 +)
 +
-+
-+(define cons*
+ 
+ (define cons*
+-  #;(Add your implementation here
+-     Note: The file won't compile like this, beacuase your tag-parser requires define to have a second expression.
+-     This is on purpose, so you don't compile the library without completing this implementation by mistake.))
 +	(let ((null? null?)
 +	(car car) (cdr cdr)
 +	(cons cons) (apply apply))
@@ -3700,148 +2174,11 @@ index 0000000..238ca99
 +      cons-loop)
 +	  ) 
 +)
-+
-+(define append
-+  (let ((null? null?)
-+	(fold-right fold-right)
-+	(cons cons))
-+    (lambda args
-+      (fold-right (lambda (e a)
-+		    (if (null? a)
-+			e
-+			(fold-right cons a e)))
-+		  '() args))))
-+
-+(define list (lambda x x))
-+
-+(define list? 
-+  (let ((null? null?)
-+	(pair? pair?)
-+	(cdr cdr))
-+    (letrec ((list?-loop (lambda (x)
-+			   (or (null? x)
-+			       (and (pair? x)
-+				    (list? (cdr x)))))))
-+      list?-loop)))
-+
-+(define length
-+  (let ((fold-left fold-left)
-+	(+ +))
-+    (lambda (l)
-+      (fold-left (lambda (acc e) (+ acc 1)) 0 l))))
-+
-+(define make-string
-+  (let ((null? null?) (car car)
-+	(make-string make-string))
-+    (lambda (x . y)
-+      (if (null? y)
-+	  (make-string x #\nul)
-+	  (make-string x (car y))))))
-+
-+(define not
-+  (lambda (x) (if x #f #t)))
-+
-+(define number?
-+  (let ((float? float?)
-+	(integer? integer?))
-+    (lambda (x)
-+      (or (float? x) (integer? x)))))
-+
-+(define +
-+  (let ((fold-left fold-left)
-+	(+ +))
-+    (lambda x (fold-left + 0 x))))
-+
-+(define *
-+  (let ((fold-left fold-left)
-+	(* *))
-+    (lambda x (fold-left * 1 x))))
-+
-+(define -
-+  (let ((apply apply)
-+	(- -) (+ +)
-+	(null? null?))
-+    (lambda (x . y)
-+      (if (null? y)
-+	  (- 0 x)
-+	  (- x (apply + y))))))
-+
-+(define /
-+  (let ((apply apply)
-+	(/ /) (* *)
-+	(null? null?))
-+    (lambda (x . y)
-+      (if (null? y)
-+	  (/ 1 x)
-+	  (/ x (apply * y))))))
-+
-+(define =
-+  (let ((= =) (null? null?)
-+	(car car) (cdr cdr)
-+	(apply apply))
-+    (letrec ((=-loop (lambda (x . y)
-+		       (if (null? y)
-+			   #t ; simplifying assumption: x is a number
-+			   (and (= x (car y)) (apply =-loop x (cdr y)))))))
-+      =-loop)))
-+
-+(define <
-+  (let ((null? null?) (< <)
-+	(car car) (cdr cdr))
-+    (letrec ((<-loop (lambda (element lst)
-+		     (if (null? lst) 
-+			 #t 
-+			 (and (< element (car lst))
-+			     (<-loop (car lst) (cdr lst)))))))
-+      (lambda (x . y)
-+	(<-loop x y)))))
-+
-+(define >
-+  (let ((null? null?) (< <) (= =)
-+	(not not) (car car) (cdr cdr))
-+    (letrec ((>-loop (lambda (element lst)
-+		     (if (null? lst) 
-+			 #t
-+			 (and (not (or
-+				    (< element (car lst))
-+				    (= element (car lst))))
-+			      (>-loop (car lst) (cdr lst)))))))
-+      (lambda (x . y)
-+	(>-loop x y)))))
-+
-+(define zero? 
-+  (let ((= =))
-+    (lambda (x) (= x 0))))
-+
-+(define string->list
-+  (let ((string-ref string-ref)
-+	(string-length string-length)
-+	(< <) (- -))
-+    (lambda (s)
-+      (letrec ((s->l-loop (lambda (n a)
-+			    (if (< n 0)
-+				a
-+				(s->l-loop (- n 1) (cons (string-ref s n) a))))))
-+	(s->l-loop (- (string-length s) 1) '())))))
-+
-+(define equal?
-+  (let ((= =) (string->list string->list)
-+	(integer? integer?) (float? float?)
-+	(pair? pair?) (char? char?)
-+	(string? string?) (eq? eq?)
-+	(car car) (cdr cdr)
-+	(char->integer char->integer))
-+    (letrec ((equal?-loop (lambda (x y)
-+			    (or 
-+			     (and (integer? x) (integer? y) (= x y))
-+			     (and (float? x) (float? y) (= x y))
-+			     (and (pair? x) (pair? y) (equal?-loop (car x) (car y)) (equal?-loop (cdr x) (cdr y)))
-+			     (and (char? x) (char? y) (= (char->integer x) (char->integer y)))
-+			     (and (string? x) (string? y) (equal?-loop (string->list x) (string->list y)))
-+			     (eq? x y)))))
-+    equal?-loop)))
+ 
+ (define append
+   (let ((null? null?)
 diff --git a/tag-parser.ml b/tag-parser.ml
-index 712f408..13d4e81 100644
+index 712f4087..13d4e811 100644
 --- a/tag-parser.ml
 +++ b/tag-parser.ml
 @@ -1,4 +1,7 @@

@@ -1,0 +1,1 @@
+(define func (lambda (x y) x)) (define function_pass (lambda (f x y) (f x y)))  (function_pass func #t #F)

@@ -16,7 +16,7 @@ BASEDIR := $(PWD)
 	cd $(MKDIR) && ocaml compiler.ml $(BASEDIR)/$@.scm > $@.s && nasm -g -f elf64 -o $@.o $@.s && gcc -g -static -m64 -o $@ $@.o && mv $@ $(BASEDIR)
 
 clean:
-	rm -f *.log *.cache *TESTCASE*
+	rm -f *.log *.cache *TESTCASE* 
 
 cdclean:
 	cd $(MKDIR) ;\
@@ -56,8 +56,28 @@ test_ly:
 	done;\
 	#make -f makefile clean;
 
+tests:
+	for test in $$(ls our_compiler/testcases/tests | grep -i .scm$ | cut -f 1 -d '.');\
+	do\
+		cd $(MKDIR) ;\
+		ocaml compiler.ml $(BASEDIR)/our_compiler/testcases/tests/$$test.scm > $$test.s ;\
+		nasm -g -f elf64 -o $$test.o $$test.s ;\
+		gcc -g -static -m64 -o $$test $$test.o ;\
+		echo "testcase: $$test";\
+		ACTUAL=`./$$test`;\
+		export ACTUAL;\
+		EXCPECTED=`scheme -q < testcases/tests/$$test.scm`;\
+		export EXCPECTED;\
+		echo "(if (equal? '($$EXCPECTED) '($$ACTUAL)) 'PASSED! '(Excpected Result: $$EXCPECTED,     Actual Result: $$ACTUAL,    testcase: $$test) )" > test.scm;\
+		scheme -q < test.scm;\
+		mv $$test compiled;\
+		mv $$test.s compiled;\
+		mv $$test.o compiled;\
+	done;\
+	#make -f makefile clean;
+
 test_no_clean:
-	for test in $$(ls our_compiler/testcases/ | grep -i ^TESTCASE_ | cut -f 1 -d '.'); do cd $(MKDIR) && ocaml our_compiler.ml $(BASEDIR)/our_compiler/testcases/$$test.scm > $$test.s && nasm -f elf64 -o $$test.o $$test.s && gcc -static -m64 -o $$test $$test.o  &&  ./$$test > ACTUAL_$$test.txt && python run_testcase.py ACTUAL_$$test.txt EXPECTED_$$test.txt our_compiler/testcases/; done 
+	for test in $$(ls our_compiler/testcases/ | grep -i '.scm$' | cut -f 1 -d '.'); do cd $(MKDIR) && ocaml our_compiler.ml $(BASEDIR)/our_compiler/testcases/$$test.scm > $$test.s && nasm -f elf64 -o $$test.o $$test.s && gcc -static -m64 -o $$test $$test.o  &&  ./$$test > ACTUAL_$$test.txt && python run_testcase.py ACTUAL_$$test.txt EXPECTED_$$test.txt our_compiler/testcases/; done 
 
 old_test:
 	ocaml ${TEST_TO_RUN} && make clean

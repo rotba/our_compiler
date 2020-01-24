@@ -26,16 +26,17 @@
 )
 
 (define fold-right
-	(let (
-			(fold-right-imp 
-				(lambda (f l acc) 
-					(fold-left (lambda (acc x) (f x acc)) acc (fold-left (lambda (acc x) (cons x acc)) '() l)  )
-					
-				)
-			)
-		)
-		fold-right-imp
-	) 
+	(let ((null? null?)
+	(car car) (cdr cdr)
+	)
+    (letrec ((fold-loop (lambda (f acc l)
+		     (if (null? l)
+			 acc
+			 (f (car l) (fold-loop f acc (cdr l)))
+			 ))))
+      fold-loop
+	)
+   )
 )
 
 

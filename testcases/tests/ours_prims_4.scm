@@ -1,0 +1,6 @@
+(number? 5)
+(not(not(zero? 0)))
+(number? 5)
+(not (number? 5.6))
+(list? '())
+(list? '(1 2 3))

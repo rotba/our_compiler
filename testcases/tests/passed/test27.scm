@@ -1,0 +1,1 @@
+(define func (lambda () 5)) (define function123 (lambda (x y) y)) (function123 6 (func))

@@ -213,7 +213,8 @@ module Code_Gen : CODE_GEN = struct
      |Sexpr(Bool(true)) -> "MAKE_BOOL(1)"
      |Sexpr(Number(Int(vall))) -> Printf.sprintf "MAKE_LITERAL_INT(%s)" (string_of_int vall)
      |Sexpr(Number(Float(vall))) -> Printf.sprintf "MAKE_LITERAL_FLOAT(%s)" (string_of_float vall)                          
-     |Sexpr(String(s)) -> Printf.sprintf "MAKE_LITERAL_STRING \"%s\", %d" (String.escaped s) (String.length (String.escaped s))
+     |Sexpr(String(s)) -> Printf.sprintf "MAKE_LITERAL_STRING {%s}, %d"  (String.concat "," (List.map (fun (x) -> string_of_int (Char.code x)) (string_to_list s))) (String.length s)
+     (* |Sexpr(String(s)) -> Printf.sprintf "MAKE_LITERAL_STRING \"%s\", %d"  (String.escaped s) (String.length (String.escaped s)) *)
      |Sexpr(Char(c)) -> Printf.sprintf "MAKE_LITERAL_CHAR (%d)" (Char.code c)
      |Sexpr(Symbol(s)) ->
        let sym_str_rel_idx = (find_rel_idx (Sexpr(String(s))) rest) in
@@ -412,6 +413,7 @@ module Code_Gen : CODE_GEN = struct
            (Printf.sprintf "loop %s" label_env_loop);
            (* (Printf.sprintf "mov rcx, %d" (List.length params)); *)
            "mov rcx, qword[rbp +8*3]";
+           "inc rcx";
            "shl rcx, 3";
            "MALLOC rbx, rcx;rbx is the new rib";
            "shr rcx, 3";
@@ -641,8 +643,10 @@ module Code_Gen : CODE_GEN = struct
         let label_not_empty_opt = Labels.make_label "not_empty_opt" in
         let label_done_fixing = Labels.make_label "done_fixing" in
         let label_create_opt_loop = Labels.make_label "create_opt_loop" in
+        let label_opt = Labels.make_label "opt" in
         (concat_lines
            [
+             Printf.sprintf "%s:" label_opt;
              ";donte the effective numer of parameters m";
              ";donte the number of simple parameters n";
              "mov rcx, qword[rsp+ 8*2]; rcx is m";
@@ -652,6 +656,7 @@ module Code_Gen : CODE_GEN = struct
              "add rcx, 3;m+2 - offset of magic";
              "shl rcx, 3";
              "mov qword[rsp+rcx], SOB_NIL_ADDRESS; magic is NIL";
+             (* "inc qword[rsp+ 8*2]; inc number of params"; *)
              Printf.sprintf "jmp %s" label_done_fixing;
              Printf.sprintf "%s:" label_not_empty_opt;
              "add rcx, 2; rcx is m+2 - the offset of the ultimetly last argument";

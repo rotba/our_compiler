@@ -1,0 +1,10 @@
+((((lambda (x) 	
+	(lambda (y)
+		(lambda (z) 
+			(set! x -1)
+			(set! y -2)
+			(set! z (* x y))
+			(+ z z)
+
+		)
+	))1)2)3)

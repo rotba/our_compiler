@@ -1,0 +1,1 @@
+((lambda (x) (lambda (y) y) 42)5)

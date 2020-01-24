@@ -1,0 +1,28 @@
+(define inequality 
+	(cond 
+		((zero? 1) #f)
+		((equal? 3 5) #f)
+		((equal? 3.5 3.05) #f)
+		((equal? "hello" "hello1") #f)
+		((null? '(1)) #f)
+		((null? 3) #f)
+		((null? "null") #f)
+		((number? #\2) #f)
+		((number? "str") #f)
+		((list? "not-a-list") #f)
+		((equal? 3.14 3.15) #f)
+		((equal? 3.14 3.145) #f)
+		((equal? 10e3 100) #f)
+		((equal? 10e-2 0.01) #f)
+		((equal? #2r10 #2r11) #f)
+		((equal? #16rff 256) #f)
+		((equal? #\a #\b) #f)
+		((equal? 'hello 'hello1) #f)
+		((integer? 4.2) #f)
+		((char? "c") #f)
+		((string? 'symbol) #f)
+		((pair? '()) #f)
+		(else #t)
+))
+inequality
+		
